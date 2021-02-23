@@ -10,6 +10,8 @@ import {ArchiveTransferService} from '../services/archive-transfer.service';
   styleUrls: ['./archive-transfers.component.scss']
 })
 export class ArchiveTransfersComponent {
+  name = 'Caroline';
+
   archiveTransfers: ArchiveTransfer[];
 
   constructor(

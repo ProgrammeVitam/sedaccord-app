@@ -56,7 +56,7 @@ export class ArchiveTransferService {
     return this.http.get<ArchiveTransfer>(url)
       .pipe(
         map(value => {
-          // TODO builder + do it for each service
+          // TODO builder + transformer/mapper for each service
           const archiveTransfer = new ArchiveTransfer(
             value.id,
             value.name,
