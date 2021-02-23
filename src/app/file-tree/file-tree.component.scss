@@ -1,5 +1,9 @@
 @import "variables";
 
+.mat-tree {
+  overflow: auto;
+}
+
 .selected {
   background-color: $badge-background;
 }
