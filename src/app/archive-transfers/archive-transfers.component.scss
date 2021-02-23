@@ -1,0 +1,60 @@
+@import "variables";
+
+:host {
+  display: grid;
+}
+
+header {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+}
+
+h2 {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.button-container {
+  grid-column: 2;
+  grid-row: 2;
+  text-align: right;
+}
+
+.mat-selection-list {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+
+  button {
+    margin: $smaller-margin;
+  }
+
+  .badge {
+    background-color: $badge-background;
+    border-radius: $badge-radius;
+    display: inline-block;
+    padding: mat-font-size($config, body-1) / 2;
+  }
+}
+
+.mat-list-option {
+  background-color: $item-background;
+  margin-top: mat-font-size($config, body-1) * 2;
+}
+
+.mat-list-single-selected-option,
+.mat-list-single-selected-option:hover,
+.mat-list-single-selected-option:focus {
+  background: $item-background-selected;
+}
+
+.mat-line:first-child {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mat-line:nth-child(2) {
+  bottom: 100%;
+  left: 0;
+  position: absolute;
+}

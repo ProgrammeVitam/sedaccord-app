@@ -1,0 +1,51 @@
+@import "variables";
+
+:host {
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.mat-tab-group {
+  height: calc(100% - 2 * #{$default-margin});
+}
+
+.open-close-container {
+  background: $panel-background;
+  height: 100%;
+  padding: $default-margin;
+  width: $panel-width;
+}
+
+.info-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.form-content-wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.date-group {
+  .mat-form-field {
+    width: $form-field-width;
+  }
+}
+
+.comment {
+  margin-top: $smaller-margin;
+
+  & > div:first-child {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.button-container {
+  text-align: right;
+}

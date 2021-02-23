@@ -1,0 +1,28 @@
+<button mat-icon-button (click)="addFile()">
+  <mat-icon>add</mat-icon>
+  Nouveau dossier
+</button>
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <!-- This is the tree node template for leaf nodes -->
+  <mat-tree-node *matTreeNodeDef="let node" [ngClass]="{'selected': isSelected(node)}" matTreeNodePadding>
+    <!-- use a disabled button to provide padding for tree leaf -->
+    <button disabled mat-icon-button></button>
+    <mat-icon inline>{{node.isDirectory ? 'folder' : 'text_snippet'}}</mat-icon>
+    <a (click)="selectFile(node)">{{node.name}}</a>
+  </mat-tree-node>
+  <!-- This is the tree node template for expandable nodes -->
+  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" [ngClass]="{'selected': isSelected(node)}"
+                 matTreeNodePadding>
+    <mat-icon inline>folder</mat-icon>
+    <button [attr.aria-label]="'Toggle ' + node.name" mat-icon-button
+            matTreeNodeToggle>
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
+    </button>
+    <a (click)="selectFile(node)">{{node.name}}</a>
+    <button (click)="addFile()" mat-icon-button>
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-tree-node>
+</mat-tree>

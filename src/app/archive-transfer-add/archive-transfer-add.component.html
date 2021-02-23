@@ -1,0 +1,189 @@
+<aside>
+  <h1>{{stepper.selectedIndex + 1}} {{steps[stepper.selectedIndex].label}}</h1>
+  <p>{{steps[stepper.selectedIndex].description}}</p>
+</aside>
+<form (ngSubmit)="onSubmit()" [formGroup]="archiveTransferFormWrapper">
+  <mat-horizontal-stepper #stepper class="mat-stepper-fill-height" formArrayName="archiveTransferForm">
+
+    <mat-step [stepControl]="archiveTransferForm.get([0])" formGroupName="0">
+      <div class="step-content step-content-1">
+        <div>
+          <h2>
+            <mat-icon inline>backup</mat-icon>
+            Projet de versement {{archiveTransferId}}
+          </h2>
+          <p>
+            Aide : Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+          </p>
+        </div>
+        <div>
+          <button (click)="addPackage()" color="primary" mat-flat-button type="button">Ajouter un ensemble</button>
+        </div>
+        <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
+          <mat-expansion-panel *ngFor="let _ of archiveDataPackages.controls; let i=index"
+                               [formGroupName]="i">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Ensemble {{i + 1}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-file-drop [formControlName]="'data'"></app-file-drop>
+            <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
+                                           [label]="'Je choisis une branche du plan de classement'"
+                                           [treeData]="classification"></app-tree-autocomplete-control>
+          </mat-expansion-panel>
+        </mat-accordion>
+        <div class="button-group">
+          <div></div>
+          <div>
+            <button (click)="onCancel()" mat-stroked-button type="button">
+              Annuler
+            </button>
+            <button color="primary" mat-flat-button matStepperNext type="button">
+              Suivant
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-step>
+
+    <mat-step [stepControl]="archiveTransferForm.get([1])" formGroupName="1">
+      <div class="step-content step-content-2">
+        <div class="info-form">
+          <h2>Informations du versement</h2>
+          <p>Afin de contribuer à une meilleure contextualisation de votre versement, veuillez compléter les
+            champs ci-dessous.</p>
+          <mat-form-field>
+            <mat-label>Je renseigne l'intitulé de mon versement
+            </mat-label>
+            <input formControlName="name" matInput/>
+            <mat-hint>L'intitulé du versement doit permettre d'identifier votre versement.</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>J'ajoute une description à mon versement
+            </mat-label>
+            <textarea formControlName="description" matInput></textarea>
+            <mat-hint>La description de votre versement permettra d'expliquer le contexte de production des documents et
+              d'en permettre l'exploitation administrative.
+            </mat-hint>
+          </mat-form-field>
+          <div class="date-group">
+            <mat-form-field>
+              <mat-label>Date de début
+              </mat-label>
+              <input [matDatepicker]="pickerStart" formControlName="startDate" matInput/>
+              <mat-datepicker-toggle [for]="pickerStart" matSuffix></mat-datepicker-toggle>
+              <mat-datepicker #pickerStart></mat-datepicker>
+              <mat-hint>Date du document le plus ancien</mat-hint>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Date de fin
+              </mat-label>
+              <input [matDatepicker]="pickerEnd" formControlName="endDate" matInput/>
+              <mat-datepicker-toggle [for]="pickerEnd" matSuffix></mat-datepicker-toggle>
+              <mat-datepicker #pickerEnd></mat-datepicker>
+              <mat-hint>Date du document le plus récent</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="button-group">
+          <div>
+            <button mat-stroked-button matStepperPrevious type="button">
+              Précédent
+            </button>
+          </div>
+          <div>
+            <button (click)="onCancel()" mat-stroked-button type="button">
+              Annuler
+            </button>
+            <button color="primary" mat-flat-button matStepperNext type="button">
+              Suivant
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-step>
+
+    <mat-step [stepControl]="archiveTransferForm.get([2])" formGroupName="2">
+      <div class="step-content step-content-3">
+        <div class="info-form">
+          <h2>Informations du service versant / producteur</h2>
+          <p>Corrigez ou modifiez, si besoin, les informations présentes ci-dessous.</p>
+          <mat-form-field appearance="outline">
+            <mat-label>Le service producteur
+            </mat-label>
+            <mat-select formControlName="creatorId">
+              <mat-option *ngFor="let creator of creators" [value]="creator.id">
+                {{creator.name}}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Le service producteur est celui qui a produit ou reçu les documents dans le cadre de ses
+              activités.
+            </mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>La description du service producteur
+            </mat-label>
+            <textarea formControlName="creatorDescription"
+                      matInput></textarea>
+            <mat-hint>La description des missions du service producteur permettra de contextualiser la production des
+              documents.
+            </mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Le service versant
+            </mat-label>
+            <mat-select formControlName="transferringAgencyId">
+              <mat-option *ngFor="let transferringAgency of transferringAgencies" [value]="transferringAgency.id">
+                {{transferringAgency.name}}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Le service versant qui est à l'origine de l'opération de versement des documents.</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>La description du service versant
+            </mat-label>
+            <textarea
+              formControlName="transferringAgencyDescription"
+              matInput></textarea>
+            <mat-hint>La description des missions du service versant permettra de comprendre pourquoi il est à l'origine
+              du versement.
+            </mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="button-group">
+          <div>
+            <button mat-stroked-button matStepperPrevious type="button">
+              Précédent
+            </button>
+          </div>
+          <div>
+            <button (click)="onCancel()" mat-stroked-button type="button">
+              Annuler
+            </button>
+            <button color="primary" mat-flat-button matStepperNext type="submit">
+              Valider le projet de versement
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-step>
+
+    <mat-step>
+      <ng-template matStepLabel></ng-template>
+      <div class="step-content step-content-4">
+        <div>
+          <mat-progress-spinner
+            [value]="progressValue">
+          </mat-progress-spinner>
+        </div>
+        <div>
+          <button (click)="onOk()" [disabled]="okDisabled" mat-stroked-button type="button">
+            Valider
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+  </mat-horizontal-stepper>
+</form>

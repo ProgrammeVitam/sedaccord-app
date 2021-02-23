@@ -1,0 +1,48 @@
+<table [dataSource]="dataSource" mat-table matSort>
+
+  <ng-container matColumnDef="delete">
+    <th *matHeaderCellDef mat-header-cell>
+    </th>
+    <td *matCellDef="let row" mat-cell>
+      <button (click)="$event.stopPropagation()" mat-icon-button>
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header> Nom</th>
+    <td *matCellDef="let element" mat-cell> {{element.name}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="startDate">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header> Date de début</th>
+    <td *matCellDef="let element" mat-cell> {{element.startDate | date}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="endDate">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header> Date de fin</th>
+    <td *matCellDef="let element" mat-cell> {{element.endDate | date}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="size">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header> Taille (Ko)</th>
+    <td *matCellDef="let element" mat-cell> {{element.size}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="format">
+    <th *matHeaderCellDef mat-header-cell mat-sort-header> Format</th>
+    <td *matCellDef="let element" mat-cell> {{element.format}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th *matHeaderCellDef mat-header-cell> Description</th>
+    <td *matCellDef="let element" mat-cell> {{element.description}} </td>
+  </ng-container>
+
+  <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+  <tr (click)="selectFile(row)" *matRowDef="let row; columns: displayedColumns;"
+      [ngClass]="{'selected': selection.isSelected(row)}"
+      mat-row></tr>
+</table>
+

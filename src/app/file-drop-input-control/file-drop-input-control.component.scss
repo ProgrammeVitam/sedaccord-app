@@ -1,0 +1,29 @@
+@import "variables";
+
+#drop_zone {
+  border: 2px dashed mat-color($primary);
+  text-align: center;
+  width: 100%;
+}
+
+label {
+  color: mat-color($primary);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.visually-hidden {
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  overflow: hidden;
+  position: absolute !important;
+  width: 1px;
+}
+
+/* Separate rule for compatibility, :focus-within is required on modern Firefox and Chrome */
+input.visually-hidden:focus + label {
+  outline: thin dotted;
+}
+input.visually-hidden:focus-within + label {
+  outline: thin dotted;
+}

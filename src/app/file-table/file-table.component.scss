@@ -1,0 +1,9 @@
+@import "variables";
+
+table {
+  width: 100%;
+}
+
+tr:hover, tr.selected {
+  background: $badge-background;
+}

@@ -1,0 +1,26 @@
+@import "~@angular/material/theming";
+
+$primary: mat-palette($mat-indigo);
+$accent: mat-palette($mat-pink, A200, A100, A400);
+
+$background: white;
+$panel-background: mat-color($mat-gray, 100);
+$item-background: mat-color($mat-gray, 200);
+$item-background-selected: mat-color($mat-gray, 300);
+$badge-background: mat-color($mat-gray, 400);
+$border: mat-color($mat-blue-gray, 50);
+
+$config: mat-typography-config();
+
+.mat-badge-content {
+  font-family: 'Material Icons', mat-font-family($config);
+}
+
+$default-margin: 2em;
+$smaller-margin: $default-margin / 2;
+
+$width: 90%;
+$panel-width: 400px;
+$form-field-width: 150px;
+
+$badge-radius: 4px;

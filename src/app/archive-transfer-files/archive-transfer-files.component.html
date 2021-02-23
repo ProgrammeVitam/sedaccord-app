@@ -1,0 +1,71 @@
+<form (ngSubmit)="onSubmit()">
+<div class="button-group button-group-top">
+  <button (click)="addPackage()" color="primary" mat-flat-button type="button">
+    <mat-icon>add</mat-icon>
+    Ajouter un ensemble
+  </button>
+  <mat-form-field>
+    <input disabled matInput type="text">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+  <mat-divider></mat-divider>
+</div>
+<div [formGroup]="filesForm" class="file-tree-form">
+  <h2>Projet de versement {{archiveTransfer.id}}</h2>
+  <mat-divider></mat-divider>
+  <mat-accordion formArrayName="archiveDataPackages">
+    <mat-expansion-panel *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index"
+                         [formGroupName]="i">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>topic</mat-icon>
+          Ensemble {{i + 1}}
+        </mat-panel-title>
+        <mat-panel-description>
+          10 dossiers / 200 fichiers
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
+                                     [label]="'Mon niveau de plan de classement'"
+                                     [treeData]="classification"
+                                     [value]="archiveDataPackage.get('classificationItem').value"></app-tree-autocomplete-control>
+      <app-file-tree (selectFileEvent)="onSelectFromTree($event)"
+                     [fileTreeData]="archiveDataPackage.get('data').value"></app-file-tree>
+      <mat-action-row>
+        <button (click)="deletePackage()" color="primary" mat-button>Supprimer cet ensemble</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+    <mat-divider></mat-divider>
+  </mat-accordion>
+</div>
+<div *ngIf="treeSelection.hasValue()" class="table-form">
+  <nav>
+    <mat-icon inline>topic</mat-icon>
+    Ensemble i →
+    <mat-icon inline>folder</mat-icon>
+    {{treeSelection.selected[0].name}}
+  </nav>
+  <mat-divider></mat-divider>
+  <app-file-table (selectFileEvent)="onSelectFromTable($event)"
+                  [elementData]="listFiles(treeSelection.selected[0])"></app-file-table>
+</div>
+<div class="button-group button-group-bottom">
+  <div>
+    <button [matBadgeHidden]="matBadgeHidden"
+            mat-stroked-button
+            matBadge="save"
+            matBadgePosition="before"
+            type="submit">
+      Sauvegarder le projet de versement
+    </button>
+  </div>
+  <div>
+    <button mat-stroked-button routerLink="/" type="button">
+      Annuler
+    </button>
+    <button color="primary" mat-flat-button routerLink="/" type="button">
+      Valider
+    </button>
+  </div>
+</div>
+</form>

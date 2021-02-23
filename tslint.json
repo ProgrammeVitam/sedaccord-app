@@ -84,7 +84,8 @@
     },
     "typedef": [
       true,
-      "call-signature"
+      "call-signature",
+      "parameter"
     ],
     "typedef-whitespace": {
       "options": [
@@ -108,7 +109,8 @@
       "options": [
         "ban-keywords",
         "check-format",
-        "allow-pascal-case"
+        "allow-pascal-case",
+        "allow-leading-underscore"
       ]
     },
     "whitespace": {

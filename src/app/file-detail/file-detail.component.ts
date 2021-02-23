@@ -1,0 +1,78 @@
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {FileComment, FileNode} from '../dtos/file';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {DialogReference, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
+import {animate, style, transition, trigger} from '@angular/animations';
+import {ArchiveTransferService} from '../services/archive-transfer.service';
+
+const TRANSITION_DURATION = 300;
+
+@Component({
+  selector: 'app-file-detail',
+  templateUrl: './file-detail.component.html',
+  styleUrls: ['./file-detail.component.scss'],
+  animations: [
+    trigger('openClose', [
+      transition(':enter', [
+        style({transform: 'translateX(100%)'}),
+        animate(TRANSITION_DURATION)
+      ]),
+      transition(':leave', [
+        animate(TRANSITION_DURATION, style({transform: 'translateX(100%)'}))
+      ])
+    ])
+  ]
+})
+export class FileDetailComponent implements OnInit {
+  @Input() file: FileNode;
+
+  fileForm: FormGroup;
+  commentForm: FormGroup;
+  isOpen = true;
+
+  comments: FileComment[];
+
+  constructor(
+    @Inject(FILE_DETAIL_SIDENAV_REF) private _sidenavRef: DialogReference<FileDetailComponent>,
+    private _formBuilder: FormBuilder,
+    private archiveTransferService: ArchiveTransferService
+  ) {
+  }
+
+  ngOnInit(): void {
+    this._getComments();
+    this.fileForm = this._formBuilder.group({
+      name: [this.file.name],
+      startDate: [this.file.startDate],
+      endDate: [this.file.endDate],
+      description: [''],
+      rule: ['']
+    });
+    this.commentForm = this._formBuilder.group({
+      text: ['']
+    });
+  }
+
+  onSubmitFile(): void {
+    setTimeout(_ => this._sidenavRef.close(), TRANSITION_DURATION);
+    this.isOpen = false;
+    // TODO
+  }
+
+  onSubmitComment(): void {
+    const comment = {
+      date: new Date(),
+      user: 'Patrick',
+      text: this.commentForm.value.text,
+      file: this.file.name
+    };
+    this.comments.push(comment);
+    this.archiveTransferService.addComment(comment).subscribe();
+    this.commentForm.reset();
+  }
+
+  private _getComments(): void {
+    this.archiveTransferService.getComments(this.file.name)
+      .subscribe(comments => this.comments = comments);
+  }
+}
