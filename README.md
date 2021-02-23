@@ -10,6 +10,15 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
+## Coding style guide
+
+See TSLint ([tslint.json](tslint.json)) and TSConfig ([tsconfig.json](tsconfig.json)) configuration files.
+
+On IntelliJ IDEA:
+- Enable the TSLint, JavaScript and TypeScript bundled plugins to start checking your code.
+It will use the configuration file by default.
+- Code style configuration (e.g. for Rearrange Code action) is shared under `/.idea/codeStyles`.
+
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
@@ -21,6 +30,14 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 ## Running end-to-end tests
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Deploy to GitHub Pages
+
+Run `ng deploy --base-href=/sedaccord-app/` to deploy the Angular application to GitHub Pages.
+
+## Browser compatibility
+
+Folder upload feature is not available on Internet Explorer and some outdated browsers (see [Directory selection from file input support reference](https://caniuse.com/input-file-directory)).
 
 ## Further help
 
