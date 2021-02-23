@@ -61,7 +61,7 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
     this.name = name;
     this.description = description ?? '';
     this.startDate = startDate ?? null;
-    this.endDate = startDate ?? null;
+    this.endDate = endDate ?? null;
     this.transferringAgency = transferringAgency ?? null;
     this.creator = creator ?? null;
   }
