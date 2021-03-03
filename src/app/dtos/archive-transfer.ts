@@ -60,10 +60,10 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
     this.archiveDataPackages = [];
     this.name = name;
     this.description = description ?? '';
-    this.startDate = startDate ?? null;
-    this.endDate = endDate ?? null;
-    this.transferringAgency = transferringAgency ?? null;
-    this.creator = creator ?? null;
+    this.startDate = startDate ?? undefined;
+    this.endDate = endDate ?? undefined;
+    this.transferringAgency = transferringAgency ?? undefined;
+    this.creator = creator ?? undefined;
   }
 
   addPackage(id: number, name: string, classificationItem: ClassificationItem, fileTreeData: FileNode[]): void {

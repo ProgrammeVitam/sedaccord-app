@@ -5,7 +5,7 @@
 <form (ngSubmit)="onSubmit()" [formGroup]="archiveTransferFormWrapper">
   <mat-horizontal-stepper #stepper class="mat-stepper-fill-height" formArrayName="archiveTransferForm">
 
-    <mat-step [stepControl]="archiveTransferForm.get([0])" formGroupName="0">
+    <mat-step [stepControl]="archiveTransferForm.get([0])!" formGroupName="0">
       <div class="step-content step-content-1">
         <div>
           <h2>
@@ -47,7 +47,7 @@
       </div>
     </mat-step>
 
-    <mat-step [stepControl]="archiveTransferForm.get([1])" formGroupName="1">
+    <mat-step [stepControl]="archiveTransferForm.get([1])!" formGroupName="1">
       <div class="step-content step-content-2">
         <div class="info-form">
           <h2>Informations du versement</h2>
@@ -104,7 +104,7 @@
       </div>
     </mat-step>
 
-    <mat-step [stepControl]="archiveTransferForm.get([2])" formGroupName="2">
+    <mat-step [stepControl]="archiveTransferForm.get([2])!" formGroupName="2">
       <div class="step-content step-content-3">
         <div class="info-form">
           <h2>Informations du service versant / producteur</h2>

@@ -13,7 +13,7 @@
     <mat-icon matListIcon>folder</mat-icon>
     <div mat-line>
       <div>Projet de versement {{archiveTransfer.id}}</div>
-      <div>{{archiveTransfer.transferringAgency.name}}</div>
+      <div>{{archiveTransfer.transferringAgency?.name}}</div>
       <div>{{archiveTransfer.name}}</div>
       <div><span class="badge">{{archiveTransfer.status}}</span></div>
       <div *ngIf="archiveTransfer === archiveTransferList.selectedOptions.selected[0]?.value">

@@ -20,7 +20,7 @@ declare global {
 export class FileDropInputControlComponent implements ControlValueAccessor {
   @Input() disabled = false;
 
-  private _files: File[];
+  private _files!: File[];
   get files(): File[] {
     return this._files;
   }
@@ -59,7 +59,9 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
   onDrop(ev: DragEvent): void {
     this._preventFileOpening(ev);
     // this.handleFilesForDnD(ev.dataTransfer.items);
-    this.handleFilesForDnD(ev.dataTransfer.files);
+    if (ev.dataTransfer) {
+      this.handleFilesForDnD(ev.dataTransfer.files);
+    }
   }
 
   handleFilesForDnD(fileList: FileList): void { // FIXME use items and iterate through directories
@@ -67,10 +69,12 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
     this._handleFiles(files);
   }
 
-  handleFilesForInput(fileList: FileList): void { // FIXME
-    const files = Array.from(fileList);
-    const rootFile = new File(files, this._getRootDirectory(fileList[0])); // FIXME
-    this._handleFiles([rootFile]);
+  handleFilesForInput(fileList: FileList | null): void { // FIXME
+    if (fileList) {
+      const files = Array.from(fileList);
+      const rootFile = new File(files, this._getRootDirectory(fileList[0])); // FIXME
+      this._handleFiles([rootFile]);
+    }
   }
 
   remove(file: File): void { // FIXME

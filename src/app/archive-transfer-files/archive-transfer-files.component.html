@@ -28,9 +28,9 @@
       <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
                                      [label]="'Mon niveau de plan de classement'"
                                      [treeData]="classification"
-                                     [value]="archiveDataPackage.get('classificationItem').value"></app-tree-autocomplete-control>
+                                     [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
       <app-file-tree (selectFileEvent)="onSelectFromTree($event)"
-                     [fileTreeData]="archiveDataPackage.get('data').value"></app-file-tree>
+                     [fileTreeData]="archiveDataPackage.get('data')!.value"></app-file-tree>
       <mat-action-row>
         <button (click)="deletePackage()" color="primary" mat-button>Supprimer cet ensemble</button>
       </mat-action-row>

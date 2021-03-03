@@ -9,7 +9,7 @@ import {ArchiveTransferService} from '../services/archive-transfer.service';
   styleUrls: ['./archive-transfer-detail.component.scss']
 })
 export class ArchiveTransferDetailComponent implements OnInit {
-  archiveTransfer: ArchiveTransfer;
+  archiveTransfer!: ArchiveTransfer;
 
   constructor(
     private _route: ActivatedRoute,
@@ -18,8 +18,10 @@ export class ArchiveTransferDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id: number = +this._route.snapshot.paramMap.get('id');
-    this._getArchiveTransfer(id);
+    const id = this._route.snapshot.paramMap.get('id');
+    if (id) {
+      this._getArchiveTransfer(+id);
+    }
   }
 
   private _getArchiveTransfer(id: number): void {

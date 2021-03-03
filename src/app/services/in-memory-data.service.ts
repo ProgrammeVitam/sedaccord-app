@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {InMemoryDbService} from 'angular-in-memory-web-api';
-import {ArchiveTransfer, ClassificationItemNode, Office} from '../dtos/archive-transfer';
+import {ArchiveTransfer, Office} from '../dtos/archive-transfer';
 import {FileNode} from '../dtos/file';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class InMemoryDataService implements InMemoryDbService {
       {id: 4, name: 'DGCS', description: 'Direction générale de la cohésion sociale'},
       {id: 5, name: 'DRH', description: 'Direction des ressources humaines'}
     ];
-    const classification: ClassificationItemNode[] = [
+    const classification = [
       {
         id: 1,
         name: 'Gestion individuelle',

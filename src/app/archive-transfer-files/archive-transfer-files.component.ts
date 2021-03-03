@@ -14,14 +14,14 @@ import {SelectionModel} from '@angular/cdk/collections';
   styleUrls: ['./archive-transfer-files.component.scss']
 })
 export class ArchiveTransferFilesComponent implements OnInit {
-  @Input() archiveTransfer: ArchiveTransfer;
+  @Input() archiveTransfer!: ArchiveTransfer;
 
-  filesForm: FormGroup;
+  filesForm!: FormGroup;
   treeSelection: SelectionModel<FileNode>;
   tableSelection: SelectionModel<FileNode>;
   matBadgeHidden: boolean;
 
-  classification: ClassificationItemNode[];
+  classification!: ClassificationItemNode[];
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -63,13 +63,14 @@ export class ArchiveTransferFilesComponent implements OnInit {
       FILE_DETAIL_SIDENAV_REF,
       {closeOnBackdropClick: true}
     );
-    fileDetailSidenavRef.componentInstance.file = this.tableSelection.hasValue() ?
-      this.tableSelection.selected[0] : null;
+    if (this.tableSelection.hasValue()) {
+      fileDetailSidenavRef.componentInstance!.file = this.tableSelection.selected[0];
+    }
   }
 
   onSubmit(): void {
     let i = 1;
-    this.archiveDataPackages.value.forEach(archiveDataPackage => {
+    this.archiveDataPackages.value.forEach((archiveDataPackage: any) => {
       this.archiveTransfer.addOrUpdatePackage(i, archiveDataPackage.name, {
         id: archiveDataPackage.classificationItem.id,
         name: archiveDataPackage.classificationItem.name

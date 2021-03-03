@@ -17,7 +17,7 @@ interface FileFlatNode {
   styleUrls: ['./file-tree.component.scss']
 })
 export class FileTreeComponent implements OnInit {
-  @Input() fileTreeData: FileNode[];
+  @Input() fileTreeData!: FileNode[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
 
   treeControl = new FlatTreeControl<FileFlatNode>(
@@ -27,14 +27,16 @@ export class FileTreeComponent implements OnInit {
 
   private _transformer = (node: FileNode, level: number) => {
     const existingNode = this._nestedNodeMap.get(node);
-    const expandable = node.isDirectory ? !!(node as Directory).children && (node as Directory).children.length > 0
+    const directoryNode = node as Directory;
+    const expandable = node.isDirectory ?
+      this._hasChild(directoryNode)
       : false;
     const flatNode = existingNode ? existingNode : {
       expandable,
       name: node.name,
       level,
       isDirectory: node.isDirectory
-    };
+    } as FileFlatNode;
     this._flatNodeMap.set(flatNode, node);
     this._nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -46,15 +48,15 @@ export class FileTreeComponent implements OnInit {
     node => node.expandable,
     node => node.isDirectory ? (node as Directory).children : null
   );
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this._treeFlattener);
 
+  dataSource = new MatTreeFlatDataSource(this.treeControl, this._treeFlattener);
   selection = new SelectionModel<FileFlatNode>(false);
 
   /** Map from flat node to nested node. This helps us finding the nested node to be modified */
   private _flatNodeMap = new Map<FileFlatNode, FileNode>();
+
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
   private _nestedNodeMap = new Map<FileNode, FileFlatNode>();
-
   ngOnInit(): void {
     this.dataSource.data = this.fileTreeData;
   }
@@ -79,6 +81,10 @@ export class FileTreeComponent implements OnInit {
 
   isSelected(node: FileFlatNode): boolean {
     return this._descendantsOneOfSelected(node);
+  }
+
+  private _hasChild(directoryNode: Directory): boolean {
+    return directoryNode.children !== undefined && directoryNode.children.length > 0;
   }
 
   /** Checks all the parents when a leaf node is selected/unselected */

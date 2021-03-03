@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Inject, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.service';
 import {ArchiveDataPackage, ArchiveTransfer, ClassificationItemNode, Office} from '../dtos/archive-transfer';
@@ -29,20 +29,18 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       description: 'Veuillez patienter pendant que le système effectue des opérations de vérification et de nettoyage sur vos répertoires.'
     }
   ];
-  archiveTransferFormWrapper: FormGroup;
+  archiveTransferFormWrapper!: FormGroup;
   progressValue = 1;
   okDisabled = true;
 
-  classification: ClassificationItemNode[];
-  creators: Office[];
-  transferringAgencies: Office[];
+  classification!: ClassificationItemNode[];
+  creators!: Office[];
+  transferringAgencies!: Office[];
 
   archiveTransferId = 1234;
 
   // Workaround for angular component issue #13870
   disableAnimation = true;
-
-  @ViewChild('stepper') stepper;
 
   constructor(
     @Inject(ADD_DIALOG_REF) private _dialogRef: DialogReference<ArchiveTransferAddComponent>,
@@ -84,10 +82,10 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
         })
       ])
     });
-    this.archiveTransferForm.at(2).get('creatorId').valueChanges
+    this.archiveTransferForm.at(2).get('creatorId')!.valueChanges
       .subscribe(value => this.archiveTransferForm.at(2)
         .patchValue({creatorDescription: this._findCreator(value).description}));
-    this.archiveTransferForm.at(2).get('transferringAgencyId').valueChanges
+    this.archiveTransferForm.at(2).get('transferringAgencyId')!.valueChanges
       .subscribe(value => this.archiveTransferForm.at(2)
         .patchValue({transferringAgencyDescription: this._findTransferringAgency(value).description}));
   }
@@ -124,7 +122,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       description: this.archiveTransferForm.at(2).value.transferringAgencyDescription
     };
     archiveTransfer.archiveDataPackages.push(...this.archiveDataPackages.value
-      .map(archiveDataPackageValue => {
+      .map((archiveDataPackageValue: any) => {
         const archiveDataPackage: ArchiveDataPackage = {
           id: 1, // TODO id
           name: archiveDataPackageValue.name,
@@ -134,12 +132,12 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
           },
           fileTreeData: []
         };
-        archiveDataPackageValue.data.forEach(file => { // TODO build tree
+        archiveDataPackageValue.data.forEach((file: File) => { // TODO build tree
           archiveDataPackage.fileTreeData.push({
             isDirectory: true,
             name: file.name,
-            startDate: null,
-            endDate: file.lastModifiedDate,
+            startDate: new Date(file.lastModified), // FIXME
+            endDate: new Date(file.lastModified),
             size: file.size
           });
         });
@@ -169,15 +167,25 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   }
 
   private _findCreator(id: number): Office {
-    return this.creators.find(creator => creator.id === id);
+    const foundCreator = this.creators.find(creator => creator.id === id);
+    if (foundCreator) {
+      return foundCreator;
+    } else {
+      throw new Error('Creator not found.');
+    }
   }
 
   private _findTransferringAgency(id: number): Office {
-    return this.transferringAgencies.find(transferringAgency => transferringAgency.id === id);
+    const foundTransferringAgency = this.transferringAgencies.find(transferringAgency => transferringAgency.id === id);
+    if (foundTransferringAgency) {
+      return foundTransferringAgency;
+    } else {
+      throw new Error('Transferring agency not found.');
+    }
   }
 
   private _spin(): void {
-    const intervalId = setInterval(_ => {
+    const intervalId = setInterval((_: any) => {
       if (this.progressValue >= 100) {
         this.okDisabled = false;
         clearInterval(intervalId);

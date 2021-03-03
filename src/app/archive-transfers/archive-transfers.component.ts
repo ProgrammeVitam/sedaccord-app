@@ -12,7 +12,7 @@ import {ArchiveTransferService} from '../services/archive-transfer.service';
 export class ArchiveTransfersComponent {
   name = 'Caroline';
 
-  archiveTransfers: ArchiveTransfer[];
+  archiveTransfers!: ArchiveTransfer[];
 
   constructor(
     private _addDialogService: ComplexDialogService<ArchiveTransferAddComponent>,
@@ -26,8 +26,8 @@ export class ArchiveTransfersComponent {
       ArchiveTransferAddComponent,
       ADD_DIALOG_REF
     );
-    addDialogRef.componentInstance.addEvent
-      .subscribe(archiveTransfer => {
+    addDialogRef.componentInstance!.addEvent
+      .subscribe((archiveTransfer: ArchiveTransfer) => {
         this.archiveTransfers.push(archiveTransfer);
         this._archiveTransferService.addArchiveTransfer(archiveTransfer).subscribe();
       });

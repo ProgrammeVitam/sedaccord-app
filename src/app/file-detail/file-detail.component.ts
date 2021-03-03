@@ -24,10 +24,10 @@ const TRANSITION_DURATION = 300;
   ]
 })
 export class FileDetailComponent implements OnInit {
-  @Input() file: FileNode;
+  @Input() file!: FileNode;
 
-  fileForm: FormGroup;
-  commentForm: FormGroup;
+  fileForm!: FormGroup;
+  commentForm!: FormGroup;
   isOpen = true;
 
   comments: FileComment[];
@@ -37,6 +37,7 @@ export class FileDetailComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private archiveTransferService: ArchiveTransferService
   ) {
+    this.comments = [];
   }
 
   ngOnInit(): void {
@@ -54,7 +55,7 @@ export class FileDetailComponent implements OnInit {
   }
 
   onSubmitFile(): void {
-    setTimeout(_ => this._sidenavRef.close(), TRANSITION_DURATION);
+    setTimeout((_: any) => this._sidenavRef.close(), TRANSITION_DURATION);
     this.isOpen = false;
     // TODO
   }

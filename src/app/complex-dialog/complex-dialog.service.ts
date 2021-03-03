@@ -18,11 +18,16 @@ const DEFAULT_CONFIG: ComplexDialogConfig = {
 };
 
 export class DialogReference<T> {
-  overlayRef: OverlayRef;
-  componentInstance: T;
+  overlayRef: OverlayRef | null;
+  componentInstance: T | null;
+
+  constructor() {
+    this.overlayRef = null;
+    this.componentInstance = null;
+  }
 
   close(): void {
-    this.overlayRef.dispose();
+    this.overlayRef!.dispose();
     this.componentInstance = null;
   }
 }

@@ -3,7 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
+  OnChanges, OnInit,
   Output,
   SimpleChanges,
   ViewChild
@@ -18,18 +18,21 @@ import {SelectionModel} from '@angular/cdk/collections';
   templateUrl: './file-table.component.html',
   styleUrls: ['./file-table.component.scss']
 })
-export class FileTableComponent implements AfterViewInit, OnChanges {
-  @Input() elementData: FileNode[];
+export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
+  @Input() elementData!: FileNode[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
 
   displayedColumns: string[] = ['delete', 'name', 'startDate', 'endDate', 'size', 'format', 'description'];
-  dataSource: MatTableDataSource<FileNode>;
-  selection: SelectionModel<FileNode>;
+  dataSource!: MatTableDataSource<FileNode>;
+  selection!: SelectionModel<FileNode>;
 
-  @ViewChild(MatTable, {static: true}) table: MatTable<FileNode[]>;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTable, {static: true}) table!: MatTable<FileNode[]>;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor() {
+  }
+
+  ngOnInit(): void {
     this.dataSource = new MatTableDataSource<FileNode>(this.elementData);
     this.selection = new SelectionModel<FileNode>(false);
   }

@@ -23,19 +23,19 @@ interface SimpleTreeNode {
 export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implements OnInit, ControlValueAccessor {
   @Input() disabled = false;
   @Input() label = '';
-  @Input() treeData: T[];
+  @Input() treeData!: T[];
 
   autoInput = new FormControl();
   treeControl = new NestedTreeControl<T>(node => node.children);
   dataSource = new MatTreeNestedDataSource<T>();
   selection = new SelectionModel<string>(false);
 
-  private _value: T;
-  get value(): T {
+  private _value!: T | null;
+  get value(): T | null {
     return this._value;
   }
   @Input()
-  set value(value: T) {
+  set value(value: T | null) {
     this._value = value;
     this.onChange(value);
   }
@@ -59,7 +59,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     this.writeValue(this.value);
   }
 
-  writeValue(node: T): void {
+  writeValue(node: T | null): void {
     this.value = node;
     this.autoInput.patchValue(this.value);
     this.value ? this.selection.select(this.value.name) : this.selection.deselect();
@@ -96,8 +96,8 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     return nodes.map(node => {
       if (this._found(searchTerm, node.name)) {
         return {name: node.name, children: node.children};
-      } else if (!this._isLeaf(node)) {
-        const filteredChildren = this._filter(searchTerm, node.children);
+      } else if (this._hasChild(node)) {
+        const filteredChildren = this._filter(searchTerm, node.children!);
         if (filteredChildren.length > 0) {
           return {
             name: node.name,
@@ -109,8 +109,8 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     }).filter(value => !!value);
   }
 
-  private _isLeaf(node: T): boolean {
-    return !node.children || node.children.length === 0;
+  private _hasChild(node: T): boolean {
+    return node.children !== undefined && node.children.length > 0;
   }
 
   private _found(searchTerm: string, value: string): boolean {
