@@ -70,12 +70,16 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   onSubmit(): void {
     let i = 1;
-    this.archiveDataPackages.value.forEach((archiveDataPackage: any) => {
-      this.archiveTransfer.addOrUpdatePackage(i, archiveDataPackage.name, {
-        id: archiveDataPackage.classificationItem.id,
-        name: archiveDataPackage.classificationItem.name
-      }, archiveDataPackage.data);
-      i++;
+    this.archiveTransfer.archiveDataPackages = this.archiveDataPackages.value.map((archiveDataPackage: any) => {
+      return {
+        id: i++,
+        name: archiveDataPackage.name,
+        classificationItem: {
+          id: archiveDataPackage.classificationItem.id,
+          name: archiveDataPackage.classificationItem.name
+        },
+        fileTreeData: archiveDataPackage.data
+      };
     });
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
     this.matBadgeHidden = true;
@@ -88,8 +92,8 @@ export class ArchiveTransferFilesComponent implements OnInit {
     }));
   }
 
-  deletePackage(): void {
-    // TODO
+  removePackage(index: number): void { // TODO
+    this.archiveDataPackages.removeAt(index);
   }
 
   listFiles(file: FileNode): FileNode[] {

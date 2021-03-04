@@ -31,8 +31,8 @@
                                      [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
       <app-file-tree (selectFileEvent)="onSelectFromTree($event)"
                      [fileTreeData]="archiveDataPackage.get('data')!.value"></app-file-tree>
-      <mat-action-row>
-        <button (click)="deletePackage()" color="primary" mat-button>Supprimer cet ensemble</button>
+      <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
+        <button (click)="removePackage(i)" color="primary" mat-button>Supprimer cet ensemble</button>
       </mat-action-row>
     </mat-expansion-panel>
     <mat-divider></mat-divider>

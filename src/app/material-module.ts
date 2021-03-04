@@ -63,7 +63,7 @@ import {MatMomentDateModule} from "@angular/material-moment-adapter";
     MatChipsModule,
     MatStepperModule,
     MatDatepickerModule,
-    // MatDialogModule,
+    MatDialogModule,
     // MatDividerModule,
     MatExpansionModule,
     // MatGridListModule,

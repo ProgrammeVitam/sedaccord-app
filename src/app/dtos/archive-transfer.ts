@@ -76,17 +76,6 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
     this.archiveDataPackages.push(newArchiveDataPackage);
   }
 
-  addOrUpdatePackage(id: number, name: string, classificationItem: ClassificationItem, fileTreeData: FileNode[]): void {
-    const archiveDataPackage = this.archiveDataPackages.find(adt => id === adt.id);
-    if (archiveDataPackage) {
-      archiveDataPackage.name = name;
-      archiveDataPackage.classificationItem = classificationItem;
-      archiveDataPackage.fileTreeData = fileTreeData;
-    } else {
-      this.addPackage(id, name, classificationItem, fileTreeData);
-    }
-  }
-
   submit(): void {
     this.status = 'En attente de correction';
   }

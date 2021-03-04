@@ -31,6 +31,9 @@
             <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
                                            [label]="'Je choisis une branche du plan de classement'"
                                            [treeData]="classification"></app-tree-autocomplete-control>
+            <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
+              <button (click)="removePackage(i)" color="primary" mat-button>Supprimer cet ensemble</button>
+            </mat-action-row>
           </mat-expansion-panel>
         </mat-accordion>
         <div class="button-group">

@@ -88,6 +88,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this.archiveTransferForm.at(2).get('transferringAgencyId')!.valueChanges
       .subscribe(value => this.archiveTransferForm.at(2)
         .patchValue({transferringAgencyDescription: this._findTransferringAgency(value).description}));
+    this.addPackage();
   }
 
   ngAfterViewInit(): void {
@@ -100,6 +101,10 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       data: [[]],
       classificationItem: ['']
     }));
+  }
+
+  removePackage(index: number): void {
+    this.archiveDataPackages.removeAt(index);
   }
 
   onCancel(): void {
