@@ -4,6 +4,8 @@ import {RepositoryService} from '../services/repository.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-archive-transfer-context',
@@ -19,6 +21,8 @@ export class ArchiveTransferContextComponent implements OnInit {
 
   creators!: Office[];
   transferringAgencies!: Office[];
+  $filteredCreators!: Observable<Office[]>;
+  $filteredTransferringAgencies!: Observable<Office[]>;
 
   constructor(
     private _router: Router,
@@ -26,8 +30,6 @@ export class ArchiveTransferContextComponent implements OnInit {
     private _repositoryService: RepositoryService,
     private _archiveTransferService: ArchiveTransferService
   ) {
-    this._getCreators();
-    this._getTransferringAgencies();
     this.matBadgeHidden = true;
   }
 
@@ -39,19 +41,29 @@ export class ArchiveTransferContextComponent implements OnInit {
       endDate: [this.archiveTransfer.endDate]
     });
     this.contextForm2 = this._formBuilder.group({
-      creatorId: [this.archiveTransfer.creator?.id],
+      creator: [this.archiveTransfer.creator],
       creatorDescription: [this.archiveTransfer.creator?.description],
-      transferringAgencyId: [this.archiveTransfer.transferringAgency?.id],
+      transferringAgency: [this.archiveTransfer.transferringAgency],
       transferringAgencyDescription: [this.archiveTransfer.transferringAgency?.description]
     });
-    this.contextForm2.get('creatorId')!.valueChanges
-      .subscribe(value => this.contextForm2
-        .patchValue({creatorDescription: this._findCreator(value).description}));
-    this.contextForm2.get('transferringAgencyId')!.valueChanges
-      .subscribe(value => this.contextForm2
-        .patchValue({transferringAgencyDescription: this._findTransferringAgency(value).description}));
+    this._getCreators();
+    this._getTransferringAgencies();
     this.contextForm1.valueChanges.subscribe(_ => this.matBadgeHidden = false);
     this.contextForm2.valueChanges.subscribe(_ => this.matBadgeHidden = false);
+  }
+
+  displayFn(office: Office): string {
+    return office && office.name ? office.name : '';
+  }
+
+  autoFillCreatorDescription(creator: Office): void {
+    this.contextForm2
+      .patchValue({creatorDescription: this._findCreator(creator).description});
+  }
+
+  autoFillTransferringAgencyDescription(transferringAgency: Office): void {
+    this.contextForm2
+      .patchValue({transferringAgencyDescription: this._findTransferringAgency(transferringAgency).description});
   }
 
   onSubmit(): void {
@@ -60,13 +72,13 @@ export class ArchiveTransferContextComponent implements OnInit {
     this.archiveTransfer.startDate = this.contextForm1.value.startDate;
     this.archiveTransfer.endDate = this.contextForm1.value.endDate;
     this.archiveTransfer.creator = {
-      id: this.contextForm2.value.creatorId,
-      name: '', // FIXME
+      id: this.contextForm2.value.creator.id,
+      name: this.contextForm2.value.creator.name,
       description: this.contextForm2.value.creatorDescription
     };
     this.archiveTransfer.transferringAgency = {
-      id: this.contextForm2.value.transferringAgencyId,
-      name: '', // FIXME
+      id: this.contextForm2.value.transferringAgency.id,
+      name: this.contextForm2.value.transferringAgency.name,
       description: this.contextForm2.value.transferringAgencyDescription
     };
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
@@ -82,6 +94,12 @@ export class ArchiveTransferContextComponent implements OnInit {
     this._repositoryService.getCreators()
       .subscribe(creators => {
         this.creators = creators;
+        this.$filteredCreators = this.contextForm2.get('creator')!.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(value => this._filterCreator(value))
+          );
       });
   }
 
@@ -89,12 +107,18 @@ export class ArchiveTransferContextComponent implements OnInit {
     this._repositoryService.getTransferringAgencies()
       .subscribe(transferringAgencies => {
         this.transferringAgencies = transferringAgencies;
+        this.$filteredTransferringAgencies = this.contextForm2.get('transferringAgency')!.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(value => this._filterTransferringAgency(value))
+          );
       });
 
   }
 
-  private _findCreator(id: number): Office {
-    const foundCreator = this.creators.find(creator => creator.id === id);
+  private _findCreator(creator: Office): Office {
+    const foundCreator = this.creators.find(c => c.id === creator.id);
     if (foundCreator) {
       return foundCreator;
     } else {
@@ -102,12 +126,22 @@ export class ArchiveTransferContextComponent implements OnInit {
     }
   }
 
-  private _findTransferringAgency(id: number): Office {
-    const foundTransferringAgency = this.transferringAgencies.find(transferringAgency => transferringAgency.id === id);
+  private _findTransferringAgency(transferringAgency: Office): Office {
+    const foundTransferringAgency = this.transferringAgencies.find(ta => ta.id === transferringAgency.id);
     if (foundTransferringAgency) {
       return foundTransferringAgency;
     } else {
       throw new Error('Transferring agency not found.');
     }
+  }
+
+  private _filterCreator(value: string): Office[] {
+    const filterValue = value.toLowerCase();
+    return this.creators.filter(creator => creator.name.toLowerCase().includes(filterValue));
+  }
+
+  private _filterTransferringAgency(value: string): Office[] {
+    const filterValue = value.toLowerCase();
+    return this.transferringAgencies.filter(transferringAgency => transferringAgency.name.toLowerCase().includes(filterValue));
   }
 }

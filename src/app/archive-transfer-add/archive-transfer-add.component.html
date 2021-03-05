@@ -115,11 +115,15 @@
           <mat-form-field appearance="outline">
             <mat-label>Le service producteur
             </mat-label>
-            <mat-select formControlName="creatorId">
-              <mat-option *ngFor="let creator of creators" [value]="creator.id">
+            <input [matAutocomplete]="autoCreator"
+                   formControlName="creator"
+                   matInput
+                   type="text">
+            <mat-autocomplete #autoCreator="matAutocomplete" (optionSelected)="autoFillCreatorDescription($event.option.value)" [displayWith]="displayFn">
+              <mat-option *ngFor="let creator of $filteredCreators | async" [value]="creator">
                 {{creator.name}}
               </mat-option>
-            </mat-select>
+            </mat-autocomplete>
             <mat-hint>Le service producteur est celui qui a produit ou reçu les documents dans le cadre de ses
               activités.
             </mat-hint>
@@ -136,11 +140,15 @@
           <mat-form-field appearance="outline">
             <mat-label>Le service versant
             </mat-label>
-            <mat-select formControlName="transferringAgencyId">
-              <mat-option *ngFor="let transferringAgency of transferringAgencies" [value]="transferringAgency.id">
+            <input [matAutocomplete]="autoTransferringAgency"
+                   formControlName="transferringAgency"
+                   matInput
+                   type="text">
+            <mat-autocomplete #autoTransferringAgency="matAutocomplete" (optionSelected)="autoFillTransferringAgencyDescription($event.option.value)" [displayWith]="displayFn">
+              <mat-option *ngFor="let transferringAgency of $filteredTransferringAgencies | async" [value]="transferringAgency">
                 {{transferringAgency.name}}
               </mat-option>
-            </mat-select>
+            </mat-autocomplete>
             <mat-hint>Le service versant qui est à l'origine de l'opération de versement des documents.</mat-hint>
           </mat-form-field>
           <mat-form-field appearance="outline">

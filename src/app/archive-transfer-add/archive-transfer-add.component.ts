@@ -4,6 +4,8 @@ import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.
 import {ArchiveDataPackage, ArchiveTransfer, ClassificationItemNode, Office} from '../dtos/archive-transfer';
 import {RepositoryService} from '../services/repository.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-archive-transfer-add',
@@ -36,6 +38,8 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   classification!: ClassificationItemNode[];
   creators!: Office[];
   transferringAgencies!: Office[];
+  $filteredCreators!: Observable<Office[]>;
+  $filteredTransferringAgencies!: Observable<Office[]>;
 
   archiveTransferId = 1234;
 
@@ -49,8 +53,6 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     private _archiveTransferService: ArchiveTransferService
   ) {
     this._getClassification();
-    this._getCreators();
-    this._getTransferringAgencies();
     this.addEvent = new EventEmitter<ArchiveTransfer>();
   }
 
@@ -75,25 +77,25 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
           endDate: ['']
         }),
         this._formBuilder.group({
-          transferringAgencyId: [''],
-          transferringAgencyDescription: [''],
-          creatorId: [''],
-          creatorDescription: ['']
+          creator: [''],
+          creatorDescription: [''],
+          transferringAgency: [''],
+          transferringAgencyDescription: ['']
         })
       ])
     });
-    this.archiveTransferForm.at(2).get('creatorId')!.valueChanges
-      .subscribe(value => this.archiveTransferForm.at(2)
-        .patchValue({creatorDescription: this._findCreator(value).description}));
-    this.archiveTransferForm.at(2).get('transferringAgencyId')!.valueChanges
-      .subscribe(value => this.archiveTransferForm.at(2)
-        .patchValue({transferringAgencyDescription: this._findTransferringAgency(value).description}));
     this.addPackage();
+    this._getCreators();
+    this._getTransferringAgencies();
   }
 
   ngAfterViewInit(): void {
     // timeout required to avoid the dreaded 'ExpressionChangedAfterItHasBeenCheckedError'
     setTimeout(() => (this.disableAnimation = false));
+  }
+
+  displayFn(office: Office): string {
+    return office && office.name ? office.name : '';
   }
 
   addPackage(): void {
@@ -107,6 +109,16 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this.archiveDataPackages.removeAt(index);
   }
 
+  autoFillCreatorDescription(creator: Office): void {
+    this.archiveTransferForm.at(2)
+      .patchValue({creatorDescription: this._findCreator(creator).description});
+  }
+
+  autoFillTransferringAgencyDescription(transferringAgency: Office): void {
+    this.archiveTransferForm.at(2)
+      .patchValue({transferringAgencyDescription: this._findTransferringAgency(transferringAgency).description});
+  }
+
   onCancel(): void {
     this._dialogRef.close();
   }
@@ -117,13 +129,13 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     archiveTransfer.startDate = this.archiveTransferForm.at(1).value.startDate;
     archiveTransfer.endDate = this.archiveTransferForm.at(1).value.endDate;
     archiveTransfer.creator = {
-      id: this.archiveTransferForm.at(2).value.creatorId,
-      name: '', // TODO weird
+      id: this.archiveTransferForm.at(2).value.creator.id,
+      name: this.archiveTransferForm.at(2).value.creator.name,
       description: this.archiveTransferForm.at(2).value.creatorDescription
     };
     archiveTransfer.transferringAgency = {
-      id: this.archiveTransferForm.at(2).value.transferringAgencyId,
-      name: '', // TODO weird the same
+      id: this.archiveTransferForm.at(2).value.transferringAgency.id,
+      name: this.archiveTransferForm.at(2).value.transferringAgency.name,
       description: this.archiveTransferForm.at(2).value.transferringAgencyDescription
     };
     archiveTransfer.archiveDataPackages.push(...this.archiveDataPackages.value
@@ -163,16 +175,32 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
 
   private _getCreators(): void {
     this._repositoryService.getCreators()
-      .subscribe(creators => this.creators = creators);
+      .subscribe(creators => {
+        this.creators = creators;
+        this.$filteredCreators = this.archiveTransferForm.at(2).get('creator')!.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(value => this._filterCreator(value))
+          );
+      });
   }
 
   private _getTransferringAgencies(): void {
     this._repositoryService.getTransferringAgencies()
-      .subscribe(transferringAgencies => this.transferringAgencies = transferringAgencies);
+      .subscribe(transferringAgencies => {
+        this.transferringAgencies = transferringAgencies;
+        this.$filteredTransferringAgencies = this.archiveTransferForm.at(2).get('transferringAgency')!.valueChanges
+          .pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : value.name),
+            map(value => this._filterTransferringAgency(value))
+          );
+      });
   }
 
-  private _findCreator(id: number): Office {
-    const foundCreator = this.creators.find(creator => creator.id === id);
+  private _findCreator(creator: Office): Office {
+    const foundCreator = this.creators.find(c => c.id === creator.id);
     if (foundCreator) {
       return foundCreator;
     } else {
@@ -180,13 +208,23 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private _findTransferringAgency(id: number): Office {
-    const foundTransferringAgency = this.transferringAgencies.find(transferringAgency => transferringAgency.id === id);
+  private _findTransferringAgency(transferringAgency: Office): Office {
+    const foundTransferringAgency = this.transferringAgencies.find(ta => ta.id === transferringAgency.id);
     if (foundTransferringAgency) {
       return foundTransferringAgency;
     } else {
       throw new Error('Transferring agency not found.');
     }
+  }
+
+  private _filterCreator(value: string): Office[] {
+    const filterValue = value.toLowerCase();
+    return this.creators.filter(creator => creator.name.toLowerCase().includes(filterValue));
+  }
+
+  private _filterTransferringAgency(value: string): Office[] {
+    const filterValue = value.toLowerCase();
+    return this.transferringAgencies.filter(transferringAgency => transferringAgency.name.toLowerCase().includes(filterValue));
   }
 
   private _spin(): void {
