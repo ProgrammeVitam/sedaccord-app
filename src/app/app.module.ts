@@ -19,6 +19,7 @@ import {FileTableComponent} from './file-table/file-table.component';
 import {FileTreeComponent} from './file-tree/file-tree.component';
 import {TreeAutocompleteControlComponent} from './tree-autocomplete-control/tree-autocomplete-control.component';
 import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats} from '@angular/material/core';
+import {ConfirmDialogComponent} from './confirm-dialog/confirm-dialog.component';
 
 export const MY_FORMATS: MatDateFormats = {
   parse: {
@@ -52,6 +53,7 @@ export const MY_FORMATS: MatDateFormats = {
     ArchiveTransferDetailComponent,
     ArchiveTransferFilesComponent,
     ArchiveTransfersComponent,
+    ConfirmDialogComponent,
     FileDetailComponent,
     FileDropInputControlComponent,
     FileTableComponent,
