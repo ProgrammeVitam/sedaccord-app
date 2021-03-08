@@ -18,6 +18,19 @@ import {FileDropInputControlComponent} from './file-drop-input-control/file-drop
 import {FileTableComponent} from './file-table/file-table.component';
 import {FileTreeComponent} from './file-tree/file-tree.component';
 import {TreeAutocompleteControlComponent} from './tree-autocomplete-control/tree-autocomplete-control.component';
+import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats} from '@angular/material/core';
+
+export const MY_FORMATS: MatDateFormats = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @NgModule({
   imports: [
@@ -44,6 +57,10 @@ import {TreeAutocompleteControlComponent} from './tree-autocomplete-control/tree
     FileTableComponent,
     FileTreeComponent,
     TreeAutocompleteControlComponent
+  ],
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}
   ],
   bootstrap: [AppComponent]
 })
