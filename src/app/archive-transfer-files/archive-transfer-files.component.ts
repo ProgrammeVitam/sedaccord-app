@@ -19,7 +19,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
   filesForm!: FormGroup;
   treeSelection: SelectionModel<FileNode>;
   tableSelection: SelectionModel<FileNode>;
-  matBadgeHidden: boolean;
+  saveButtonDisabled: boolean;
 
   classification!: ClassificationItemNode[];
 
@@ -31,7 +31,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
   ) {
     this.treeSelection = new SelectionModel<FileNode>(false);
     this.tableSelection = new SelectionModel<FileNode>(false);
-    this.matBadgeHidden = true;
+    this.saveButtonDisabled = true;
   }
 
   get archiveDataPackages(): FormArray {
@@ -49,7 +49,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
         classificationItem: [archiveDataPackage.classificationItem]
       }));
     });
-    this.filesForm.valueChanges.subscribe(_ => this.matBadgeHidden = false);
+    this.filesForm.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
   }
 
   onSelectFromTree(file: FileNode): void {
@@ -82,7 +82,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
       };
     });
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
-    this.matBadgeHidden = true;
+    this.saveButtonDisabled = true;
   }
 
   addPackage(): void {

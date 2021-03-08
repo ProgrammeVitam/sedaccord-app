@@ -17,7 +17,7 @@ export class ArchiveTransferContextComponent implements OnInit {
 
   contextForm1!: FormGroup;
   contextForm2!: FormGroup;
-  matBadgeHidden: boolean;
+  saveButtonDisabled: boolean;
 
   creators!: Office[];
   transferringAgencies!: Office[];
@@ -30,7 +30,7 @@ export class ArchiveTransferContextComponent implements OnInit {
     private _repositoryService: RepositoryService,
     private _archiveTransferService: ArchiveTransferService
   ) {
-    this.matBadgeHidden = true;
+    this.saveButtonDisabled = true;
   }
 
   ngOnInit(): void {
@@ -48,8 +48,8 @@ export class ArchiveTransferContextComponent implements OnInit {
     });
     this._getCreators();
     this._getTransferringAgencies();
-    this.contextForm1.valueChanges.subscribe(_ => this.matBadgeHidden = false);
-    this.contextForm2.valueChanges.subscribe(_ => this.matBadgeHidden = false);
+    this.contextForm1.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
+    this.contextForm2.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
   }
 
   displayFn(office: Office): string {
@@ -82,7 +82,7 @@ export class ArchiveTransferContextComponent implements OnInit {
       description: this.contextForm2.value.transferringAgencyDescription
     };
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
-    this.matBadgeHidden = true;
+    this.saveButtonDisabled = true;
   }
 
   submitArchiveTransfer(): void {

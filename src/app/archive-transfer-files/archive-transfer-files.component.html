@@ -51,10 +51,8 @@
 </div>
 <div class="button-group button-group-bottom">
   <div>
-    <button [matBadgeHidden]="matBadgeHidden"
+    <button [disabled]="saveButtonDisabled"
             mat-stroked-button
-            matBadge="save"
-            matBadgePosition="before"
             type="submit">
       Sauvegarder le projet de versement
     </button>
@@ -63,8 +61,8 @@
     <button mat-stroked-button routerLink="/" type="button">
       Annuler
     </button>
-    <button color="primary" mat-flat-button routerLink="/" type="button">
-      Valider
+    <button color="primary" disabled mat-flat-button routerLink="/" type="button">
+      Soumettre
     </button>
   </div>
 </div>

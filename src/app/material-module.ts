@@ -54,7 +54,7 @@ import {MatMomentDateModule} from "@angular/material-moment-adapter";
     // CdkTreeModule,
     // DragDropModule,
     MatAutocompleteModule,
-    MatBadgeModule,
+    // MatBadgeModule,
     // MatBottomSheetModule,
     MatButtonModule,
     // MatButtonToggleModule,
