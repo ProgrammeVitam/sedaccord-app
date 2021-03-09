@@ -30,10 +30,10 @@
                 Ensemble {{i + 1}}
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <app-file-drop [formControlName]="'data'"></app-file-drop>
             <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
                                            [label]="'Je choisis une branche du plan de classement'"
                                            [treeData]="classification"></app-tree-autocomplete-control>
+            <app-file-drop [formControlName]="'data'"></app-file-drop>
             <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
               <button (click)="removePackage(i)" color="primary" mat-button>Supprimer cet ensemble</button>
             </mat-action-row>
