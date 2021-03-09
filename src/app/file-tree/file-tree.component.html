@@ -4,14 +4,16 @@
 </button>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <!-- This is the tree node template for leaf nodes -->
-  <mat-tree-node *matTreeNodeDef="let node" [ngClass]="{'selected': isSelected(node)}" matTreeNodePadding>
+  <mat-tree-node *matTreeNodeDef="let node" [ngClass]="{'selectable': node.isDirectory, 'selected': isSelected(node)}"
+                 matTreeNodePadding>
     <!-- use a disabled button to provide padding for tree leaf -->
     <button disabled mat-icon-button></button>
     <mat-icon inline>{{node.isDirectory ? 'folder' : 'text_snippet'}}</mat-icon>
     <a (click)="selectFile(node)">{{node.name}}</a>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" [ngClass]="{'selected': isSelected(node)}"
+  <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
+                 [ngClass]="{'selectable': node.isDirectory, 'selected': isSelected(node)}"
                  matTreeNodePadding>
     <mat-icon inline>folder</mat-icon>
     <button [attr.aria-label]="'Toggle ' + node.name" mat-icon-button

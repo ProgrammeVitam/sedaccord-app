@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {ArchiveTransferAddComponent} from '../archive-transfer-add/archive-transfer-add.component';
 import {ADD_DIALOG_REF, ComplexDialogService} from '../complex-dialog/complex-dialog.service';
 import {ArchiveTransfer} from '../dtos/archive-transfer';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
+import {MatListOption, MatSelectionList} from '@angular/material/list';
 
 @Component({
   selector: 'app-archive-transfers',
@@ -15,6 +16,8 @@ export class ArchiveTransfersComponent {
   name = 'Caroline';
 
   archiveTransfers!: ArchiveTransfer[];
+
+  @ViewChild('archiveTransferList') archiveTransferList!: MatSelectionList;
 
   constructor(
     private _addDialogService: ComplexDialogService<ArchiveTransferAddComponent>,
@@ -34,6 +37,14 @@ export class ArchiveTransfersComponent {
         this.archiveTransfers.push(archiveTransfer);
         this._archiveTransferService.addArchiveTransfer(archiveTransfer).subscribe();
       });
+  }
+
+  onHoverIn(archiveTransferOption: MatListOption): void {
+    this.archiveTransferList.selectedOptions.select(archiveTransferOption);
+  }
+
+  onHoverOut(): void {
+    this.archiveTransferList.deselectAll();
   }
 
   delete(archiveTransfer: ArchiveTransfer): void {

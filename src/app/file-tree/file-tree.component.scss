@@ -4,6 +4,10 @@
   overflow: auto;
 }
 
+.mat-tree-node.selectable {
+  cursor: pointer;
+}
+
 .selected {
   background-color: $badge-background;
 }

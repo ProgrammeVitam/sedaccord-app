@@ -38,6 +38,7 @@ h2 {
 
 .mat-list-option {
   background-color: $item-background;
+  cursor: default !important;
   margin-top: mat-font-size($config, body-1) * 2;
 }
 
@@ -47,10 +48,27 @@ h2 {
   background: $item-background-selected;
 }
 
-.mat-line:first-child {
+.mat-line.table-row {
   align-items: center;
   display: flex;
-  justify-content: space-between;
+
+  .table-cell {
+    flex: 1;
+    overflow: hidden;
+    word-wrap: break-word;
+
+    &.table-cell-2 {
+      flex: 2;
+    }
+
+    &.table-cell-4 {
+      flex: 4;
+    }
+
+    &.table-cell-right {
+      text-align: right;
+    }
+  }
 }
 
 .mat-line:nth-child(2) {

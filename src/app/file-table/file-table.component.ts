@@ -22,7 +22,7 @@ export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() elementData!: FileNode[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
 
-  displayedColumns: string[] = ['delete', 'name', 'startDate', 'endDate', 'size', 'format', 'description'];
+  displayedColumns: string[] = ['name', 'startDate', 'endDate', 'size', 'format', 'description', 'edit', 'delete'];
   dataSource!: MatTableDataSource<FileNode>;
   selection!: SelectionModel<FileNode>;
 
@@ -42,11 +42,20 @@ export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.dataSource.data = this.elementData;
+    if (this.dataSource) {
+      this.dataSource.data = this.elementData;
+    }
   }
 
-  selectFile(row: FileNode): void {
+  onHoverIn(row: FileNode): void {
     this.selection.select(row);
+  }
+
+  onHoverOut(): void {
+    this.selection.clear();
+  }
+
+  edit(row: FileNode): void {
     this.selectFileEvent.emit(row);
   }
 }
