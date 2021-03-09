@@ -17,7 +17,10 @@
           </p>
         </div>
         <div>
-          <button (click)="addPackage()" color="primary" mat-flat-button type="button">Ajouter un ensemble</button>
+          <button (click)="addPackage()" color="primary" mat-flat-button type="button">
+            <mat-icon>add</mat-icon>
+            Ajouter un ensemble
+          </button>
         </div>
         <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
           <mat-expansion-panel *ngFor="let _ of archiveDataPackages.controls; let i=index"
@@ -119,7 +122,9 @@
                    formControlName="creator"
                    matInput
                    type="text">
-            <mat-autocomplete #autoCreator="matAutocomplete" (optionSelected)="autoFillCreatorDescription($event.option.value)" [displayWith]="displayFn">
+            <mat-autocomplete #autoCreator="matAutocomplete"
+                              (optionSelected)="autoFillCreatorDescription($event.option.value)"
+                              [displayWith]="displayFn">
               <mat-option *ngFor="let creator of $filteredCreators | async" [value]="creator">
                 {{creator.name}}
               </mat-option>
@@ -144,8 +149,11 @@
                    formControlName="transferringAgency"
                    matInput
                    type="text">
-            <mat-autocomplete #autoTransferringAgency="matAutocomplete" (optionSelected)="autoFillTransferringAgencyDescription($event.option.value)" [displayWith]="displayFn">
-              <mat-option *ngFor="let transferringAgency of $filteredTransferringAgencies | async" [value]="transferringAgency">
+            <mat-autocomplete #autoTransferringAgency="matAutocomplete"
+                              (optionSelected)="autoFillTransferringAgencyDescription($event.option.value)"
+                              [displayWith]="displayFn">
+              <mat-option *ngFor="let transferringAgency of $filteredTransferringAgencies | async"
+                          [value]="transferringAgency">
                 {{transferringAgency.name}}
               </mat-option>
             </mat-autocomplete>

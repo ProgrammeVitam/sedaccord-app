@@ -18,7 +18,7 @@
       <div><span class="badge">{{archiveTransfer.status}}</span></div>
       <div *ngIf="archiveTransfer === archiveTransferList.selectedOptions.selected[0]?.value">
         <button color="primary" mat-flat-button routerLink="/detail/{{archiveTransfer.id}}">Voir le versement</button>
-        <button (click)="submit(archiveTransfer)" [disabled]="archiveTransfer.status !== 'En cours'" color="primary" mat-flat-button>Soumettre</button>
+        <button (click)="submit(archiveTransfer)" [disabled]="archiveTransfer.status !== 'En cours'" color="primary" mat-flat-button>Verser aux archives</button>
         <button (click)="delete(archiveTransfer)" color="primary" mat-mini-fab>
           <mat-icon>delete</mat-icon>
         </button>

@@ -50,7 +50,7 @@
       </form>
     </mat-tab>
 
-    <mat-tab label="Commentaires">
+    <mat-tab label="Remarques">
       <form (ngSubmit)="onSubmitComment()" [formGroup]="commentForm" class="info-form">
         <div class="form-content-wrapper">
           <div *ngFor="let comment of comments" class="comment">
