@@ -7,6 +7,11 @@
   top: 0;
 }
 
+h2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .mat-tab-group {
   height: calc(100% - 2 * #{$default-margin});
 }
@@ -16,6 +21,12 @@
   height: 100%;
   padding: $default-margin;
   width: $panel-width;
+}
+
+.close-button {
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .info-form {
@@ -46,6 +57,3 @@
   }
 }
 
-.button-container {
-  text-align: right;
-}

@@ -54,9 +54,12 @@ export class FileDetailComponent implements OnInit {
     });
   }
 
+  onCancel(): void {
+    this._closeSidenav();
+  }
+
   onSubmitFile(): void {
-    setTimeout((_: any) => this._sidenavRef.close(), TRANSITION_DURATION);
-    this.isOpen = false;
+    this._closeSidenav();
     // TODO
   }
 
@@ -70,6 +73,11 @@ export class FileDetailComponent implements OnInit {
     this.comments.push(comment);
     this.archiveTransferService.addComment(comment).subscribe();
     this.commentForm.reset();
+  }
+
+  private _closeSidenav(): void {
+    setTimeout((_: any) => this._sidenavRef.close(), TRANSITION_DURATION);
+    this.isOpen = false;
   }
 
   private _getComments(): void {

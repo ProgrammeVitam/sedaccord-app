@@ -1,4 +1,7 @@
 <div *ngIf="isOpen" @openClose class="open-close-container">
+  <button (click)="onCancel()" class="close-button" mat-icon-button>
+    <mat-icon>close</mat-icon>
+  </button>
   <h2>{{file.name}}</h2>
   <mat-tab-group class="mat-tab-fill-height" dynamicHeight>
 
@@ -42,7 +45,10 @@
             <textarea formControlName="rule" matInput></textarea>
           </mat-form-field>
         </div>
-        <div class="button-container">
+        <div class="button-group">
+          <button (click)="onCancel()" mat-stroked-button>
+            Annuler
+          </button>
           <button color="primary" mat-flat-button type="submit">
             Valider
           </button>
@@ -72,7 +78,10 @@
           </mat-label>
           <textarea formControlName="text" matInput></textarea>
         </mat-form-field>
-        <div class="button-container">
+        <div class="button-group">
+          <button (click)="onCancel()" mat-stroked-button>
+            Annuler
+          </button>
           <button color="primary" mat-flat-button type="submit">
             Envoyer
           </button>
