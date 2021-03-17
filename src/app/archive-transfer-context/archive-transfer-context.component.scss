@@ -3,8 +3,9 @@
 form {
   background: $background;
   display: grid;
-  grid-column-gap: $default-margin;
-  grid-template-columns: 0.5fr 0.5fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  height: 100%;
   padding: $default-margin;
 }
 
@@ -14,6 +15,14 @@ h2 {
 
 .mat-form-field {
   margin-bottom: $default-margin;
+}
+
+.form-content-wrapper {
+  display: grid;
+  grid-column-gap: $default-margin;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  overflow: auto;
 }
 
 .info-form:nth-of-type(1) {

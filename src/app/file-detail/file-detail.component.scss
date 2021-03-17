@@ -2,9 +2,11 @@
 
 :host {
   height: 100%;
+  min-width: $min-panel-width;
   position: absolute;
   right: 0;
   top: 0;
+  width: 25%;
 }
 
 h2 {
@@ -20,7 +22,6 @@ h2 {
   background: $panel-background;
   height: 100%;
   padding: $default-margin;
-  width: $panel-width;
 }
 
 .close-button {

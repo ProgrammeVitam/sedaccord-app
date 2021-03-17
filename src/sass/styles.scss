@@ -25,14 +25,17 @@ $theme: mat-light-theme(
   box-sizing: border-box;
 }
 
-html, body {
-  height: 100%;
-}
-
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0;
+}
+
+main {
+  display: grid;
+  height: 100vh;
   margin: 0 auto;
   width: $width;
+  grid-template-rows: 1fr;
 }
 
 .mat-tab-group.mat-tab-fill-height .mat-tab-body-wrapper {

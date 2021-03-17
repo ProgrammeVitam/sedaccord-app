@@ -1,4 +1,4 @@
-<table [dataSource]="dataSource" mat-table matSort>
+<table [dataSource]="dataSource" fixedLayout mat-table matSort>
 
   <ng-container matColumnDef="name">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Nom</th>
@@ -31,8 +31,8 @@
   </ng-container>
 
   <ng-container matColumnDef="edit" stickyEnd>
-    <th *matHeaderCellDef mat-header-cell></th>
-    <td *matCellDef="let row" mat-cell>
+    <th *matHeaderCellDef class="mat-cell-sticky-right" mat-header-cell></th>
+    <td *matCellDef="let row" class="mat-cell-sticky-right" mat-cell>
       <button (click)="edit(row)" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'" mat-icon-button>
         <mat-icon>edit</mat-icon>
       </button>
@@ -40,8 +40,8 @@
   </ng-container>
 
   <ng-container matColumnDef="delete" stickyEnd>
-    <th *matHeaderCellDef mat-header-cell></th>
-    <td *matCellDef="let row" mat-cell>
+    <th *matHeaderCellDef class="mat-cell-sticky-right" mat-header-cell></th>
+    <td *matCellDef="let row" class="mat-cell-sticky-right" mat-cell>
       <button (click)="$event.stopPropagation()" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'"
               mat-icon-button>
         <mat-icon>delete</mat-icon>
