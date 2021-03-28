@@ -22,14 +22,14 @@
             <mat-form-field appearance="fill">
               <mat-label>Date de début
               </mat-label>
-              <input [matDatepicker]="pickerStart" formControlName="startDate" matInput/>
+              <input [matDatepicker]="pickerStart" formControlName="creationDate" matInput/>
               <mat-datepicker-toggle [for]="pickerStart" matSuffix></mat-datepicker-toggle>
               <mat-datepicker #pickerStart></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="fill">
               <mat-label>Date de fin
               </mat-label>
-              <input [matDatepicker]="pickerEnd" formControlName="endDate" matInput/>
+              <input [matDatepicker]="pickerEnd" formControlName="lastModificationDate" matInput/>
               <mat-datepicker-toggle [for]="pickerEnd" matSuffix></mat-datepicker-toggle>
               <mat-datepicker #pickerEnd></mat-datepicker>
             </mat-form-field>

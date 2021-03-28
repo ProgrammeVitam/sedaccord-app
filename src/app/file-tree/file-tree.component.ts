@@ -1,8 +1,9 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {Directory, FileNode} from '../dtos/file';
 import {SelectionModel} from '@angular/cdk/collections';
+import {Directory, FileNode} from '../dtos/file';
+import {FileMetadata} from '../dtos/archive-transfer';
 
 interface FileFlatNode {
   expandable: boolean;
@@ -17,7 +18,7 @@ interface FileFlatNode {
   styleUrls: ['./file-tree.component.scss']
 })
 export class FileTreeComponent implements OnInit {
-  @Input() fileTreeData!: FileNode[];
+  @Input() fileTreeData!: FileMetadata[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
 
   treeControl = new FlatTreeControl<FileFlatNode>(
@@ -57,8 +58,9 @@ export class FileTreeComponent implements OnInit {
 
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
   private _nestedNodeMap = new Map<FileNode, FileFlatNode>();
+
   ngOnInit(): void {
-    this.dataSource.data = this.fileTreeData;
+    this.dataSource.data = this._buildTreeFromMaterialized(this.fileTreeData);
   }
 
   getLevel = (node: FileFlatNode) => node.level;
@@ -81,6 +83,45 @@ export class FileTreeComponent implements OnInit {
 
   isSelected(node: FileFlatNode): boolean {
     return this._descendantsOneOfSelected(node);
+  }
+
+  private _fileMetadataToNode(fileMetadata: FileMetadata, nodeName: string): FileNode {
+    return {
+      isDirectory: fileMetadata.isDirectory,
+      name: nodeName,
+      creationDate: fileMetadata.creationDate,
+      lastModificationDate: fileMetadata.lastModificationDate,
+      size: fileMetadata.size,
+      format: fileMetadata.format // TODO only if not directory?
+    };
+  }
+
+  private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
+    let tree: FileNode[] = [];
+    const root = tree;
+    for (const fileMetadata of data) {
+      const pathNodes = fileMetadata.path.split('/');
+      for (let i = 0; i < pathNodes.length - 1; i++) {
+        const pathNode = pathNodes[i];
+        let fileNode: Directory;
+        const fileNodes = tree.filter(n => pathNode === n.name);
+        if (fileNodes.length === 1) {
+          fileNode = fileNodes[0];
+        } else if (fileNodes.length === 0) {
+          fileNode = this._fileMetadataToNode(fileMetadata, pathNode);
+          tree.push(fileNode);
+        } else {
+          throw new Error('Duplicate file name should not happen.');
+        }
+        fileNode.children = fileNode.children || [];
+        tree = fileNode.children;
+      }
+      const pathLeaf = pathNodes[pathNodes.length - 1];
+      const fileLeaf: FileNode = this._fileMetadataToNode(fileMetadata, pathLeaf);
+      tree.push(fileLeaf);
+      tree = root;
+    }
+    return root;
   }
 
   private _hasChild(directoryNode: Directory): boolean {

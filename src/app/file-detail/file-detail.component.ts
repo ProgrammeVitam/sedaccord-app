@@ -1,9 +1,10 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
-import {FileComment, FileNode} from '../dtos/file';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {DialogReference, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
+import {FileComment} from '../dtos/archive-transfer';
+import {FileNode} from '../dtos/file';
 
 const TRANSITION_DURATION = 300;
 
@@ -44,8 +45,8 @@ export class FileDetailComponent implements OnInit {
     this._getComments();
     this.fileForm = this._formBuilder.group({
       name: [this.file.name],
-      startDate: [this.file.startDate],
-      endDate: [this.file.endDate],
+      creationDate: [this.file.creationDate],
+      lastModificationDate: [this.file.lastModificationDate],
       description: [''],
       rule: ['']
     });

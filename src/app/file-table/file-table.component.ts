@@ -3,15 +3,16 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges, OnInit,
+  OnChanges,
+  OnInit,
   Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
-import {FileNode} from '../dtos/file';
 import {SelectionModel} from '@angular/cdk/collections';
+import {FileNode} from '../dtos/file';
 
 @Component({
   selector: 'app-file-table',
@@ -22,7 +23,7 @@ export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() elementData!: FileNode[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
 
-  displayedColumns: string[] = ['name', 'startDate', 'endDate', 'size', 'format', 'description', 'edit', 'delete'];
+  displayedColumns: string[] = ['name', 'creationDate', 'lastModificationDate', 'size', 'format', 'description', 'edit', 'delete'];
   dataSource!: MatTableDataSource<FileNode>;
   selection!: SelectionModel<FileNode>;
 

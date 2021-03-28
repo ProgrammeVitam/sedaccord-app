@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveTransfer, FileComment} from '../dtos/archive-transfer';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
-import {FileComment} from '../dtos/file';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ export class ArchiveTransferService {
   constructor(private http: HttpClient) {
   }
 
-  getArchiveTransfers(): Observable<ArchiveTransfer[]> {
+  getArchiveTransfers(): Observable<ArchiveTransfer[]> { // TODO return partial objects
     return this.http.get<ArchiveTransfer[]>(this.archiveTransfersUrl)
       .pipe(
         map(value => {
@@ -29,17 +28,17 @@ export class ArchiveTransferService {
               element.id,
               element.name,
               element.description,
-              element.startDate,
-              element.endDate,
-              element.transferringAgency,
-              element.creator
+              element.creationDate,
+              element.lastModificationDate,
+              element.submissionAgency,
+              element.originatingAgency
             );
             for (const archiveDataPackage of element.archiveDataPackages) {
               archiveTransfer.addPackage(
                 archiveDataPackage.id,
                 archiveDataPackage.name,
                 archiveDataPackage.classificationItem,
-                archiveDataPackage.fileTreeData
+                archiveDataPackage.archiveData
               );
             }
             archiveTransfers.push(archiveTransfer);
@@ -61,17 +60,17 @@ export class ArchiveTransferService {
             value.id,
             value.name,
             value.description,
-            value.startDate,
-            value.endDate,
-            value.transferringAgency,
-            value.creator
+            value.creationDate,
+            value.lastModificationDate,
+            value.submissionAgency,
+            value.originatingAgency
           );
           for (const archiveDataPackage of value.archiveDataPackages) {
             archiveTransfer.addPackage(
               archiveDataPackage.id,
               archiveDataPackage.name,
               archiveDataPackage.classificationItem,
-              archiveDataPackage.fileTreeData
+              archiveDataPackage.archiveData
             );
           }
           return archiveTransfer;

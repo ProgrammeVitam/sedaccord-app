@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {InMemoryDbService} from 'angular-in-memory-web-api';
-import {ArchiveTransfer, Office} from '../dtos/archive-transfer';
-import {FileNode} from '../dtos/file';
+import {ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
+import {Agency} from '../dtos/referential';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +12,7 @@ export class InMemoryDataService implements InMemoryDbService {
   }
 
   createDb() {
-    const transferringAgencies: Office[] = [
-      {id: 1, name: 'DGT', description: 'Direction générale du travail'},
-      {id: 2, name: 'DGAS', description: 'Direction générale de l\'action sociale'},
-      {id: 3, name: 'DGOS', description: 'Direction générale de l\'offre de soin'},
-      {id: 4, name: 'DGCS', description: 'Direction générale de la cohésion sociale'},
-      {id: 5, name: 'DRH', description: 'Direction des ressources humaines'}
-    ];
-    const creators: Office[] = [
+    const agencies: Agency[] = [
       {id: 1, name: 'DGT', description: 'Direction générale du travail'},
       {id: 2, name: 'DGAS', description: 'Direction générale de l\'action sociale'},
       {id: 3, name: 'DGOS', description: 'Direction générale de l\'offre de soin'},
@@ -54,122 +47,131 @@ export class InMemoryDataService implements InMemoryDbService {
         ]
       }
     ];
-    const fileTreeData1: FileNode[] = [
+    const data1: FileMetadata[] = [
       {
         isDirectory: true,
         name: 'Agents partis en janvier 2017',
-        startDate: new Date(2017, 0, 1),
-        endDate: new Date(2020, 0, 31),
-        size: 948.55
+        creationDate: new Date(2017, 0, 1),
+        lastModificationDate: new Date(2020, 0, 31),
+        size: 948.55,
+        path: 'Agents partis en janvier 2017'
       },
       {
         isDirectory: true,
         name: 'Agents partis en février 2017',
-        startDate: new Date(2020, 1, 1),
-        endDate: new Date(2020, 1, 28),
-        size: 948.55
+        creationDate: new Date(2020, 1, 1),
+        lastModificationDate: new Date(2020, 1, 28),
+        size: 948.55,
+        path: 'Agents partis en février 2017'
       },
       {
         isDirectory: true,
         name: 'Agents partis en mars 2017',
-        startDate: new Date(2017, 2, 1),
-        endDate: new Date(2017, 2, 31),
-        size: 948.55
+        creationDate: new Date(2017, 2, 1),
+        lastModificationDate: new Date(2017, 2, 31),
+        size: 948.55,
+        path: 'Agents partis en mars 2017'
       },
       {
         isDirectory: true,
         name: 'Agents partis en avril 2017',
-        startDate: new Date(2017, 3, 1),
-        endDate: new Date(2017, 3, 30),
+        creationDate: new Date(2017, 3, 1),
+        lastModificationDate: new Date(2017, 3, 30),
         size: 948.55,
-        children: [
-          {
-            isDirectory: true,
-            name: 'Agents_A',
-            startDate: new Date(2017, 3, 1),
-            endDate: new Date(2017, 3, 30),
-            size: 948.55
-          },
-          {
-            isDirectory: true,
-            name: 'Agents_B',
-            startDate: new Date(2017, 3, 1),
-            endDate: new Date(2017, 3, 30),
-            size: 948.55
-          },
-          {
-            isDirectory: true,
-            name: 'Agents_C',
-            startDate: new Date(2017, 3, 1),
-            endDate: new Date(2017, 3, 30),
-            size: 948.55,
-            children: [
-              {
-                isDirectory: true,
-                name: 'CARPENTAS Isabelle',
-                startDate: new Date(2020, 11, 22, 15, 0, 0),
-                endDate: new Date(2020, 11, 22, 15, 0, 0),
-                size: 948.55
-              },
-              {
-                isDirectory: true,
-                name: 'CHAMONIX Jean-Marc',
-                startDate: new Date(2020, 11, 22, 15, 0, 0),
-                endDate: new Date(2020, 11, 22, 15, 0, 0),
-                size: 948.55
-              },
-              {
-                isDirectory: true,
-                name: 'CRIPOUX Sarah',
-                startDate: new Date(2020, 11, 22, 15, 0, 0),
-                endDate: new Date(2020, 11, 22, 15, 0, 0),
-                size: 948.55,
-                children: [
-                  {
-                    isDirectory: false,
-                    name: 'CV',
-                    startDate: new Date(2010, 3, 2),
-                    endDate: new Date(2010, 3, 2),
-                    size: 948.55,
-                    format: 'PDF'
-                  },
-                  {
-                    isDirectory: false,
-                    name: 'CR_evaluation_2015',
-                    startDate: new Date(2015, 0, 11),
-                    endDate: new Date(2015, 0, 11),
-                    size: 948.55,
-                    format: 'docx'
-                  },
-                  {
-                    isDirectory: false,
-                    name: 'Arrêté de nomination',
-                    startDate: new Date(2014, 2, 31),
-                    endDate: new Date(2014, 2, 31),
-                    size: 948.55,
-                    format: 'docx'
-                  },
-                  {
-                    isDirectory: false,
-                    name: '2011_07_26_attestation_formation_gestes_posture',
-                    startDate: new Date(2011, 6, 26),
-                    endDate: new Date(2011, 6, 26),
-                    size: 948.55,
-                    format: 'docx'
-                  },
-                  {
-                    isDirectory: false,
-                    name: 'Evaluation_2016_CR',
-                    startDate: new Date(2014, 0, 6),
-                    endDate: new Date(2014, 0, 6),
-                    size: 948.55,
-                    format: 'rtf'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+        path: 'Agents partis en avril 2017'
+      },
+      {
+        isDirectory: true,
+        name: 'Agents_A',
+        creationDate: new Date(2017, 3, 1),
+        lastModificationDate: new Date(2017, 3, 30),
+        size: 948.55,
+        path: 'Agents partis en avril 2017/Agents_A'
+      },
+      {
+        isDirectory: true,
+        name: 'Agents_B',
+        creationDate: new Date(2017, 3, 1),
+        lastModificationDate: new Date(2017, 3, 30),
+        size: 948.55,
+        path: 'Agents partis en avril 2017/Agents_B'
+      },
+      {
+        isDirectory: true,
+        name: 'Agents_C',
+        creationDate: new Date(2017, 3, 1),
+        lastModificationDate: new Date(2017, 3, 30),
+        size: 948.55,
+        path: 'Agents partis en avril 2017/Agents_C'
+      },
+      {
+        isDirectory: true,
+        name: 'CARPENTAS Isabelle',
+        creationDate: new Date(2020, 11, 22, 15, 0, 0),
+        lastModificationDate: new Date(2020, 11, 22, 15, 0, 0),
+        size: 948.55,
+        path: 'Agents partis en avril 2017/Agents_C/CARPENTAS Isabelle'
+      },
+      {
+        isDirectory: true,
+        name: 'CHAMONIX Jean-Marc',
+        creationDate: new Date(2020, 11, 22, 15, 0, 0),
+        lastModificationDate: new Date(2020, 11, 22, 15, 0, 0),
+        size: 948.55,
+        path: 'Agents partis en avril 2017/Agents_C/CHAMONIX Jean-Marc'
+      },
+      {
+        isDirectory: true,
+        name: 'CRIPOUX Sarah',
+        creationDate: new Date(2020, 11, 22, 15, 0, 0),
+        lastModificationDate: new Date(2020, 11, 22, 15, 0, 0),
+        size: 948.55,
+        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah'
+      },
+      {
+        isDirectory: false,
+        name: 'CV',
+        creationDate: new Date(2010, 3, 2),
+        lastModificationDate: new Date(2010, 3, 2),
+        size: 948.55,
+        format: 'PDF',
+        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/CV'
+      },
+      {
+        isDirectory: false,
+        name: 'CR_evaluation_2015',
+        creationDate: new Date(2015, 0, 11),
+        lastModificationDate: new Date(2015, 0, 11),
+        size: 948.55,
+        format: 'docx',
+        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/CR_evaluation_2015'
+      },
+      {
+        isDirectory: false,
+        name: 'Arrêté de nomination',
+        creationDate: new Date(2014, 2, 31),
+        lastModificationDate: new Date(2014, 2, 31),
+        size: 948.55,
+        format: 'docx',
+        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Arrêté de nomination'
+      },
+      {
+        isDirectory: false,
+        name: '2011_07_26_attestation_formation_gestes_posture',
+        creationDate: new Date(2011, 6, 26),
+        lastModificationDate: new Date(2011, 6, 26),
+        size: 948.55,
+        format: 'docx',
+        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/2011_07_26_attestation_formation_gestes_posture'
+      },
+      {
+        isDirectory: false,
+        name: 'Evaluation_2016_CR',
+        creationDate: new Date(2014, 0, 6),
+        lastModificationDate: new Date(2014, 0, 6),
+        size: 948.55,
+        format: 'rtf',
+        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR'
       }
     ];
     const transfer1 = new ArchiveTransfer(
@@ -178,11 +180,11 @@ export class InMemoryDataService implements InMemoryDbService {
       'Dossiers de carrière d’agents du ministère des affaires sociales ayant quitté leurs fonctions en 2017 et 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
       new Date(1978, 0, 11),
       new Date(2018, 10, 27),
-      transferringAgencies[4],
-      creators[4]
+      agencies[4],
+      agencies[4]
     );
     transfer1.lastModificationDate = new Date(2021, 0, 30, 15, 0, 0);
-    transfer1.addPackage(1, '', classification[0].children[0], fileTreeData1);
+    transfer1.addPackage(1, '', classification[0].children[0], data1);
     const archiveTransfers = [
       new ArchiveTransfer(
         2222,
@@ -190,8 +192,8 @@ export class InMemoryDataService implements InMemoryDbService {
         'Dossiers médicaux des agents du ministère des affaires sociales ayant quitté leurs fonctions en 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
         new Date(1965, 0, 4),
         new Date(2018, 7, 18),
-        transferringAgencies[4],
-        creators[4]
+        agencies[4],
+        agencies[4]
       ),
       transfer1
     ];
@@ -210,8 +212,7 @@ export class InMemoryDataService implements InMemoryDbService {
       }
     ];
     return {
-      transferringAgencies,
-      creators,
+      agencies,
       classification,
       archiveTransfers,
       comments

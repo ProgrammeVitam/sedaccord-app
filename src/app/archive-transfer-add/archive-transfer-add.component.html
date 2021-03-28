@@ -118,15 +118,16 @@
           <mat-form-field appearance="outline">
             <mat-label>Le service producteur
             </mat-label>
-            <input [matAutocomplete]="autoCreator"
-                   formControlName="creator"
+            <input [matAutocomplete]="autoOriginatingAgency"
+                   formControlName="originatingAgency"
                    matInput
                    type="text">
-            <mat-autocomplete #autoCreator="matAutocomplete"
-                              (optionSelected)="autoFillCreatorDescription($event.option.value)"
+            <mat-autocomplete #autoOriginatingAgency="matAutocomplete"
+                              (optionSelected)="autoFillOriginatingAgencyDescription($event.option.value)"
                               [displayWith]="displayFn">
-              <mat-option *ngFor="let creator of $filteredCreators | async" [value]="creator">
-                {{creator.name}}
+              <mat-option *ngFor="let originatingAgency of $filteredOriginatingAgencies | async"
+                          [value]="originatingAgency">
+                {{originatingAgency.name}}
               </mat-option>
             </mat-autocomplete>
             <mat-hint>Le service producteur est celui qui a produit ou reçu les documents dans le cadre de ses
@@ -136,7 +137,7 @@
           <mat-form-field appearance="outline">
             <mat-label>La description du service producteur
             </mat-label>
-            <textarea formControlName="creatorDescription"
+            <textarea formControlName="originatingAgencyDescription"
                       matInput></textarea>
             <mat-hint>La description des missions du service producteur permettra de contextualiser la production des
               documents.
@@ -145,16 +146,16 @@
           <mat-form-field appearance="outline">
             <mat-label>Le service versant
             </mat-label>
-            <input [matAutocomplete]="autoTransferringAgency"
-                   formControlName="transferringAgency"
+            <input [matAutocomplete]="autoSubmissionAgency"
+                   formControlName="submissionAgency"
                    matInput
                    type="text">
-            <mat-autocomplete #autoTransferringAgency="matAutocomplete"
-                              (optionSelected)="autoFillTransferringAgencyDescription($event.option.value)"
+            <mat-autocomplete #autoSubmissionAgency="matAutocomplete"
+                              (optionSelected)="autoFillSubmissionAgencyDescription($event.option.value)"
                               [displayWith]="displayFn">
-              <mat-option *ngFor="let transferringAgency of $filteredTransferringAgencies | async"
-                          [value]="transferringAgency">
-                {{transferringAgency.name}}
+              <mat-option *ngFor="let submissionAgency of $filteredSubmissionAgencies | async"
+                          [value]="submissionAgency">
+                {{submissionAgency.name}}
               </mat-option>
             </mat-autocomplete>
             <mat-hint>Le service versant qui est à l'origine de l'opération de versement des documents.</mat-hint>
@@ -163,7 +164,7 @@
             <mat-label>La description du service versant
             </mat-label>
             <textarea
-              formControlName="transferringAgencyDescription"
+              formControlName="submissionAgencyDescription"
               matInput></textarea>
             <mat-hint>La description des missions du service versant permettra de comprendre pourquoi il est à l'origine
               du versement.

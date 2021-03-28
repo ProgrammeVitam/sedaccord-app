@@ -5,14 +5,14 @@
     <td *matCellDef="let element" mat-cell> {{element.name}} </td>
   </ng-container>
 
-  <ng-container matColumnDef="startDate">
+  <ng-container matColumnDef="creationDate">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Date de début</th>
-    <td *matCellDef="let element" mat-cell> {{element.startDate | date}} </td>
+    <td *matCellDef="let element" mat-cell> {{element.creationDate | date}} </td>
   </ng-container>
 
-  <ng-container matColumnDef="endDate">
+  <ng-container matColumnDef="lastModificationDate">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Date de fin</th>
-    <td *matCellDef="let element" mat-cell> {{element.endDate | date}} </td>
+    <td *matCellDef="let element" mat-cell> {{element.lastModificationDate | date}} </td>
   </ng-container>
 
   <ng-container matColumnDef="size">

@@ -1,11 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ArchiveTransfer, Office} from '../dtos/archive-transfer';
-import {RepositoryService} from '../services/repository.service';
+import {ArchiveTransfer} from '../dtos/archive-transfer';
+import {ReferentialService} from '../services/referential.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+import {Agency} from '../dtos/referential';
 
 @Component({
   selector: 'app-archive-transfer-context',
@@ -19,15 +20,14 @@ export class ArchiveTransferContextComponent implements OnInit {
   contextForm2!: FormGroup;
   saveButtonDisabled: boolean;
 
-  creators!: Office[];
-  transferringAgencies!: Office[];
-  $filteredCreators!: Observable<Office[]>;
-  $filteredTransferringAgencies!: Observable<Office[]>;
+  agencies!: Agency[];
+  $filteredOriginatingAgencies!: Observable<Agency[]>;
+  $filteredSubmissionAgencies!: Observable<Agency[]>;
 
   constructor(
     private _router: Router,
     private _formBuilder: FormBuilder,
-    private _repositoryService: RepositoryService,
+    private _referentialService: ReferentialService,
     private _archiveTransferService: ArchiveTransferService
   ) {
     this.saveButtonDisabled = true;
@@ -41,29 +41,28 @@ export class ArchiveTransferContextComponent implements OnInit {
       endDate: [this.archiveTransfer.endDate]
     });
     this.contextForm2 = this._formBuilder.group({
-      creator: [this.archiveTransfer.creator],
-      creatorDescription: [this.archiveTransfer.creator?.description],
-      transferringAgency: [this.archiveTransfer.transferringAgency],
-      transferringAgencyDescription: [this.archiveTransfer.transferringAgency?.description]
+      originatingAgency: [this.archiveTransfer.originatingAgency],
+      originatingAgencyDescription: [this.archiveTransfer.originatingAgency?.description],
+      submissionAgency: [this.archiveTransfer.submissionAgency],
+      submissionAgencyDescription: [this.archiveTransfer.submissionAgency?.description]
     });
-    this._getCreators();
-    this._getTransferringAgencies();
+    this._getAgencies();
     this.contextForm1.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
     this.contextForm2.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
   }
 
-  displayFn(office: Office): string {
+  displayFn(office: Agency): string {
     return office && office.name ? office.name : '';
   }
 
-  autoFillCreatorDescription(creator: Office): void {
+  autoFillOriginatingAgencyDescription(originatingAgency: Agency): void {
     this.contextForm2
-      .patchValue({creatorDescription: this._findCreator(creator).description});
+      .patchValue({originatingAgencyDescription: this._findAgency(originatingAgency).description});
   }
 
-  autoFillTransferringAgencyDescription(transferringAgency: Office): void {
+  autoFillSubmissionAgencyDescription(submissionAgency: Agency): void {
     this.contextForm2
-      .patchValue({transferringAgencyDescription: this._findTransferringAgency(transferringAgency).description});
+      .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
   }
 
   onSubmit(): void {
@@ -71,15 +70,15 @@ export class ArchiveTransferContextComponent implements OnInit {
     this.archiveTransfer.description = this.contextForm1.value.description;
     this.archiveTransfer.startDate = this.contextForm1.value.startDate;
     this.archiveTransfer.endDate = this.contextForm1.value.endDate;
-    this.archiveTransfer.creator = {
-      id: this.contextForm2.value.creator.id,
-      name: this.contextForm2.value.creator.name,
-      description: this.contextForm2.value.creatorDescription
+    this.archiveTransfer.originatingAgency = {
+      id: this.contextForm2.value.originatingAgency.id,
+      name: this.contextForm2.value.originatingAgency.name,
+      description: this.contextForm2.value.originatingAgencyDescription
     };
-    this.archiveTransfer.transferringAgency = {
-      id: this.contextForm2.value.transferringAgency.id,
-      name: this.contextForm2.value.transferringAgency.name,
-      description: this.contextForm2.value.transferringAgencyDescription
+    this.archiveTransfer.submissionAgency = {
+      id: this.contextForm2.value.submissionAgency.id,
+      name: this.contextForm2.value.submissionAgency.name,
+      description: this.contextForm2.value.submissionAgencyDescription
     };
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
     this.saveButtonDisabled = true;
@@ -90,58 +89,37 @@ export class ArchiveTransferContextComponent implements OnInit {
     this._router.navigate(['/']);
   }
 
-  private _getCreators(): void {
-    this._repositoryService.getCreators()
-      .subscribe(creators => {
-        this.creators = creators;
-        this.$filteredCreators = this.contextForm2.get('creator')!.valueChanges
+  private _getAgencies(): void {
+    this._referentialService.getAgencies()
+      .subscribe(agencies => {
+        this.agencies = agencies;
+        this.$filteredOriginatingAgencies = this.contextForm2.get('originatingAgency')!.valueChanges
           .pipe(
             startWith(''),
             map(value => typeof value === 'string' ? value : value.name),
-            map(value => this._filterCreator(value))
+            map(value => this._filterAgency(value))
           );
-      });
-  }
-
-  private _getTransferringAgencies(): void {
-    this._repositoryService.getTransferringAgencies()
-      .subscribe(transferringAgencies => {
-        this.transferringAgencies = transferringAgencies;
-        this.$filteredTransferringAgencies = this.contextForm2.get('transferringAgency')!.valueChanges
+        this.$filteredSubmissionAgencies = this.contextForm2.get('submissionAgency')!.valueChanges
           .pipe(
             startWith(''),
             map(value => typeof value === 'string' ? value : value.name),
-            map(value => this._filterTransferringAgency(value))
+            map(value => this._filterAgency(value))
           );
       });
 
   }
 
-  private _findCreator(creator: Office): Office {
-    const foundCreator = this.creators.find(c => c.id === creator.id);
-    if (foundCreator) {
-      return foundCreator;
+  private _findAgency(agency: Agency): Agency {
+    const foundAgency = this.agencies.find(a => a.id === agency.id);
+    if (foundAgency) {
+      return foundAgency;
     } else {
-      throw new Error('Creator not found.');
+      throw new Error('Agency not found.');
     }
   }
 
-  private _findTransferringAgency(transferringAgency: Office): Office {
-    const foundTransferringAgency = this.transferringAgencies.find(ta => ta.id === transferringAgency.id);
-    if (foundTransferringAgency) {
-      return foundTransferringAgency;
-    } else {
-      throw new Error('Transferring agency not found.');
-    }
-  }
-
-  private _filterCreator(value: string): Office[] {
+  private _filterAgency(value: string): Agency[] {
     const filterValue = value.toLowerCase();
-    return this.creators.filter(creator => creator.name.toLowerCase().includes(filterValue));
-  }
-
-  private _filterTransferringAgency(value: string): Office[] {
-    const filterValue = value.toLowerCase();
-    return this.transferringAgencies.filter(transferringAgency => transferringAgency.name.toLowerCase().includes(filterValue));
+    return this.agencies.filter(agency => agency.name.toLowerCase().includes(filterValue));
   }
 }

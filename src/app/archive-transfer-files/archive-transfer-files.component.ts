@@ -1,12 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ArchiveTransfer, ClassificationItemNode} from '../dtos/archive-transfer';
-import {Directory, FileNode} from '../dtos/file';
-import {RepositoryService} from '../services/repository.service';
+import {ArchiveTransfer} from '../dtos/archive-transfer';
+import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ComplexDialogService, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
 import {FileDetailComponent} from '../file-detail/file-detail.component';
 import {SelectionModel} from '@angular/cdk/collections';
+import {ClassificationItemNode} from '../dtos/referential';
+import {Directory, FileNode} from '../dtos/file';
 
 @Component({
   selector: 'app-archive-transfer-files',
@@ -26,7 +27,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private _fileDetailDialogService: ComplexDialogService<FileDetailComponent>,
-    private _repositoryService: RepositoryService,
+    private _referentialService: ReferentialService,
     private _archiveTransferService: ArchiveTransferService
   ) {
     this.treeSelection = new SelectionModel<FileNode>(false);
@@ -45,7 +46,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
     });
     this.archiveTransfer.archiveDataPackages.forEach(archiveDataPackage => {
       this.archiveDataPackages.push(this._formBuilder.group({
-        data: [archiveDataPackage.fileTreeData],
+        data: [archiveDataPackage.archiveData],
         classificationItem: [archiveDataPackage.classificationItem]
       }));
     });
@@ -78,7 +79,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
           id: archiveDataPackage.classificationItem.id,
           name: archiveDataPackage.classificationItem.name
         },
-        fileTreeData: archiveDataPackage.data
+        data: archiveDataPackage.data
       };
     });
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
@@ -104,7 +105,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
   }
 
   private getClassification(): void {
-    this._repositoryService.getClassification()
+    this._referentialService.getClassification()
       .subscribe(classification => this.classification = classification);
   }
 }

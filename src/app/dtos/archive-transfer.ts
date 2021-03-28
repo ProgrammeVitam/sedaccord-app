@@ -1,25 +1,22 @@
-import {FileNode} from './file';
+import {Agency, Reference} from './referential';
+import {FileInterface} from './file';
 
-interface ClassificationItem {
-  id: number;
-  name: string;
+export interface FileComment { // FIXME
+  date: Date;
+  user: string;
+  text: string;
+  file: string;
 }
 
-export interface ClassificationItemNode extends ClassificationItem {
-  children?: ClassificationItemNode[];
-}
-
-export interface Office {
-  id: number;
-  name: string;
-  description: string;
+export interface FileMetadata extends FileInterface {
+  path: string;
 }
 
 export interface ArchiveDataPackage {
   id: number;
   name: string;
-  classificationItem: ClassificationItem;
-  fileTreeData: FileNode[];
+  classificationItem: Reference;
+  archiveData: FileMetadata[];
 }
 
 interface ArchiveTransferInterface {
@@ -31,8 +28,8 @@ interface ArchiveTransferInterface {
   description?: string;
   startDate?: Date;
   endDate?: Date;
-  transferringAgency?: Office;
-  creator?: Office;
+  originatingAgency?: Agency;
+  submissionAgency?: Agency;
   archiveDataPackages?: ArchiveDataPackage[];
 }
 
@@ -40,8 +37,8 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
   public creationDate: Date;
   public lastModificationDate: Date;
   public status: string;
-  public transferringAgency?: Office;
-  public creator?: Office;
+  public originatingAgency?: Agency;
+  public submissionAgency?: Agency;
   public archiveDataPackages: ArchiveDataPackage[] = [];
 
   constructor(
@@ -50,8 +47,8 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
     public description?: string,
     public startDate?: Date,
     public endDate?: Date,
-    transferringAgency?: Office,
-    creator?: Office
+    originatingAgency?: Agency,
+    submissionAgency?: Agency
   ) {
     this.id = id;
     this.creationDate = new Date();
@@ -62,16 +59,16 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
     this.description = description ?? '';
     this.startDate = startDate ?? undefined;
     this.endDate = endDate ?? undefined;
-    this.transferringAgency = transferringAgency ?? undefined;
-    this.creator = creator ?? undefined;
+    this.originatingAgency = originatingAgency ?? undefined;
+    this.submissionAgency = submissionAgency ?? undefined;
   }
 
-  addPackage(id: number, name: string, classificationItem: ClassificationItem, fileTreeData: FileNode[]): void {
+  addPackage(id: number, name: string, classificationItem: Reference, archiveData: FileMetadata[]): void {
     const newArchiveDataPackage = {
       id,
       name,
       classificationItem: classificationItem ?? null,
-      fileTreeData
+      archiveData
     };
     this.archiveDataPackages.push(newArchiveDataPackage);
   }
