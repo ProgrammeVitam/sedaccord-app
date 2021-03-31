@@ -9,9 +9,9 @@
   </p>
   <mat-form-field class="full-width">
     <mat-chip-list>
-      <mat-chip (removed)="remove(file)"
-                *ngFor="let file of files">
-        {{file.name}} ({{file.size}}Ko)
+      <mat-chip (removed)="remove(filePackage)"
+                *ngFor="let filePackage of filePackages">
+        {{filePackage.root}} ({{filePackage.size}}Ko)
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
     </mat-chip-list>

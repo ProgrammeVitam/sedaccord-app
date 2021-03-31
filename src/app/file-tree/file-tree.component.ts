@@ -4,6 +4,7 @@ import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
 import {Directory, FileNode} from '../dtos/file';
 import {FileMetadata} from '../dtos/archive-transfer';
+import {Utils} from '../shared/utils';
 
 interface FileFlatNode {
   expandable: boolean;
@@ -103,15 +104,10 @@ export class FileTreeComponent implements OnInit {
       const pathNodes = fileMetadata.path.split('/');
       for (let i = 0; i < pathNodes.length - 1; i++) {
         const pathNode = pathNodes[i];
-        let fileNode: Directory;
-        const fileNodes = tree.filter(n => pathNode === n.name);
-        if (fileNodes.length === 1) {
-          fileNode = fileNodes[0];
-        } else if (fileNodes.length === 0) {
+        let fileNode: Directory | null = Utils.findUniqueInArray(tree, n => pathNode === n.name);
+        if (!fileNode) {
           fileNode = this._fileMetadataToNode(fileMetadata, pathNode);
           tree.push(fileNode);
-        } else {
-          throw new Error('Duplicate file name should not happen.');
         }
         fileNode.children = fileNode.children || [];
         tree = fileNode.children;
