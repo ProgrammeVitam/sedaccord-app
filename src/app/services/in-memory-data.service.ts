@@ -54,7 +54,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2017, 0, 1),
         lastModificationDate: new Date(2020, 0, 31),
         size: 948.55,
-        path: 'Agents partis en janvier 2017'
+        path: '/Agents partis en janvier 2017'
       },
       {
         isDirectory: true,
@@ -62,7 +62,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2020, 1, 1),
         lastModificationDate: new Date(2020, 1, 28),
         size: 948.55,
-        path: 'Agents partis en février 2017'
+        path: '/Agents partis en février 2017'
       },
       {
         isDirectory: true,
@@ -70,7 +70,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2017, 2, 1),
         lastModificationDate: new Date(2017, 2, 31),
         size: 948.55,
-        path: 'Agents partis en mars 2017'
+        path: '/Agents partis en mars 2017'
       },
       {
         isDirectory: true,
@@ -78,7 +78,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2017, 3, 1),
         lastModificationDate: new Date(2017, 3, 30),
         size: 948.55,
-        path: 'Agents partis en avril 2017'
+        path: '/Agents partis en avril 2017'
       },
       {
         isDirectory: true,
@@ -86,7 +86,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2017, 3, 1),
         lastModificationDate: new Date(2017, 3, 30),
         size: 948.55,
-        path: 'Agents partis en avril 2017/Agents_A'
+        path: '/Agents partis en avril 2017/Agents_A'
       },
       {
         isDirectory: true,
@@ -94,7 +94,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2017, 3, 1),
         lastModificationDate: new Date(2017, 3, 30),
         size: 948.55,
-        path: 'Agents partis en avril 2017/Agents_B'
+        path: '/Agents partis en avril 2017/Agents_B'
       },
       {
         isDirectory: true,
@@ -102,7 +102,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2017, 3, 1),
         lastModificationDate: new Date(2017, 3, 30),
         size: 948.55,
-        path: 'Agents partis en avril 2017/Agents_C'
+        path: '/Agents partis en avril 2017/Agents_C'
       },
       {
         isDirectory: true,
@@ -110,7 +110,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2020, 11, 22, 15, 0, 0),
         lastModificationDate: new Date(2020, 11, 22, 15, 0, 0),
         size: 948.55,
-        path: 'Agents partis en avril 2017/Agents_C/CARPENTAS Isabelle'
+        path: '/Agents partis en avril 2017/Agents_C/CARPENTAS Isabelle'
       },
       {
         isDirectory: true,
@@ -118,7 +118,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2020, 11, 22, 15, 0, 0),
         lastModificationDate: new Date(2020, 11, 22, 15, 0, 0),
         size: 948.55,
-        path: 'Agents partis en avril 2017/Agents_C/CHAMONIX Jean-Marc'
+        path: '/Agents partis en avril 2017/Agents_C/CHAMONIX Jean-Marc'
       },
       {
         isDirectory: true,
@@ -126,7 +126,7 @@ export class InMemoryDataService implements InMemoryDbService {
         creationDate: new Date(2020, 11, 22, 15, 0, 0),
         lastModificationDate: new Date(2020, 11, 22, 15, 0, 0),
         size: 948.55,
-        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah'
       },
       {
         isDirectory: false,
@@ -135,7 +135,7 @@ export class InMemoryDataService implements InMemoryDbService {
         lastModificationDate: new Date(2010, 3, 2),
         size: 948.55,
         format: 'PDF',
-        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/CV'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/CV.pdf'
       },
       {
         isDirectory: false,
@@ -144,7 +144,7 @@ export class InMemoryDataService implements InMemoryDbService {
         lastModificationDate: new Date(2015, 0, 11),
         size: 948.55,
         format: 'docx',
-        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/CR_evaluation_2015'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/CR_evaluation_2015.docx'
       },
       {
         isDirectory: false,
@@ -153,7 +153,7 @@ export class InMemoryDataService implements InMemoryDbService {
         lastModificationDate: new Date(2014, 2, 31),
         size: 948.55,
         format: 'docx',
-        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Arrêté de nomination'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Arrêté de nomination.docx'
       },
       {
         isDirectory: false,
@@ -162,7 +162,7 @@ export class InMemoryDataService implements InMemoryDbService {
         lastModificationDate: new Date(2011, 6, 26),
         size: 948.55,
         format: 'docx',
-        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/2011_07_26_attestation_formation_gestes_posture'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/2011_07_26_attestation_formation_gestes_posture.docx'
       },
       {
         isDirectory: false,
@@ -171,7 +171,7 @@ export class InMemoryDataService implements InMemoryDbService {
         lastModificationDate: new Date(2014, 0, 6),
         size: 948.55,
         format: 'rtf',
-        path: 'Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf'
       }
     ];
     const transfer1 = new ArchiveTransfer(

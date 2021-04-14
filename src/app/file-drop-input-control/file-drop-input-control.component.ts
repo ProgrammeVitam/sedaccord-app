@@ -1,6 +1,5 @@
 import {Component, forwardRef, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Utils} from '../shared/utils';
 
 declare global {
   interface File {
@@ -9,9 +8,10 @@ declare global {
   }
 }
 
-interface FilePackage {
-  root: string;
+export interface FilePackage {
+  name: string;
   files: File[];
+  directories: string[];
   size: number;
 }
 
@@ -67,7 +67,6 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
   onDrop(ev: DragEvent): void {
     this._preventFileOpening(ev);
     if (ev.dataTransfer) {
-      // this.handleFilesForDnD(ev.dataTransfer.files);
       this._handleFilesForDnD(ev.dataTransfer.items);
     }
   }
@@ -78,15 +77,16 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
         file.fullPath = file.webkitRelativePath;
         return file;
       });
-      this._handleFiles(files);
+      // TODO list directories to make it compatible with D&D + uncomment in html
+      this.writeValue(this.filePackages);
     }
   }
 
-  remove(filePackage: FilePackage): void { // FIXME
+  remove(filePackage: FilePackage): void {
     const index = this.filePackages.indexOf(filePackage);
     if (index >= 0) {
       this.filePackages.splice(index, 1);
-      this.onChange(this.filePackages);
+      this.writeValue(this.filePackages);
     }
   }
 
@@ -94,13 +94,17 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
     const entries = Array.from(fileList)
       .filter(item => item.kind === 'file')
       .map(item => item.webkitGetAsEntry());
-    this._listFiles(entries, []).then(files => {
-      this._handleFiles(files);
+    entries.forEach(entry => {
+      this._listFiles([entry], [], []).then((filePackage: FilePackage) => {
+        this.filePackages.push(filePackage);
+        this.writeValue(this.filePackages);
+      });
     });
   }
 
   // FIXME types when they are implemented (e.g. FileSystemEntry)
-  private _listFiles(entries: any[], files: File[]): Promise<File[]> {
+  private _listFiles(entries: any[], files: File[], directories: string[]): Promise<FilePackage> {
+    let name = '';
     const promises: Promise<any>[] = [];
     entries.forEach(entry => {
       if (entry.isFile) {
@@ -109,14 +113,25 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
         });
         promises.push(promise);
       } else if (entry.isDirectory) {
-        const promise = this._parseDirectoryEntry(entry, files);
+        const promise = this._parseDirectoryEntry(entry, files, directories);
+        name = name || entry.name;
+        directories.push(entry.fullPath);
         promises.push(promise);
       }
     });
-    return Promise.all(promises).then(() => files);
+    return Promise.all(promises).then(() => {
+      return {
+        name,
+        files,
+        directories,
+        size: files
+          .map(file => file.size)
+          .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+      };
+    });
   }
 
-  private _parseDirectoryEntry(directoryEntry: any, files: File[]): Promise<any> {
+  private _parseDirectoryEntry(directoryEntry: any, files: File[], directories: string[]): Promise<FilePackage> {
     const directoryReader = directoryEntry.createReader();
     return new Promise((resolve, reject) => {
       let allEntries: any[] = [];
@@ -125,7 +140,7 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
           allEntries = allEntries.concat(entries);
           directoryReader.readEntries(readAllEntries);
         } else {
-          resolve(this._listFiles(allEntries, files));
+          resolve(this._listFiles(allEntries, files, directories));
         }
       };
       directoryReader.readEntries(
@@ -149,24 +164,6 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
         }
       );
     });
-  }
-
-  private _handleFiles(files: File[]): void {
-    files.forEach(file => {
-      const root = file.fullPath.split('/')[1];
-      const filePackage = Utils.findUniqueInArray(this.filePackages, p => root === p.root);
-      if (filePackage) {
-        filePackage.files.push(file);
-        filePackage.size += file.size;
-      } else {
-        this.filePackages.push({
-          root,
-          files: [file],
-          size: file.size
-        });
-      }
-    });
-    this.writeValue(this.filePackages);
   }
 
   private _preventFileOpening(ev: Event): void {

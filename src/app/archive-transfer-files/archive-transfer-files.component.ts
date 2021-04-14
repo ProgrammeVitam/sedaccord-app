@@ -46,7 +46,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
     });
     this.archiveTransfer.archiveDataPackages.forEach(archiveDataPackage => {
       this.archiveDataPackages.push(this._formBuilder.group({
-        data: [archiveDataPackage.archiveData],
+        archiveData: [archiveDataPackage.archiveData],
         classificationItem: [archiveDataPackage.classificationItem]
       }));
     });
@@ -79,7 +79,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
           id: archiveDataPackage.classificationItem.id,
           name: archiveDataPackage.classificationItem.name
         },
-        data: archiveDataPackage.data
+        archiveData: archiveDataPackage.archiveData
       };
     });
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
@@ -88,7 +88,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   addPackage(): void {
     this.archiveDataPackages.push(this._formBuilder.group({
-      data: [[]],
+      archiveData: [[]],
       classificationItem: ['']
     }));
   }

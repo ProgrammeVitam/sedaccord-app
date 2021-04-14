@@ -1,17 +1,17 @@
 <div (dragover)="onDragover($event)" (drop)="onDrop($event)" id="drop_zone">
   <p>
     <mat-icon inline>move_to_inbox</mat-icon>
-    Glisser déposer un répertoire d'archives bureautiques, ou
+    Glisser-déposer un répertoire d'archives bureautiques
     <input #inputFile (change)="handleFilesForInput(inputFile.files)" class="visually-hidden" id="input_file" multiple
            type="file"
            webkitdirectory> <!-- FIXME change not firing on chrome when empty? -->
-    <label for="input_file">Importer depuis le PC</label>
+<!--    , ou <label for="input_file">Importer depuis le PC</label>--> <!-- TODO uncomment when properly implemented -->
   </p>
   <mat-form-field class="full-width">
     <mat-chip-list>
       <mat-chip (removed)="remove(filePackage)"
                 *ngFor="let filePackage of filePackages">
-        {{filePackage.root}} ({{filePackage.size}}Ko)
+        {{filePackage.name}} ({{filePackage.size}}Ko)
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
     </mat-chip-list>

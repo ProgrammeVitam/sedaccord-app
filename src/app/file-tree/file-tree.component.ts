@@ -2,9 +2,8 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
-import {Directory, FileNode} from '../dtos/file';
+import {Directory, FileNode, SimpleFile} from '../dtos/file';
 import {FileMetadata} from '../dtos/archive-transfer';
-import {Utils} from '../shared/utils';
 
 interface FileFlatNode {
   expandable: boolean;
@@ -86,38 +85,90 @@ export class FileTreeComponent implements OnInit {
     return this._descendantsOneOfSelected(node);
   }
 
-  private _fileMetadataToNode(fileMetadata: FileMetadata, nodeName: string): FileNode {
-    return {
-      isDirectory: fileMetadata.isDirectory,
-      name: nodeName,
-      creationDate: fileMetadata.creationDate,
-      lastModificationDate: fileMetadata.lastModificationDate,
-      size: fileMetadata.size,
-      format: fileMetadata.format // TODO only if not directory?
-    };
+  private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
+    const groupByDepth = this._groupByDepth(data);
+    const groupByDepthAndNode = this._groupByDepthAndNode(groupByDepth);
+
+    const keys = Array.from(groupByDepthAndNode.keys());
+    const minLevel = Math.min(...keys);
+    const maxLevel = Math.max(...keys);
+    if (keys.length > maxLevel - minLevel + 1) {
+      throw new Error('Invalid tree data: missing value in level range.');
+    }
+
+    // Build tree one level at a time from bottom to top
+    const treeBottomLayer = groupByDepthAndNode.get(maxLevel) as Map<string, FileMetadata[]>;
+    let tree = this._mapMap(treeBottomLayer, node => this._fileMetadataToNode(node, []));
+    let currentLevel = maxLevel - 1;
+    while (currentLevel >= minLevel) {
+      const treeCurrentLayer = groupByDepthAndNode.get(currentLevel) as Map<string, FileMetadata[]>;
+      tree = this._mapMap(treeCurrentLayer, node => {
+          return this._fileMetadataToNode(node, tree.get(node.path) as FileNode[]);
+        }
+      );
+      currentLevel -= 1;
+    }
+
+    return tree.get('/')!;
   }
 
-  private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
-    let tree: FileNode[] = [];
-    const root = tree;
-    for (const fileMetadata of data) {
-      const pathNodes = fileMetadata.path.split('/');
-      for (let i = 0; i < pathNodes.length - 1; i++) {
-        const pathNode = pathNodes[i];
-        let fileNode: Directory | null = Utils.findUniqueInArray(tree, n => pathNode === n.name);
-        if (!fileNode) {
-          fileNode = this._fileMetadataToNode(fileMetadata, pathNode);
-          tree.push(fileNode);
-        }
-        fileNode.children = fileNode.children || [];
-        tree = fileNode.children;
-      }
-      const pathLeaf = pathNodes[pathNodes.length - 1];
-      const fileLeaf: FileNode = this._fileMetadataToNode(fileMetadata, pathLeaf);
-      tree.push(fileLeaf);
-      tree = root;
+  private _groupByDepth(arr: FileMetadata[]): Map<number, FileMetadata[]> {
+    const res = new Map();
+    arr.forEach(el => {
+      const key = el.path.split('/').length;
+      res.set(key, res.get(key) || []);
+      res.get(key).push(el);
+    });
+    return res;
+  }
+
+  private _groupByDepthAndNode(group: Map<number, FileMetadata[]>): Map<number, Map<string, FileMetadata[]>> {
+    return new Map(Array.from(group.entries())
+      .map(pair => {
+        const res = this._groupByNode(pair[1]);
+        return [pair[0], res];
+      }));
+  }
+
+  private _groupByNode(arr: FileMetadata[]): Map<string, FileMetadata[]> {
+    const res = new Map();
+    arr.forEach(el => {
+      const lastIndex = this._lastIndexOf(el.path, '/');
+      const key = lastIndex > 0 ? el.path.slice(0, lastIndex) : '/';
+      res.set(key, res.get(key) || []);
+      res.get(key).push(el);
+    });
+    return res;
+  }
+
+  private _lastIndexOf(str: string, searchTerm: string): number {
+    let tmpIndex = str.indexOf(searchTerm);
+    let lastIndex = tmpIndex;
+    while (tmpIndex > -1) {
+      lastIndex = tmpIndex;
+      tmpIndex = str.indexOf(searchTerm, lastIndex + 1);
     }
-    return root;
+    return lastIndex;
+  }
+
+  private _mapMap<T, U, V>(m: Map<T, U[]>, f: (v: U) => V): Map<T, V[]> {
+    return new Map(Array.from(m.entries(), ([k, v]) => [k, v.map(f)]));
+  }
+
+  private _fileMetadataToNode(fileMetadata: FileMetadata, children: FileNode[]): FileNode {
+    const fileNode = {
+      isDirectory: fileMetadata.isDirectory,
+      name: fileMetadata.name,
+      creationDate: fileMetadata.creationDate,
+      lastModificationDate: fileMetadata.lastModificationDate,
+      size: fileMetadata.size
+    };
+    if (fileNode.isDirectory) {
+      (fileNode as Directory).children = children || [];
+    } else {
+      (fileNode as SimpleFile).format = fileMetadata.format || '';
+    }
+    return fileNode;
   }
 
   private _hasChild(directoryNode: Directory): boolean {

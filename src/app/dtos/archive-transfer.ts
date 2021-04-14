@@ -10,6 +10,7 @@ export interface FileComment { // FIXME
 
 export interface FileMetadata extends FileInterface {
   path: string;
+  format?: string;
 }
 
 export interface ArchiveDataPackage {

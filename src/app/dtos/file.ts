@@ -4,11 +4,14 @@ export interface FileInterface {
   creationDate: Date;
   lastModificationDate: Date;
   size: number;
-  format?: string;
+}
+
+export interface SimpleFile extends FileInterface {
+  format: string;
 }
 
 export interface Directory extends FileInterface {
   children?: FileNode[];
 }
 
-export type FileNode = Directory | FileInterface;
+export type FileNode = Directory | SimpleFile;

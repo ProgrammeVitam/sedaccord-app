@@ -7,6 +7,7 @@ import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {Agency, ClassificationItemNode} from '../dtos/referential';
+import {FilePackage} from '../file-drop-input-control/file-drop-input-control.component';
 
 @Component({
   selector: 'app-archive-transfer-add',
@@ -99,7 +100,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
 
   addPackage(): void {
     this.archiveDataPackages.push(this._formBuilder.group({
-      data: [[]],
+      archiveData: [[]],
       classificationItem: ['']
     }));
   }
@@ -148,16 +149,35 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
           },
           archiveData: []
         };
-        archiveDataPackageValue.data.forEach((file: File) => { // TODO build tree
-          archiveDataPackage.archiveData.push({
-            isDirectory: true,
-            name: file.name,
-            path: '', // TODO
-            creationDate: new Date(file.lastModified), // FIXME
-            lastModificationDate: new Date(file.lastModified),
-            size: file.size
+        const fileMetadata = archiveDataPackageValue.archiveData
+          .map((filePackage: FilePackage) => filePackage.files)
+          .flat()
+          .map((file: File) => {
+            return {
+              isDirectory: false,
+              name: file.name,
+              path: file.fullPath,
+              creationDate: new Date(file.lastModified), // TODO update it backend side
+              lastModificationDate: new Date(file.lastModified),
+              size: file.size,
+              format: '' // TODO update it backend side
+            };
           });
-        });
+        archiveDataPackage.archiveData = archiveDataPackage.archiveData.concat(fileMetadata);
+        const directoryMetadata = archiveDataPackageValue.archiveData
+          .map((filePackage: FilePackage) => filePackage.directories)
+          .flat()
+          .map((directory: string) => {
+            return {
+              isDirectory: true,
+              name: directory.split('/').pop()!,
+              path: directory,
+              creationDate: new Date(), // TODO update it backend side
+              lastModificationDate: new Date(), // TODO update it backend side
+              size: 0 // TODO update it backend side
+            };
+          });
+        archiveDataPackage.archiveData = archiveDataPackage.archiveData.concat(directoryMetadata);
         return archiveDataPackage;
       }));
     this.addEvent.emit(archiveTransfer);

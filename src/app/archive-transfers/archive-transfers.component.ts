@@ -6,6 +6,7 @@ import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 import {MatListOption, MatSelectionList} from '@angular/material/list';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-archive-transfers',
@@ -20,6 +21,7 @@ export class ArchiveTransfersComponent {
   @ViewChild('archiveTransferList') archiveTransferList!: MatSelectionList;
 
   constructor(
+    private _router: Router,
     private _addDialogService: ComplexDialogService<ArchiveTransferAddComponent>,
     private _archiveTransferService: ArchiveTransferService,
     private _dialog: MatDialog
@@ -35,7 +37,8 @@ export class ArchiveTransfersComponent {
     addDialogRef.componentInstance!.addEvent
       .subscribe((archiveTransfer: ArchiveTransfer) => {
         this.archiveTransfers.push(archiveTransfer);
-        this._archiveTransferService.addArchiveTransfer(archiveTransfer).subscribe();
+        this._archiveTransferService.addArchiveTransfer(archiveTransfer)
+          .subscribe(newArchiveTransfer => this._router.navigate([`/detail/${newArchiveTransfer.id}`]));
       });
   }
 
