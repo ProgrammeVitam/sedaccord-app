@@ -40,7 +40,10 @@ export const MY_FORMATS: MatDateFormats = {
     BrowserModule,
     FormsModule,
     HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, {dataEncapsulation: false}
+      InMemoryDataService, {
+        dataEncapsulation: false,
+        passThruUnknownUrl: true
+      }
     ),
     HttpClientModule,
     MaterialModule,

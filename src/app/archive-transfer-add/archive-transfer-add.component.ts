@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.service';
-import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveDataPackage, ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Observable} from 'rxjs';
@@ -100,7 +100,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
 
   addPackage(): void {
     this.archiveDataPackages.push(this._formBuilder.group({
-      archiveData: [[]],
+      archiveDataValues: [[]],
       classificationItem: ['']
     }));
   }
@@ -138,48 +138,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       name: this.archiveTransferForm.at(2).value.submissionAgency.name,
       description: this.archiveTransferForm.at(2).value.submissionAgencyDescription
     };
-    archiveTransfer.archiveDataPackages.push(...this.archiveDataPackages.value
-      .map((archiveDataPackageValue: any) => {
-        const archiveDataPackage: ArchiveDataPackage = {
-          id: 1, // TODO id
-          name: archiveDataPackageValue.name,
-          classificationItem: {
-            id: archiveDataPackageValue.classificationItem.id,
-            name: archiveDataPackageValue.classificationItem.name
-          },
-          archiveData: []
-        };
-        const fileMetadata = archiveDataPackageValue.archiveData
-          .map((filePackage: FilePackage) => filePackage.files)
-          .flat()
-          .map((file: File) => {
-            return {
-              isDirectory: false,
-              name: file.name,
-              path: file.fullPath,
-              creationDate: new Date(file.lastModified), // TODO update it backend side
-              lastModificationDate: new Date(file.lastModified),
-              size: file.size,
-              format: '' // TODO update it backend side
-            };
-          });
-        archiveDataPackage.archiveData = archiveDataPackage.archiveData.concat(fileMetadata);
-        const directoryMetadata = archiveDataPackageValue.archiveData
-          .map((filePackage: FilePackage) => filePackage.directories)
-          .flat()
-          .map((directory: string) => {
-            return {
-              isDirectory: true,
-              name: directory.split('/').pop()!,
-              path: directory,
-              creationDate: new Date(), // TODO update it backend side
-              lastModificationDate: new Date(), // TODO update it backend side
-              size: 0 // TODO update it backend side
-            };
-          });
-        archiveDataPackage.archiveData = archiveDataPackage.archiveData.concat(directoryMetadata);
-        return archiveDataPackage;
-      }));
+    archiveTransfer.archiveDataPackages.push(...this._buildArchiveDataPackages(this.archiveDataPackages.value));
     this.addEvent.emit(archiveTransfer);
     this._spin();
   }
@@ -224,6 +183,49 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   private _filterAgency(value: string): Agency[] {
     const filterValue = value.toLowerCase();
     return this.agencies.filter(agency => agency.name.toLowerCase().includes(filterValue));
+  }
+
+  private _buildArchiveDataPackages(archiveDataPackageValues: any[]): ArchiveDataPackage[] {
+    return archiveDataPackageValues
+      .map((archiveDataPackageValue: any, index: number) => {
+        return {
+          id: index,
+          name: archiveDataPackageValue.name,
+          classificationItem: {
+            id: archiveDataPackageValue.classificationItem.id,
+            name: archiveDataPackageValue.classificationItem.name
+          },
+          archiveData: this._buildArchiveData(archiveDataPackageValue.archiveDataValues)
+        };
+      });
+  }
+
+  private _buildArchiveData(archiveDataValues: any): FileMetadata[][] {
+    return archiveDataValues
+      .map((filePackage: FilePackage) => {
+        const directoryMetadata = filePackage.directories.map((directory: string) => {
+          return {
+            isDirectory: true,
+            name: directory.split('/').pop()!,
+            path: directory,
+            creationDate: new Date(), // TODO update it backend side
+            lastModificationDate: new Date(), // TODO update it backend side
+            size: 0 // TODO update it backend side
+          };
+        });
+        const fileMetadata = filePackage.files.map((file: File) => {
+          return {
+            isDirectory: false,
+            name: file.name,
+            path: file.fullPath,
+            creationDate: new Date(file.lastModified), // TODO update it backend side
+            lastModificationDate: new Date(file.lastModified),
+            size: file.size,
+            format: '' // TODO update it backend side
+          };
+        });
+        return [...directoryMetadata, ...fileMetadata];
+      });
   }
 
   private _spin(): void {

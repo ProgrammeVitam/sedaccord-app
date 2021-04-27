@@ -102,10 +102,7 @@ export class FileTreeComponent implements OnInit {
     let currentLevel = maxLevel - 1;
     while (currentLevel >= minLevel) {
       const treeCurrentLayer = groupByDepthAndNode.get(currentLevel) as Map<string, FileMetadata[]>;
-      tree = this._mapMap(treeCurrentLayer, node => {
-          return this._fileMetadataToNode(node, tree.get(node.path) as FileNode[]);
-        }
-      );
+      tree = this._mapMap(treeCurrentLayer, node => this._fileMetadataToNode(node, tree.get(node.path) as FileNode[]));
       currentLevel -= 1;
     }
 
@@ -188,9 +185,7 @@ export class FileTreeComponent implements OnInit {
   private _checkRootNodeSelection(node: FileFlatNode): void {
     const nodeSelected = this.selection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.length > 0 && descendants.every(child => {
-      return this.selection.isSelected(child);
-    });
+    const descAllSelected = descendants.length > 0 && descendants.every(child => this.selection.isSelected(child));
     if (nodeSelected && !descAllSelected) {
       this.selection.deselect(node);
     } else if (!nodeSelected && descAllSelected) {
@@ -226,8 +221,6 @@ export class FileTreeComponent implements OnInit {
       return true;
     }
     const descendants = this.treeControl.getDescendants(node);
-    return descendants.length > 0 && descendants.some(child => {
-      return this.selection.isSelected(child);
-    });
+    return descendants.length > 0 && descendants.some(child => this.selection.isSelected(child));
   }
 }

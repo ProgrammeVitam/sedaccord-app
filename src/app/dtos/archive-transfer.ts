@@ -10,14 +10,16 @@ export interface FileComment { // FIXME
 
 export interface FileMetadata extends FileInterface {
   path: string;
+  description?: string;
   format?: string;
 }
 
 export interface ArchiveDataPackage {
   id: number;
   name: string;
+  description?: string;
   classificationItem: Reference;
-  archiveData: FileMetadata[];
+  archiveData: FileMetadata[][];
 }
 
 interface ArchiveTransferInterface {
@@ -64,7 +66,7 @@ export class ArchiveTransfer implements ArchiveTransferInterface {
     this.submissionAgency = submissionAgency ?? undefined;
   }
 
-  addPackage(id: number, name: string, classificationItem: Reference, archiveData: FileMetadata[]): void {
+  addPackage(id: number, name: string, classificationItem: Reference, archiveData: FileMetadata[][]): void {
     const newArchiveDataPackage = {
       id,
       name,

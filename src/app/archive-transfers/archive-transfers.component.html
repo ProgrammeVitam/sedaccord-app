@@ -28,6 +28,14 @@
           <button (click)="submit(archiveTransfer)" [disabled]="archiveTransfer.status !== 'En cours'" color="primary"
                   mat-flat-button>Verser aux archives
           </button>
+          <div class="progress-button-container">
+            <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
+              <mat-spinner diameter="24"></mat-spinner>
+            </div>
+            <button (click)="download(archiveTransfer)" [disabled]="isLoading(archiveTransfer)" color="primary" mat-mini-fab>
+              <mat-icon>download</mat-icon>
+            </button>
+          </div>
           <button (click)="delete(archiveTransfer)" color="primary" mat-mini-fab>
             <mat-icon>delete</mat-icon>
           </button>

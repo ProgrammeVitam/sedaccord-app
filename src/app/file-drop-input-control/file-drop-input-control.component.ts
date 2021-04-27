@@ -108,12 +108,10 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
     const promises: Promise<any>[] = [];
     entries.forEach(entry => {
       if (entry.isFile) {
-        const promise = this._parseFileEntry(entry).then(file => {
-          files.push(file);
-        });
+        const promise = this._parseFileEntry(entry).then(file => files.push(file));
         promises.push(promise);
       } else if (entry.isDirectory) {
-        const promise = this._parseDirectoryEntry(entry, files, directories);
+        const promise = this._parseDirectoryEntry(entry, files, directories).then(_ => {});
         name = name || entry.name;
         directories.push(entry.fullPath);
         promises.push(promise);
@@ -126,7 +124,7 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
         directories,
         size: files
           .map(file => file.size)
-          .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+          .reduce((acc, val) => acc + val, 0)
       };
     });
   }

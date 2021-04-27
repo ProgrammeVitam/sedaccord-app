@@ -47,32 +47,32 @@ export class InMemoryDataService implements InMemoryDbService {
         ]
       }
     ];
-    const data1: FileMetadata[] = [
-      {
+    const data1: FileMetadata[][] = [
+      [{
         isDirectory: true,
         name: 'Agents partis en janvier 2017',
         creationDate: new Date(2017, 0, 1),
         lastModificationDate: new Date(2020, 0, 31),
         size: 948.55,
         path: '/Agents partis en janvier 2017'
-      },
-      {
+      }],
+      [{
         isDirectory: true,
         name: 'Agents partis en février 2017',
         creationDate: new Date(2020, 1, 1),
         lastModificationDate: new Date(2020, 1, 28),
         size: 948.55,
         path: '/Agents partis en février 2017'
-      },
-      {
+      }],
+      [{
         isDirectory: true,
         name: 'Agents partis en mars 2017',
         creationDate: new Date(2017, 2, 1),
         lastModificationDate: new Date(2017, 2, 31),
         size: 948.55,
         path: '/Agents partis en mars 2017'
-      },
-      {
+      }],
+      [{
         isDirectory: true,
         name: 'Agents partis en avril 2017',
         creationDate: new Date(2017, 3, 1),
@@ -172,7 +172,7 @@ export class InMemoryDataService implements InMemoryDbService {
         size: 948.55,
         format: 'rtf',
         path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf'
-      }
+      }]
     ];
     const transfer1 = new ArchiveTransfer(
       1111,

@@ -7,6 +7,9 @@ import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 import {MatListOption, MatSelectionList} from '@angular/material/list';
 import {Router} from '@angular/router';
+import {SipService} from '../services/sip.service';
+import { saveAs } from 'file-saver';
+import {HttpResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-archive-transfers',
@@ -16,6 +19,8 @@ import {Router} from '@angular/router';
 export class ArchiveTransfersComponent {
   name = 'Caroline';
 
+  loadingArchiveTransferId = 0;
+
   archiveTransfers!: ArchiveTransfer[];
 
   @ViewChild('archiveTransferList') archiveTransferList!: MatSelectionList;
@@ -24,6 +29,7 @@ export class ArchiveTransfersComponent {
     private _router: Router,
     private _addDialogService: ComplexDialogService<ArchiveTransferAddComponent>,
     private _archiveTransferService: ArchiveTransferService,
+    private _sipService: SipService,
     private _dialog: MatDialog
   ) {
     this._getArchiveTransfers();
@@ -80,8 +86,28 @@ export class ArchiveTransfersComponent {
     });
   }
 
+  download(archiveTransfer: ArchiveTransfer): void {
+    this._generateSip(archiveTransfer);
+  }
+
+  isLoading(archiveTransfer: ArchiveTransfer): boolean {
+    return archiveTransfer.id === this.loadingArchiveTransferId;
+  }
+
   private _getArchiveTransfers(): void {
     this._archiveTransferService.getArchiveTransfers()
       .subscribe(archiveTransfers => this.archiveTransfers = archiveTransfers);
+  }
+
+  private _generateSip(archiveTransfer: ArchiveTransfer): void {
+    this.loadingArchiveTransferId = archiveTransfer.id;
+    this._sipService.generateSip(archiveTransfer).subscribe((response: HttpResponse<Blob>) => {
+      saveAs(response.body || '', `projet-de-versement-${archiveTransfer.id}_${this._getFilename(response)}`);
+      this.loadingArchiveTransferId = 0;
+    });
+  }
+
+  private _getFilename(response: HttpResponse<Blob>): any {
+    return response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1];
   }
 }
