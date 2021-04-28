@@ -66,20 +66,20 @@ export class ArchiveTransferContextComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.archiveTransfer.name = this.contextForm1.value.name;
-    this.archiveTransfer.description = this.contextForm1.value.description;
-    this.archiveTransfer.startDate = this.contextForm1.value.startDate;
-    this.archiveTransfer.endDate = this.contextForm1.value.endDate;
-    this.archiveTransfer.originatingAgency = {
-      id: this.contextForm2.value.originatingAgency.id,
-      name: this.contextForm2.value.originatingAgency.name,
-      description: this.contextForm2.value.originatingAgencyDescription
-    };
-    this.archiveTransfer.submissionAgency = {
-      id: this.contextForm2.value.submissionAgency.id,
-      name: this.contextForm2.value.submissionAgency.name,
-      description: this.contextForm2.value.submissionAgencyDescription
-    };
+    this.archiveTransfer.withName(this.contextForm1.value.name)
+      .withDescription(this.contextForm1.value.description)
+      .withStartDate(this.contextForm1.value.startDate)
+      .withEndDate(this.contextForm1.value.endDate)
+      .withOriginatingAgency({
+        id: this.contextForm2.value.originatingAgency.id,
+        name: this.contextForm2.value.originatingAgency.name,
+        description: this.contextForm2.value.originatingAgencyDescription
+      })
+      .withSubmissionAgency({
+        id: this.contextForm2.value.submissionAgency.id,
+        name: this.contextForm2.value.submissionAgency.name,
+        description: this.contextForm2.value.submissionAgencyDescription
+      });
     this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
     this.saveButtonDisabled = true;
   }

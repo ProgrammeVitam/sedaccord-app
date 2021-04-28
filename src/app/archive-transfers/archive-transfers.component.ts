@@ -19,7 +19,7 @@ import {HttpResponse} from '@angular/common/http';
 export class ArchiveTransfersComponent {
   name = 'Caroline';
 
-  loadingArchiveTransferId = 0;
+  loadingArchiveTransferId: number | null;
 
   archiveTransfers!: ArchiveTransfer[];
 
@@ -33,6 +33,7 @@ export class ArchiveTransfersComponent {
     private _dialog: MatDialog
   ) {
     this._getArchiveTransfers();
+    this.loadingArchiveTransferId = null;
   }
 
   openAddDialog(): void {
@@ -80,7 +81,7 @@ export class ArchiveTransfersComponent {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        archiveTransfer.submit();
+        // TODO
         this._archiveTransferService.updateArchiveTransfer(archiveTransfer).subscribe();
       }
     });
@@ -100,7 +101,7 @@ export class ArchiveTransfersComponent {
   }
 
   private _generateSip(archiveTransfer: ArchiveTransfer): void {
-    this.loadingArchiveTransferId = archiveTransfer.id;
+    this.loadingArchiveTransferId = archiveTransfer.id || null;
     this._sipService.generateSip(archiveTransfer).subscribe((response: HttpResponse<Blob>) => {
       saveAs(response.body || '', `projet-de-versement-${archiveTransfer.id}_${this._getFilename(response)}`);
       this.loadingArchiveTransferId = 0;

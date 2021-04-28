@@ -124,21 +124,20 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    const archiveTransfer = new ArchiveTransfer(0, this.archiveTransferForm.at(1).value.name); // TODO id
-    archiveTransfer.description = this.archiveTransferForm.at(1).value.description;
-    archiveTransfer.startDate = this.archiveTransferForm.at(1).value.startDate;
-    archiveTransfer.endDate = this.archiveTransferForm.at(1).value.endDate;
-    archiveTransfer.originatingAgency = {
-      id: this.archiveTransferForm.at(2).value.originatingAgency.id,
-      name: this.archiveTransferForm.at(2).value.originatingAgency.name,
-      description: this.archiveTransferForm.at(2).value.originatingAgencyDescription
-    };
-    archiveTransfer.submissionAgency = {
-      id: this.archiveTransferForm.at(2).value.submissionAgency.id,
-      name: this.archiveTransferForm.at(2).value.submissionAgency.name,
-      description: this.archiveTransferForm.at(2).value.submissionAgencyDescription
-    };
-    archiveTransfer.archiveDataPackages.push(...this._buildArchiveDataPackages(this.archiveDataPackages.value));
+    const archiveTransfer = new ArchiveTransfer()
+      .withName(this.archiveTransferForm.at(1).value.name)
+      .withDescription(this.archiveTransferForm.at(1).value.description)
+      .withStartDate(this.archiveTransferForm.at(1).value.startDate)
+      .withEndDate(this.archiveTransferForm.at(1).value.endDate)
+      .withOriginatingAgency({
+        id: this.archiveTransferForm.at(2).value.originatingAgency.id,
+        name: this.archiveTransferForm.at(2).value.originatingAgency.name,
+        description: this.archiveTransferForm.at(2).value.originatingAgencyDescription
+      }).withSubmissionAgency({
+        id: this.archiveTransferForm.at(2).value.submissionAgency.id,
+        name: this.archiveTransferForm.at(2).value.submissionAgency.name,
+        description: this.archiveTransferForm.at(2).value.submissionAgencyDescription
+      }).withArchiveDataPackages(this._buildArchiveDataPackages(this.archiveDataPackages.value));
     this.addEvent.emit(archiveTransfer);
     this._spin();
   }

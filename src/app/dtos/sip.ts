@@ -22,6 +22,14 @@ interface SipDataInterface {
 }
 
 export class SipData implements SipDataInterface {
+  public comment: string;
+  public messageIdentifier: string;
+  public archivalAgreement: string;
+  public archivalAgency: string;
+  public transferringAgency: string;
+  public originatingAgency: string;
+  public submissionAgency: string;
+  public archiveUnitDataList: ArchiveUnitData[];
 
   constructor() {
     this.comment = '';
@@ -33,14 +41,6 @@ export class SipData implements SipDataInterface {
     this.submissionAgency = '';
     this.archiveUnitDataList = [];
   }
-  comment: string;
-  messageIdentifier: string;
-  archivalAgreement: string;
-  archivalAgency: string;
-  transferringAgency: string;
-  originatingAgency: string;
-  submissionAgency: string;
-  archiveUnitDataList: ArchiveUnitData[];
 
   static fromArchiveTransfer(archiveTransfer: ArchiveTransfer): SipData {
     return new SipData()

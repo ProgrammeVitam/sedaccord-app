@@ -174,28 +174,39 @@ export class InMemoryDataService implements InMemoryDbService {
         path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf'
       }]
     ];
-    const transfer1 = new ArchiveTransfer(
-      1111,
-      'Dossiers de carrière - Agents partis en 2017 et 2018',
-      'Dossiers de carrière d’agents du ministère des affaires sociales ayant quitté leurs fonctions en 2017 et 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
-      new Date(1978, 0, 11),
-      new Date(2018, 10, 27),
-      agencies[4],
-      agencies[4]
-    );
-    transfer1.lastModificationDate = new Date(2021, 0, 30, 15, 0, 0);
-    transfer1.addPackage(1, '', classification[0].children[0], data1);
+    const transfer1 = {
+      id: 1,
+      creationDate: new Date(2021, 0, 1),
+      lastModificationDate: new Date(2021, 1, 11),
+      status: 'En cours',
+      name: 'Dossiers de carrière - Agents partis en 2017 et 2018',
+      description: 'Dossiers de carrière d’agents du ministère des affaires sociales ayant quitté leurs fonctions en 2017 et 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
+      startDate: new Date(1978, 0, 11),
+      endDate: new Date(2018, 10, 27),
+      originatingAgency: agencies[4],
+      submissionAgency: agencies[4],
+      archiveDataPackages: [{
+        id: 1,
+        name: '',
+        classificationItem: classification[0].children[0],
+        archiveData: data1
+      }]
+    };
+    const transfer2 = {
+      id: 2,
+      creationDate: new Date(2021, 0, 1),
+      lastModificationDate: new Date(2021, 0, 1),
+      status: 'En cours',
+      name: 'Dossiers médicaux – Agents partis en 2018',
+      description: 'Dossiers médicaux des agents du ministère des affaires sociales ayant quitté leurs fonctions en 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
+      startDate: new Date(1965, 0, 4),
+      endDate: new Date(2018, 7, 18),
+      originatingAgency: agencies[4],
+      submissionAgency: agencies[4]
+    };
     const archiveTransfers = [
-      new ArchiveTransfer(
-        2222,
-        'Dossiers médicaux – Agents partis en 2018',
-        'Dossiers médicaux des agents du ministère des affaires sociales ayant quitté leurs fonctions en 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
-        new Date(1965, 0, 4),
-        new Date(2018, 7, 18),
-        agencies[4],
-        agencies[4]
-      ),
-      transfer1
+      transfer1,
+      transfer2
     ];
     const comments = [
       {
@@ -219,12 +230,12 @@ export class InMemoryDataService implements InMemoryDbService {
     };
   }
 
-  // Overrides the genId method to ensure that a hero always has an id.
-  // If the heroes array is empty,
-  // the method below returns the initial number (11).
-  // if the heroes array is not empty, the method below returns the highest
-  // hero id + 1.
+  // Overrides the genId method to ensure that an archive transfer always has an id.
+  // If the archive transfers array is empty,
+  // the method below returns the initial number (1).
+  // if the archive transfers array is not empty, the method below returns the highest
+  // archive transfer id + 1.
   genId(archiveTransfers: ArchiveTransfer[]): number {
-    return archiveTransfers.length > 0 ? Math.max(...archiveTransfers.map(hero => hero.id)) + 1 : 11;
+    return archiveTransfers.length > 0 ? Math.max(...archiveTransfers.map(archiveTransfer => archiveTransfer.id!)) + 1 : 1;
   }
 }

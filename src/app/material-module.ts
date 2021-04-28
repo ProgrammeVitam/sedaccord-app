@@ -42,8 +42,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 import {OverlayModule} from '@angular/cdk/overlay';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatMomentDateModule} from "@angular/material-moment-adapter";
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @NgModule({
   exports: [
@@ -92,7 +91,7 @@ import {MatMomentDateModule} from "@angular/material-moment-adapter";
     // PortalModule,
     // ScrollingModule,
     MatFormFieldModule,
-    MatMomentDateModule,
+    MatNativeDateModule
   ]
 })
 export class MaterialModule {}

@@ -22,61 +22,127 @@ export interface ArchiveDataPackage {
   archiveData: FileMetadata[][];
 }
 
-interface ArchiveTransferInterface {
-  id: number;
-  creationDate: Date;
-  lastModificationDate: Date;
-  status: string;
+export interface ArchiveTransferInterface {
+  id: number | undefined;
+  creationDate: string;
+  lastModificationDate: string;
+  status: 'En cours' | 'En attente de correction';
+  name: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  originatingAgency?: Agency;
+  submissionAgency?: Agency;
+  archiveDataPackages: ArchiveDataPackage[];
+}
+
+const NULL_ID = 0;
+
+export class ArchiveTransfer {
+  private _id: number;
+  get id(): number {
+    return this._id;
+  }
+
+  private _creationDate: Date;
+  get creationDate(): Date {
+    return this._creationDate;
+  }
+
+  private _lastModificationDate: Date;
+  get lastModificationDate(): Date {
+    return this._lastModificationDate;
+  }
+
+  private _status: 'En cours' | 'En attente de correction';
+  get status(): 'En cours' | 'En attente de correction' {
+    return this._status;
+  }
+
   name: string;
   description?: string;
   startDate?: Date;
   endDate?: Date;
   originatingAgency?: Agency;
   submissionAgency?: Agency;
-  archiveDataPackages?: ArchiveDataPackage[];
-}
+  archiveDataPackages: ArchiveDataPackage[];
 
-export class ArchiveTransfer implements ArchiveTransferInterface {
-  public creationDate: Date;
-  public lastModificationDate: Date;
-  public status: string;
-  public originatingAgency?: Agency;
-  public submissionAgency?: Agency;
-  public archiveDataPackages: ArchiveDataPackage[] = [];
-
-  constructor(
-    public id: number,
-    public name: string,
-    public description?: string,
-    public startDate?: Date,
-    public endDate?: Date,
-    originatingAgency?: Agency,
-    submissionAgency?: Agency
-  ) {
-    this.id = id;
-    this.creationDate = new Date();
-    this.lastModificationDate = this.creationDate;
-    this.status = 'En cours';
+  constructor() {
+    this._id = NULL_ID;
+    this._creationDate = new Date();
+    this._lastModificationDate = this.creationDate;
+    this._status = 'En cours';
+    this.name = '';
     this.archiveDataPackages = [];
-    this.name = name;
-    this.description = description ?? '';
-    this.startDate = startDate ?? undefined;
-    this.endDate = endDate ?? undefined;
-    this.originatingAgency = originatingAgency ?? undefined;
-    this.submissionAgency = submissionAgency ?? undefined;
   }
 
-  addPackage(id: number, name: string, classificationItem: Reference, archiveData: FileMetadata[][]): void {
-    const newArchiveDataPackage = {
-      id,
-      name,
-      classificationItem: classificationItem ?? null,
-      archiveData
+  fromObject(archiveTransferObject: ArchiveTransferInterface): ArchiveTransfer {
+    this._id = archiveTransferObject.id || NULL_ID;
+    this._creationDate = new Date(archiveTransferObject.creationDate);
+    this._lastModificationDate = new Date(archiveTransferObject.lastModificationDate);
+    this._status = archiveTransferObject.status;
+    this.name = archiveTransferObject.name;
+    this.description = archiveTransferObject.description;
+    this.startDate = archiveTransferObject.startDate ? new Date(archiveTransferObject.startDate) : undefined;
+    this.endDate = archiveTransferObject.endDate ? new Date(archiveTransferObject.endDate) : undefined;
+    this.originatingAgency = archiveTransferObject.originatingAgency;
+    this.submissionAgency = archiveTransferObject.submissionAgency;
+    this.archiveDataPackages = archiveTransferObject.archiveDataPackages;
+    return this;
+  }
+
+   toInterface(): ArchiveTransferInterface {
+    return {
+      id: this._id > 0 ? this._id : undefined,
+      creationDate: this._creationDate.toDateString(),
+      lastModificationDate: this._lastModificationDate.toDateString(),
+      status: this.status,
+      name: this.name,
+      description: this.description,
+      startDate: this.startDate && this.startDate.toDateString(),
+      endDate: this.endDate && this.endDate.toDateString(),
+      originatingAgency: this.originatingAgency,
+      submissionAgency: this.submissionAgency,
+      archiveDataPackages: this.archiveDataPackages
     };
-    this.archiveDataPackages.push(newArchiveDataPackage);
   }
 
-  submit(): void {
-    this.status = 'En attente de correction';
+  withName(value: string): ArchiveTransfer {
+    this.name = value;
+    return this;
+  }
+
+  withDescription(value: string): ArchiveTransfer {
+    this.description = value;
+    return this;
+  }
+
+  withStartDate(value: Date): ArchiveTransfer {
+    this.startDate = value;
+    return this;
+  }
+
+  withEndDate(value: Date): ArchiveTransfer {
+    this.endDate = value;
+    return this;
+  }
+
+  withOriginatingAgency(value: Agency): ArchiveTransfer {
+    this.originatingAgency = value;
+    return this;
+  }
+
+  withSubmissionAgency(value: Agency): ArchiveTransfer {
+    this.submissionAgency = value;
+    return this;
+  }
+
+  withArchiveDataPackages(value: ArchiveDataPackage[]): ArchiveTransfer {
+    this.archiveDataPackages.push(...value);
+    return this;
+  }
+
+  update(): void {
+    this._lastModificationDate = new Date();
   }
 }

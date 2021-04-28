@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {ArchiveTransfer, FileComment} from '../dtos/archive-transfer';
+import {ArchiveTransfer, ArchiveTransferInterface, FileComment} from '../dtos/archive-transfer';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 
@@ -18,33 +18,9 @@ export class ArchiveTransferService {
   }
 
   getArchiveTransfers(): Observable<ArchiveTransfer[]> { // TODO return partial objects
-    return this.http.get<ArchiveTransfer[]>(this.archiveTransfersUrl)
+    return this.http.get<ArchiveTransferInterface[]>(this.archiveTransfersUrl)
       .pipe(
-        map(value => {
-          const archiveTransfers = [];
-          for (const element of value) {
-            // TODO builder
-            const archiveTransfer = new ArchiveTransfer(
-              element.id,
-              element.name,
-              element.description,
-              element.creationDate,
-              element.lastModificationDate,
-              element.submissionAgency,
-              element.originatingAgency
-            );
-            for (const archiveDataPackage of element.archiveDataPackages) {
-              archiveTransfer.addPackage(
-                archiveDataPackage.id,
-                archiveDataPackage.name,
-                archiveDataPackage.classificationItem,
-                archiveDataPackage.archiveData
-              );
-            }
-            archiveTransfers.push(archiveTransfer);
-          }
-          return archiveTransfers;
-        }),
+        map(value => value.map(element => new ArchiveTransfer().fromObject(element))),
         tap(_ => this.log('fetched archive transfers')),
         catchError(this.handleError<ArchiveTransfer[]>('getArchiveTransfers', []))
       );
@@ -52,36 +28,16 @@ export class ArchiveTransferService {
 
   getArchiveTransfer(id: number): Observable<ArchiveTransfer> {
     const url = `${this.archiveTransfersUrl}/${id}`;
-    return this.http.get<ArchiveTransfer>(url)
+    return this.http.get<ArchiveTransferInterface>(url)
       .pipe(
-        map(value => {
-          // TODO builder + transformer/mapper for each service
-          const archiveTransfer = new ArchiveTransfer(
-            value.id,
-            value.name,
-            value.description,
-            value.creationDate,
-            value.lastModificationDate,
-            value.submissionAgency,
-            value.originatingAgency
-          );
-          for (const archiveDataPackage of value.archiveDataPackages) {
-            archiveTransfer.addPackage(
-              archiveDataPackage.id,
-              archiveDataPackage.name,
-              archiveDataPackage.classificationItem,
-              archiveDataPackage.archiveData
-            );
-          }
-          return archiveTransfer;
-        }),
+        map(value => new ArchiveTransfer().fromObject(value)),
         tap(_ => this.log(`fetched archive transfer id=${id}`)),
         catchError(this.handleError<ArchiveTransfer>(`getArchiveTransfer id=${id}`))
       );
   }
 
-  updateArchiveTransfer(archiveTransfer: ArchiveTransfer): Observable<any> {
-    return this.http.put(this.archiveTransfersUrl, archiveTransfer, this.httpOptions)
+  updateArchiveTransfer(archiveTransfer: ArchiveTransfer): Observable<ArchiveTransfer> {
+    return this.http.put<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
       .pipe(
         tap(_ => this.log(`updated archive transfer id=${archiveTransfer.id}`)),
         catchError(this.handleError<any>('updateArchiveTransfer'))
@@ -89,7 +45,7 @@ export class ArchiveTransferService {
   }
 
   addArchiveTransfer(archiveTransfer: ArchiveTransfer): Observable<ArchiveTransfer> {
-    return this.http.post<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer, this.httpOptions)
+    return this.http.post<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
       .pipe(
         tap((newArchiveTransfer: ArchiveTransfer) => this.log(`added archive transfer w/ id=${newArchiveTransfer.id}`)),
         catchError(this.handleError<ArchiveTransfer>('addArchiveTransfer'))
