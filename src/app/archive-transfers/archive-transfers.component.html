@@ -25,7 +25,7 @@
         <div class="table-cell"><span class="badge">{{archiveTransfer.status}}</span></div>
         <div class="table-cell table-cell-4 table-cell-right">
           <button color="primary" mat-flat-button routerLink="/detail/{{archiveTransfer.id}}">Voir le versement</button>
-          <button (click)="submit(archiveTransfer)" [disabled]="archiveTransfer.status !== 'En cours'" color="primary"
+          <button (click)="submit(archiveTransfer)" disabled color="primary"
                   mat-flat-button>Verser aux archives
           </button>
           <div class="progress-button-container">
