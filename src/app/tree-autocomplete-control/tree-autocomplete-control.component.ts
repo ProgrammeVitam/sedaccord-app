@@ -3,7 +3,7 @@ import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/for
 import {NestedTreeControl} from '@angular/cdk/tree';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
-import {filter, map, startWith, tap} from 'rxjs/operators';
+import {map, startWith, tap} from 'rxjs/operators';
 
 interface SimpleTreeNode {
   name: string;
@@ -37,14 +37,13 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
   @Input()
   set value(value: T | null) {
     this._value = value;
-    this.onChange(value);
   }
 
   onChange = (_: any) => {};
   onTouched = () => {};
 
   constructor() {
-    this.writeValue(null);
+    this.value = null;
   }
 
   ngOnInit(): void {
@@ -52,17 +51,34 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     this.autoInput.valueChanges
       .pipe(
         startWith(''),
-        filter(value => !!value),
-        map(value => typeof value === 'string' ? value : value.name),
-        tap(name => this.dataSource.data = this._filter(name, this.treeData))
+        map(value => value === null ? '' : typeof value === 'string' ? value : value.name),
+        tap(searchTerm => {
+          if (searchTerm) {
+            this.dataSource.data = this._filter(searchTerm, this.treeData);
+          } else {
+            this.dataSource.data = this.treeData;
+          }
+        }),
       ).subscribe();
     this.writeValue(this.value);
   }
 
   writeValue(node: T | null): void {
-    this.value = node;
-    this.autoInput.patchValue(this.value);
-    this.value ? this.selection.select(this.value.name) : this.selection.deselect();
+    if (node !== null) {
+      this.value = node;
+      this.autoInput.patchValue(this.value);
+      this.selection.select(this.value.name);
+      this.onChange(this.value);
+    } else {
+      this.clearValue();
+    }
+  }
+
+  clearValue(): void {
+    this.value = null;
+    this.autoInput.patchValue(null);
+    this.selection.deselect(...this.selection.selected);
+    this.onChange(this.value);
   }
 
   registerOnChange(fn: any): void {
@@ -81,32 +97,37 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
 
   selectOption(node: T): void {
     this.writeValue(node);
-    // this.autoInput.openPanel(); // TODO keep panel opened
+    this.dataSource.data = this.treeData;
+  }
+
+  reselectOption(): void {
+    this.autoInput.patchValue(this.value);
   }
 
   deselectOption(): void {
-    this.writeValue(null);
+    this.clearValue();
+    this.dataSource.data = this.treeData;
   }
 
   displayFn(node: T): string {
     return node && node.name ? node.name : '';
   }
 
-  private _filter(searchTerm: string, nodes: T[]): any { // FIXME any
+  private _filter(searchTerm: string, nodes: T[]): T[] {
     return nodes.map(node => {
       if (this._found(searchTerm, node.name)) {
-        return {name: node.name, children: node.children};
+        return {name: node.name, children: node.children} as T;
       } else if (this._hasChild(node)) {
         const filteredChildren = this._filter(searchTerm, node.children!);
         if (filteredChildren.length > 0) {
           return {
             name: node.name,
             children: filteredChildren
-          };
+          } as T;
         }
       }
-      return null;
-    }).filter(value => !!value);
+      return {name: ''} as T;
+    }).filter(value => !!value.name);
   }
 
   private _hasChild(node: T): boolean {

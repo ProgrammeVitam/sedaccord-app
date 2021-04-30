@@ -9,7 +9,8 @@
   />
   <!-- #enddocregion input -->
   <!-- #docregion mat-autocomplete -->
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectOption($event.option.value)"
+  <mat-autocomplete #auto="matAutocomplete" (closed)="reselectOption()"
+                    (optionSelected)="selectOption($event.option.value)"
                     [displayWith]="displayFn">
     <mat-tree
       [dataSource]="dataSource"
