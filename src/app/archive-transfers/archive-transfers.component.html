@@ -2,7 +2,16 @@
   <h1>Bonjour {{name}}</h1>
   <p>Bienvenue sur votre espace SEDAccord.</p>
 </header>
-<h2>Vos projets de versement</h2>
+<div class="list-header">
+  <h2>Vos projets de versement</h2>
+  <mat-form-field appearance="outline">
+    <mat-label>Trier par</mat-label>
+    <mat-select (selectionChange)="sortArchiveTransfers($event.value)" value="lastModificationDate">
+      <mat-option value="creationDate">Date de création</mat-option>
+      <mat-option value="lastModificationDate">Date de dernière modification</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
 <div class="button-container">
   <button (click)="openAddDialog()" color="primary" mat-flat-button type="button">
     Créer un projet de versement
@@ -14,7 +23,10 @@
                    [value]="archiveTransfer">
     <mat-icon matListIcon>folder</mat-icon>
     <div class="table-row" mat-line>
-      <div class="table-cell table-cell-2">Projet de versement {{archiveTransfer.id}}</div>
+      <div class="table-cell table-cell-2 list-title">
+        <span>Projet de versement {{archiveTransfer.id}}</span>
+        <span class="mat-small">Créé le {{archiveTransfer.creationDate | date}}</span>
+      </div>
       <ng-template [ngIfElse]="hovered"
                    [ngIf]="archiveTransfer !== archiveTransferList.selectedOptions.selected[0]?.value">
         <div class="table-cell">{{archiveTransfer.submissionAgency?.name}}</div>

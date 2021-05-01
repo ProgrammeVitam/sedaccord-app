@@ -9,7 +9,16 @@ header {
   grid-row: 1;
 }
 
-h2 {
+.list-title {
+  display: flex;
+  flex-direction: column;
+
+  .mat-small {
+    color: mat-color($mat-gray, 600);
+  }
+}
+
+.list-header {
   grid-column: 1;
   grid-row: 2;
 }

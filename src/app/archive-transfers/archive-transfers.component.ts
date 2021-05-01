@@ -11,6 +11,8 @@ import {SipService} from '../services/sip.service';
 import { saveAs } from 'file-saver';
 import {HttpResponse} from '@angular/common/http';
 
+type SortValue = 'creationDate' | 'lastModificationDate';
+
 @Component({
   selector: 'app-archive-transfers',
   templateUrl: './archive-transfers.component.html',
@@ -34,6 +36,24 @@ export class ArchiveTransfersComponent {
   ) {
     this._getArchiveTransfers();
     this.loadingArchiveTransferId = null;
+  }
+
+  _sortByLastModificationDate = (archiveTransfer1: ArchiveTransfer, archiveTransfer2: ArchiveTransfer) =>
+    archiveTransfer2.lastModificationDate.getTime() - archiveTransfer1.lastModificationDate.getTime()
+  _sortByCreationDate = (archiveTransfer1: ArchiveTransfer, archiveTransfer2: ArchiveTransfer) =>
+    archiveTransfer2.creationDate.getTime() - archiveTransfer1.creationDate.getTime()
+
+  sortArchiveTransfers(value: SortValue): void {
+    switch (value) {
+      case 'creationDate':
+        this.archiveTransfers = this.archiveTransfers.sort(this._sortByCreationDate);
+        break;
+      case 'lastModificationDate':
+        this.archiveTransfers = this.archiveTransfers.sort(this._sortByLastModificationDate);
+        break;
+      default:
+        break;
+    }
   }
 
   openAddDialog(): void {
@@ -97,7 +117,7 @@ export class ArchiveTransfersComponent {
 
   private _getArchiveTransfers(): void {
     this._archiveTransferService.getArchiveTransfers()
-      .subscribe(archiveTransfers => this.archiveTransfers = archiveTransfers);
+      .subscribe(archiveTransfers => this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate));
   }
 
   private _generateSip(archiveTransfer: ArchiveTransfer): void {
