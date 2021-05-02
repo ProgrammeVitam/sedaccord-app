@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
@@ -40,7 +40,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getClassification();
+    this._getClassification();
     this.filesForm = this._formBuilder.group({
       archiveDataPackages: this._formBuilder.array([])
     });
@@ -104,7 +104,15 @@ export class ArchiveTransferFilesComponent implements OnInit {
     return [];
   }
 
-  private getClassification(): void {
+  getDirectoryCount(archiveDataValues: FileMetadata[]): number {
+    return archiveDataValues.flat().filter(file => file.isDirectory).length;
+  }
+
+  getFileCount(archiveDataValues: FileMetadata[]): number {
+    return archiveDataValues.flat().filter(file => !file.isDirectory).length;
+  }
+
+  private _getClassification(): void {
     this._referentialService.getClassification()
       .subscribe(classification => this.classification = classification);
   }

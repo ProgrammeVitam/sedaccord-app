@@ -23,7 +23,7 @@
               Ensemble {{i + 1}}
             </mat-panel-title>
             <mat-panel-description>
-              10 dossiers / 200 fichiers
+              {{getDirectoryCount(archiveDataPackage.get('archiveDataValues')?.value)}} dossiers / {{getFileCount(archiveDataPackage.get('archiveDataValues')?.value)}} fichiers
             </mat-panel-description>
           </mat-expansion-panel-header>
           <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"

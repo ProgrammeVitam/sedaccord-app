@@ -124,7 +124,7 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
         directories,
         size: files
           .map(file => file.size)
-          .reduce((acc, val) => acc + val, 0)
+          .reduce((acc, currentValue) => acc + currentValue, 0)
       };
     });
   }

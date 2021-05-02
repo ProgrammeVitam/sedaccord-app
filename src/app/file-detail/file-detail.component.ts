@@ -36,7 +36,7 @@ export class FileDetailComponent implements OnInit {
   constructor(
     @Inject(FILE_DETAIL_SIDENAV_REF) private _sidenavRef: DialogReference<FileDetailComponent>,
     private _formBuilder: FormBuilder,
-    private archiveTransferService: ArchiveTransferService
+    private _archiveTransferService: ArchiveTransferService
   ) {
     this.comments = [];
   }
@@ -72,7 +72,7 @@ export class FileDetailComponent implements OnInit {
       file: this.file.name
     };
     this.comments.push(comment);
-    this.archiveTransferService.addComment(comment).subscribe();
+    this._archiveTransferService.addComment(comment).subscribe();
     this.commentForm.reset();
   }
 
@@ -82,7 +82,7 @@ export class FileDetailComponent implements OnInit {
   }
 
   private _getComments(): void {
-    this.archiveTransferService.getComments(this.file.name)
+    this._archiveTransferService.getComments(this.file.name)
       .subscribe(comments => this.comments = comments);
   }
 }

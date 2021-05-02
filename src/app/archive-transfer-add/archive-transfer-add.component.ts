@@ -199,7 +199,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private _buildArchiveData(archiveDataValues: any): FileMetadata[][] {
+  private _buildArchiveData(archiveDataValues: FilePackage[]): FileMetadata[][] {
     return archiveDataValues
       .map((filePackage: FilePackage) => {
         const directoryMetadata = filePackage.directories.map((directory: string) => {

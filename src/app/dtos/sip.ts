@@ -51,10 +51,10 @@ export class SipData implements SipDataInterface {
       .withTransferringAgency(archiveTransfer.originatingAgency?.name || '')
       .withOriginatingAgency(archiveTransfer.originatingAgency?.name || '')
       .withSubmissionAgency(archiveTransfer.submissionAgency?.name || '')
-      .withArchiveUnits(this.archiveDataPackagesToArchiveUnits(archiveTransfer.archiveDataPackages));
+      .withArchiveUnits(this._archiveDataPackagesToArchiveUnits(archiveTransfer.archiveDataPackages));
   }
 
-  private static archiveDataPackagesToArchiveUnits(archiveDataPackages: ArchiveDataPackage[]): ArchiveUnitData[] {
+  private static _archiveDataPackagesToArchiveUnits(archiveDataPackages: ArchiveDataPackage[]): ArchiveUnitData[] {
     return archiveDataPackages.flatMap(archiveDataPackage => {
       const archiveUnitId = `${archiveDataPackage.id}`;
       const metaArchiveUnit: ArchiveUnitData = {
