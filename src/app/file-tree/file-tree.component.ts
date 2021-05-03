@@ -88,27 +88,30 @@ export class FileTreeComponent implements OnInit {
   }
 
   private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
-    const groupByDepth = this._groupByDepth(data);
-    const groupByDepthAndNode = this._groupByDepthAndNode(groupByDepth);
+    if (data.length > 0) {
+      const groupByDepth = this._groupByDepth(data);
+      const groupByDepthAndNode = this._groupByDepthAndNode(groupByDepth);
 
-    const keys = Array.from(groupByDepthAndNode.keys());
-    const minLevel = Math.min(...keys);
-    const maxLevel = Math.max(...keys);
-    if (keys.length > maxLevel - minLevel + 1) {
-      throw new Error('Invalid tree data: missing value in level range.');
+      const keys = Array.from(groupByDepthAndNode.keys());
+      const minLevel = Math.min(...keys);
+      const maxLevel = Math.max(...keys);
+      if (keys.length > maxLevel - minLevel + 1) {
+        throw new Error('Invalid tree data: missing value in level range.');
+      }
+
+      // Build tree one level at a time from bottom to top
+      const treeBottomLayer = groupByDepthAndNode.get(maxLevel) as Map<string, FileMetadata[]>;
+      let tree = this._mapMap(treeBottomLayer, node => this._fileMetadataToNode(node, []));
+      let currentLevel = maxLevel - 1;
+      while (currentLevel >= minLevel) {
+        const treeCurrentLayer = groupByDepthAndNode.get(currentLevel) as Map<string, FileMetadata[]>;
+        tree = this._mapMap(treeCurrentLayer, node => this._fileMetadataToNode(node, tree.get(node.path) as FileNode[]));
+        currentLevel -= 1;
+      }
+
+      return tree.get('/')!;
     }
-
-    // Build tree one level at a time from bottom to top
-    const treeBottomLayer = groupByDepthAndNode.get(maxLevel) as Map<string, FileMetadata[]>;
-    let tree = this._mapMap(treeBottomLayer, node => this._fileMetadataToNode(node, []));
-    let currentLevel = maxLevel - 1;
-    while (currentLevel >= minLevel) {
-      const treeCurrentLayer = groupByDepthAndNode.get(currentLevel) as Map<string, FileMetadata[]>;
-      tree = this._mapMap(treeCurrentLayer, node => this._fileMetadataToNode(node, tree.get(node.path) as FileNode[]));
-      currentLevel -= 1;
-    }
-
-    return tree.get('/')!;
+    return [];
   }
 
   private _groupByDepth(arr: FileMetadata[]): Map<number, FileMetadata[]> {
