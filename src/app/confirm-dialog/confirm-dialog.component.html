@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>{{data.title}}</h1>
 <div mat-dialog-content>{{data.content}}</div>
-<div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Annuler</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Valider</button>
+<div align="end" mat-dialog-actions>
+  <button mat-button mat-dialog-close type="button">Annuler</button>
+  <button [mat-dialog-close]="true" cdkFocusInitial mat-button type="button">Valider</button>
 </div>

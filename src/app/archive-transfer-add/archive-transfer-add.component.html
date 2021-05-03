@@ -35,7 +35,9 @@
                                            [treeData]="classification"></app-tree-autocomplete-control>
             <app-file-drop [formControlName]="'archiveDataValues'"></app-file-drop>
             <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
-              <button (click)="removePackage(i)" color="primary" mat-button>Supprimer cet ensemble</button>
+              <button (click)="removePackage(i)" color="primary" mat-button type="button">
+                Supprimer cet ensemble
+              </button>
             </mat-action-row>
           </mat-expansion-panel>
         </mat-accordion>

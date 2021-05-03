@@ -1,9 +1,7 @@
 <form (ngSubmit)="onSubmit()">
   <div class="button-group">
     <div>
-      <button [disabled]="saveButtonDisabled"
-              mat-stroked-button
-              type="submit">
+      <button [disabled]="saveButtonDisabled" mat-stroked-button type="submit">
         Sauvegarder le projet de versement
       </button>
     </div>
@@ -37,13 +35,15 @@
           <app-file-tree (selectFileEvent)="onSelectFromTree($event)" (updateNavigationEvent)="onNavigateOnTree($event)"
                          [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"></app-file-tree>
           <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
-            <button (click)="removePackage(i)" color="primary" mat-button>Supprimer cet ensemble</button>
+            <button (click)="removePackage(i)" color="primary" mat-button type="button">
+              Supprimer cet ensemble
+            </button>
           </mat-action-row>
         </mat-expansion-panel>
         <mat-divider></mat-divider>
       </ng-container>
     </mat-accordion>
-    <button (click)="addPackage()" mat-icon-button>
+    <button (click)="addPackage()" mat-icon-button type="button">
       <mat-icon>add</mat-icon>
       Ajouter un ensemble
     </button>

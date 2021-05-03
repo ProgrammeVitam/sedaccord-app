@@ -33,7 +33,8 @@
   <ng-container matColumnDef="edit" stickyEnd>
     <th *matHeaderCellDef class="mat-cell-sticky-right" mat-header-cell></th>
     <td *matCellDef="let row" class="mat-cell-sticky-right" mat-cell>
-      <button (click)="edit(row)" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'" mat-icon-button>
+      <button (click)="edit(row)" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'" mat-icon-button
+              type="button">
         <mat-icon>edit</mat-icon>
       </button>
     </td>
@@ -43,7 +44,7 @@
     <th *matHeaderCellDef class="mat-cell-sticky-right" mat-header-cell></th>
     <td *matCellDef="let row" class="mat-cell-sticky-right" mat-cell>
       <button (click)="$event.stopPropagation()" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'"
-              mat-icon-button>
+              mat-icon-button type="button">
         <mat-icon>delete</mat-icon>
       </button>
     </td>

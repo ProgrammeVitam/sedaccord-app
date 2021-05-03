@@ -1,5 +1,5 @@
 <div *ngIf="isOpen" @openClose class="open-close-container">
-  <button (click)="onCancel()" class="close-button" mat-icon-button>
+  <button (click)="onCancel()" class="close-button" mat-icon-button type="button">
     <mat-icon>close</mat-icon>
   </button>
   <h2>{{file.name}}</h2>
@@ -46,7 +46,7 @@
           </mat-form-field>
         </div>
         <div class="button-group">
-          <button (click)="onCancel()" mat-stroked-button>
+          <button (click)="onCancel()" mat-stroked-button type="button">
             Annuler
           </button>
           <button color="primary" mat-flat-button type="submit">
@@ -79,7 +79,7 @@
           <textarea formControlName="text" matInput></textarea>
         </mat-form-field>
         <div class="button-group">
-          <button (click)="onCancel()" mat-stroked-button>
+          <button (click)="onCancel()" mat-stroked-button type="button">
             Annuler
           </button>
           <button color="primary" mat-flat-button type="submit">

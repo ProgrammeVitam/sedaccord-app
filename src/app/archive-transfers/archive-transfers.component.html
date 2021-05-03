@@ -36,19 +36,21 @@
       <ng-template #hovered>
         <div class="table-cell"><span class="badge">{{archiveTransfer.status}}</span></div>
         <div class="table-cell table-cell-4 table-cell-right">
-          <button color="primary" mat-flat-button routerLink="/detail/{{archiveTransfer.id}}">Voir le versement</button>
-          <button (click)="submit(archiveTransfer)" disabled color="primary"
-                  mat-flat-button>Verser aux archives
+          <button color="primary" mat-flat-button routerLink="/detail/{{archiveTransfer.id}}" type="button">
+            Voir le versement
+          </button>
+          <button (click)="submit(archiveTransfer)" color="primary" disabled mat-flat-button type="button">
+            Verser aux archives
           </button>
           <div class="progress-button-container">
             <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
               <mat-spinner diameter="24"></mat-spinner>
             </div>
-            <button (click)="download(archiveTransfer)" [disabled]="isLoading(archiveTransfer)" color="primary" mat-mini-fab>
+            <button (click)="download(archiveTransfer)" [disabled]="isLoading(archiveTransfer)" color="primary" mat-mini-fab type="button">
               <mat-icon>download</mat-icon>
             </button>
           </div>
-          <button (click)="delete(archiveTransfer)" color="primary" mat-mini-fab>
+          <button (click)="delete(archiveTransfer)" color="primary" mat-mini-fab type="button">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
