@@ -12,11 +12,10 @@
   </div>
   <div class="form-content-wrapper">
     <section [formGroup]="filesForm" class="file-tree-form">
-      <h2>Projet de versement {{archiveTransfer.id}}</h2>
-      <mat-divider></mat-divider>
       <mat-accordion formArrayName="archiveDataPackages">
         <mat-expansion-panel (opened)="onSelectPackage(i)"
-                             *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index" [formGroupName]="i">
+                             *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index"
+                             [formGroupName]="i">
           <mat-expansion-panel-header>
             <mat-panel-title>
               <mat-icon>topic</mat-icon>
@@ -41,17 +40,23 @@
       </mat-accordion>
     </section>
     <section *ngIf="treeSelection.hasValue()" class="table-form">
-      <nav *ngIf="selectedArchiveDataPackageIndex > -1">
-        <mat-icon inline>topic</mat-icon>
-        Ensemble {{selectedArchiveDataPackageIndex + 1}}
-        <mat-icon inline>chevron_right</mat-icon>
+      <nav *ngIf="selectedArchiveDataPackageIndex > -1" class="breadcrumb">
+        <span>
+          <mat-icon inline>topic</mat-icon>
+          Ensemble {{selectedArchiveDataPackageIndex + 1}}
+        </span>
+        <mat-icon inline>arrow_right_alt</mat-icon>
         <ng-container *ngFor="let crumb of selectionPath">
-          <mat-icon inline>folder</mat-icon>
-          {{crumb}}
-          <mat-icon inline>chevron_right</mat-icon>
+          <span>
+            <mat-icon inline>folder</mat-icon>
+            {{crumb}}
+          </span>
+          <mat-icon inline>arrow_right_alt</mat-icon>
         </ng-container>
-        <mat-icon inline>folder</mat-icon>
-        {{treeSelection.selected[0].name}}
+        <span>
+          <mat-icon inline>folder</mat-icon>
+          {{treeSelection.selected[0].name}}
+        </span>
       </nav>
       <mat-divider></mat-divider>
       <app-file-table (selectFileEvent)="onSelectFromTable($event)"

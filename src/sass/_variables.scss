@@ -18,6 +18,7 @@ $config: mat-typography-config();
 
 $default-margin: 2em;
 $smaller-margin: $default-margin / 2;
+$smallest-margin: $smaller-margin / 2;
 
 $width: 90%;
 $min-panel-width: 400px;

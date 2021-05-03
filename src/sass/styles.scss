@@ -63,6 +63,17 @@ main {
   width: 100%;
 }
 
+nav.breadcrumb {
+  align-items: center;
+  display: flex;
+  padding: $smaller-margin 0 $smaller-margin;
+
+  > * {
+    padding-left: $smallest-margin;
+    padding-right: $smallest-margin;
+  }
+}
+
 .button-group {
   display: flex;
   justify-content: space-between;
