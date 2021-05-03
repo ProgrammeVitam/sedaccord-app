@@ -15,23 +15,24 @@
       <h2>Projet de versement {{archiveTransfer.id}}</h2>
       <mat-divider></mat-divider>
       <mat-accordion formArrayName="archiveDataPackages">
-        <mat-expansion-panel *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index"
-                             [formGroupName]="i">
+        <mat-expansion-panel (opened)="onSelectPackage(i)"
+                             *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index" [formGroupName]="i">
           <mat-expansion-panel-header>
             <mat-panel-title>
               <mat-icon>topic</mat-icon>
               Ensemble {{i + 1}}
             </mat-panel-title>
             <mat-panel-description>
-              {{getDirectoryCount(archiveDataPackage.get('archiveDataValues')?.value)}} dossiers / {{getFileCount(archiveDataPackage.get('archiveDataValues')?.value)}} fichiers
+              {{getDirectoryCount(archiveDataPackage.get('archiveDataValues')?.value)}} dossiers
+              / {{getFileCount(archiveDataPackage.get('archiveDataValues')?.value)}} fichiers
             </mat-panel-description>
           </mat-expansion-panel-header>
           <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
                                          [label]="'Mon niveau de plan de classement'"
                                          [treeData]="classification"
                                          [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
-          <app-file-tree (selectFileEvent)="onSelectFromTree($event)"
-                         [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value"></app-file-tree>
+          <app-file-tree (selectFileEvent)="onSelectFromTree($event)" (updateNavigationEvent)="onNavigateOnTree($event)"
+                         [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"></app-file-tree>
           <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
             <button (click)="removePackage(i)" color="primary" mat-button>Supprimer cet ensemble</button>
           </mat-action-row>
@@ -40,9 +41,15 @@
       </mat-accordion>
     </section>
     <section *ngIf="treeSelection.hasValue()" class="table-form">
-      <nav>
+      <nav *ngIf="selectedArchiveDataPackageIndex > -1">
         <mat-icon inline>topic</mat-icon>
-        Ensemble i →
+        Ensemble {{selectedArchiveDataPackageIndex + 1}}
+        <mat-icon inline>chevron_right</mat-icon>
+        <ng-container *ngFor="let crumb of selectionPath">
+          <mat-icon inline>folder</mat-icon>
+          {{crumb}}
+          <mat-icon inline>chevron_right</mat-icon>
+        </ng-container>
         <mat-icon inline>folder</mat-icon>
         {{treeSelection.selected[0].name}}
       </nav>

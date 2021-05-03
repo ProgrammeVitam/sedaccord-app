@@ -19,6 +19,8 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   filesForm!: FormGroup;
   treeSelection: SelectionModel<FileNode>;
+  selectedArchiveDataPackageIndex: number;
+  selectionPath: string[];
   tableSelection: SelectionModel<FileNode>;
   saveButtonDisabled: boolean;
 
@@ -31,6 +33,8 @@ export class ArchiveTransferFilesComponent implements OnInit {
     private _archiveTransferService: ArchiveTransferService
   ) {
     this.treeSelection = new SelectionModel<FileNode>(false);
+    this.selectedArchiveDataPackageIndex = -1;
+    this.selectionPath = [];
     this.tableSelection = new SelectionModel<FileNode>(false);
     this.saveButtonDisabled = true;
   }
@@ -53,8 +57,16 @@ export class ArchiveTransferFilesComponent implements OnInit {
     this.filesForm.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
   }
 
+  onSelectPackage(archiveDataPackageIndex: number): void {
+    this.selectedArchiveDataPackageIndex = archiveDataPackageIndex;
+  }
+
   onSelectFromTree(file: FileNode): void {
     this.treeSelection.select(file);
+  }
+
+  onNavigateOnTree(filePath: string[]): void {
+    this.selectionPath = filePath;
   }
 
   onSelectFromTable(file: FileNode): void {

@@ -20,6 +20,7 @@ interface FileFlatNode {
 export class FileTreeComponent implements OnInit {
   @Input() fileTreeData!: FileMetadata[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
+  @Output() updateNavigationEvent = new EventEmitter<string[]>();
 
   treeControl = new FlatTreeControl<FileFlatNode>(
     node => node.level,
@@ -71,8 +72,9 @@ export class FileTreeComponent implements OnInit {
   selectFile(node: FileFlatNode): void {
     if (node.isDirectory) {
       this.selection.select(node);
-      this._checkAllParentsSelection(node);
+      const parents = this._checkAllParentsSelection(node);
       this.selectFileEvent.emit(this._flatNodeMap.get(node));
+      this.updateNavigationEvent.emit(parents);
     }
   }
 
@@ -172,13 +174,16 @@ export class FileTreeComponent implements OnInit {
     return directoryNode.children !== undefined && directoryNode.children.length > 0;
   }
 
-  /** Checks all the parents when a leaf node is selected/unselected */
-  private _checkAllParentsSelection(node: FileFlatNode): void {
-    let parent: FileFlatNode | null = this._getParentNode(node);
+  /** Checks all the parents when a leaf node is selected/unselected and return them */
+  private _checkAllParentsSelection(node: FileFlatNode): string[] {
+    const parents = [];
+    let parent = this._getParentNode(node);
     while (parent) {
       this._checkRootNodeSelection(parent);
+      parents.push(parent.name);
       parent = this._getParentNode(parent);
     }
+    return parents;
   }
 
   /** Check root node checked state and change it accordingly */
