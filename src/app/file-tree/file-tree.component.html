@@ -1,4 +1,4 @@
-<button mat-icon-button (click)="addFile()">
+<button (click)="addFile()" mat-icon-button>
   <mat-icon>add</mat-icon>
   Nouveau dossier
 </button>
@@ -8,8 +8,18 @@
                  matTreeNodePadding>
     <!-- use a disabled button to provide padding for tree leaf -->
     <button disabled mat-icon-button></button>
-    <mat-icon inline>{{node.isDirectory ? 'folder' : 'text_snippet'}}</mat-icon>
-    <a (click)="selectFile(node)">{{node.name}}</a>
+    <ng-container *ngIf="node.isDirectory; else elseBlock">
+      <span (click)="selectDirectory(node)" class="tree-node-content">
+        <mat-icon inline>folder</mat-icon>
+        {{node.name}}
+      </span>
+    </ng-container>
+    <ng-template #elseBlock>
+      <span class="tree-node-content">
+        <mat-icon inline>text_snippet</mat-icon>
+        {{node.name}}
+      </span>
+    </ng-template>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
@@ -22,7 +32,7 @@
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    <a (click)="selectFile(node)">{{node.name}}</a>
+    <span (click)="selectDirectory(node)" class="tree-node-content">{{node.name}}</span>
     <button (click)="addFile()" mat-icon-button>
       <mat-icon>add</mat-icon>
     </button>

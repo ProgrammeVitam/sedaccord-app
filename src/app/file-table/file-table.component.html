@@ -2,7 +2,7 @@
 
   <ng-container matColumnDef="name">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Nom</th>
-    <td *matCellDef="let element" mat-cell> {{element.name}} </td>
+    <td *matCellDef="let element" mat-cell matTooltip="{{element.name}}"> {{element.name}} </td>
   </ng-container>
 
   <ng-container matColumnDef="creationDate">

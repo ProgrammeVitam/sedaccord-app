@@ -1,7 +1,14 @@
 @import "variables";
 
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 .mat-tab-group {
-  height: 100vh;
+  background: $background;
+  flex-grow: 1;
 }
 
 nav.breadcrumb {

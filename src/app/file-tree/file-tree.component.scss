@@ -1,13 +1,15 @@
 @import "variables";
 
-.mat-tree {
-  overflow: auto;
-}
-
 .mat-tree-node.selectable {
   cursor: pointer;
 }
 
 .selected {
   background-color: $badge-background;
+}
+
+.tree-node-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

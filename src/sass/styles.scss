@@ -32,8 +32,8 @@ body {
 
 main {
   display: grid;
-  height: 100vh;
   margin: 0 auto;
+  min-height: 100vh;
   width: $width;
   grid-template-rows: 1fr;
 }
@@ -78,8 +78,8 @@ nav.breadcrumb {
   display: flex;
   justify-content: space-between;
 
-  button {
-    margin: $smaller-margin;
+  button + button {
+    margin-left: $default-margin;
   }
 }
 

@@ -1,21 +1,25 @@
 <form (ngSubmit)="onSubmit()">
-  <div class="button-group button-group-top">
-    <button (click)="addPackage()" color="primary" mat-flat-button type="button">
-      <mat-icon>add</mat-icon>
-      Ajouter
-    </button>
-    <mat-form-field>
-      <input disabled matInput type="text">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    <mat-divider></mat-divider>
+  <div class="button-group">
+    <div>
+      <button [disabled]="saveButtonDisabled"
+              mat-stroked-button
+              type="submit">
+        Sauvegarder le projet de versement
+      </button>
+    </div>
+    <div>
+      <button mat-stroked-button routerLink="/" type="button">
+        Annuler
+      </button>
+      <button color="primary" disabled mat-flat-button routerLink="/" type="button">
+        Verser aux archives
+      </button>
+    </div>
   </div>
-  <div class="form-content-wrapper">
-    <section [formGroup]="filesForm" class="file-tree-form">
-      <mat-accordion formArrayName="archiveDataPackages">
-        <mat-expansion-panel (opened)="onSelectPackage(i)"
-                             *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index"
-                             [formGroupName]="i">
+  <section [formGroup]="filesForm" class="file-tree-form">
+    <mat-accordion formArrayName="archiveDataPackages">
+      <ng-container *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index">
+        <mat-expansion-panel (opened)="onSelectPackage(i)" [formGroupName]="i">
           <mat-expansion-panel-header>
             <mat-panel-title>
               <mat-icon>topic</mat-icon>
@@ -37,47 +41,34 @@
           </mat-action-row>
         </mat-expansion-panel>
         <mat-divider></mat-divider>
-      </mat-accordion>
-    </section>
-    <section *ngIf="treeSelection.hasValue()" class="table-form">
-      <nav *ngIf="selectedArchiveDataPackageIndex > -1" class="breadcrumb">
+      </ng-container>
+    </mat-accordion>
+    <button (click)="addPackage()" mat-icon-button>
+      <mat-icon>add</mat-icon>
+      Ajouter un ensemble
+    </button>
+  </section>
+  <section *ngIf="treeSelection.hasValue()" class="table-form">
+    <nav *ngIf="selectedArchiveDataPackageIndex > -1" class="breadcrumb">
         <span>
           <mat-icon inline>topic</mat-icon>
           Ensemble {{selectedArchiveDataPackageIndex + 1}}
         </span>
-        <mat-icon inline>arrow_right_alt</mat-icon>
-        <ng-container *ngFor="let crumb of selectionPath">
+      <mat-icon inline>arrow_right_alt</mat-icon>
+      <ng-container *ngFor="let crumb of selectionPath">
           <span>
             <mat-icon inline>folder</mat-icon>
             {{crumb}}
           </span>
-          <mat-icon inline>arrow_right_alt</mat-icon>
-        </ng-container>
-        <span>
+        <mat-icon inline>arrow_right_alt</mat-icon>
+      </ng-container>
+      <span>
           <mat-icon inline>folder</mat-icon>
-          {{treeSelection.selected[0].name}}
+        {{treeSelection.selected[0].name}}
         </span>
-      </nav>
-      <mat-divider></mat-divider>
-      <app-file-table (selectFileEvent)="onSelectFromTable($event)"
-                      [elementData]="listFiles(treeSelection.selected[0])"></app-file-table>
-    </section>
-  </div>
-  <div class="button-group button-group-bottom">
-    <div>
-      <button [disabled]="saveButtonDisabled"
-              mat-stroked-button
-              type="submit">
-        Sauvegarder le projet de versement
-      </button>
-    </div>
-    <div>
-      <button mat-stroked-button routerLink="/" type="button">
-        Annuler
-      </button>
-      <button color="primary" disabled mat-flat-button routerLink="/" type="button">
-        Verser aux archives
-      </button>
-    </div>
-  </div>
+    </nav>
+    <mat-divider></mat-divider>
+    <app-file-table (selectFileEvent)="onSelectFromTable($event)"
+                    [elementData]="listFiles(treeSelection.selected[0])"></app-file-table>
+  </section>
 </form>

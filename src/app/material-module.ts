@@ -85,7 +85,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     MatTableModule,
     MatTabsModule,
     // MatToolbarModule,
-    // MatTooltipModule,
+    MatTooltipModule,
     MatTreeModule,
     OverlayModule,
     // PortalModule,

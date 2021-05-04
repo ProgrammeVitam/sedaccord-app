@@ -1,99 +1,4 @@
 <form (ngSubmit)="onSubmit()">
-  <section class="form-content-wrapper">
-    <div [formGroup]="contextForm1" class="info-form">
-      <h2>Informations du versement</h2>
-      <p>Afin de contribuer à une meilleure contextualisation de votre versement, veuillez compléter les
-        champs ci-dessous.</p>
-      <mat-form-field>
-        <mat-label>Je renseigne l'intitulé de mon versement
-        </mat-label>
-        <input formControlName="name" matInput/>
-        <mat-hint>L'intitulé du versement doit permettre d'identifier votre versement.</mat-hint>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>J'ajoute une description à mon versement
-        </mat-label>
-        <textarea formControlName="description" matInput rows="5"></textarea>
-        <mat-hint>La description de votre versement permettra d'expliquer le contexte de production des documents et
-          d'en permettre l'exploitation administrative.
-        </mat-hint>
-      </mat-form-field>
-      <div class="date-group">
-        <mat-form-field>
-          <mat-label>Date de début
-          </mat-label>
-          <input [matDatepicker]="pickerStart" formControlName="startDate" matInput/>
-          <mat-datepicker-toggle [for]="pickerStart" matSuffix></mat-datepicker-toggle>
-          <mat-datepicker #pickerStart></mat-datepicker>
-          <mat-hint>Date du document le plus ancien</mat-hint>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Date de fin
-          </mat-label>
-          <input [matDatepicker]="pickerEnd" formControlName="endDate" matInput/>
-          <mat-datepicker-toggle [for]="pickerEnd" matSuffix></mat-datepicker-toggle>
-          <mat-datepicker #pickerEnd></mat-datepicker>
-          <mat-hint>Date du document le plus récent</mat-hint>
-        </mat-form-field>
-      </div>
-    </div>
-    <div [formGroup]="contextForm2" class="info-form">
-      <h2>Informations du service versant / producteur</h2>
-      <p>Corrigez ou modifiez, si besoin, les informations présentes ci-dessous.</p>
-      <mat-form-field appearance="outline">
-        <mat-label>Le service producteur
-        </mat-label>
-        <input [matAutocomplete]="autoOriginatingAgency"
-               formControlName="originatingAgency"
-               matInput
-               type="text">
-        <mat-autocomplete #autoOriginatingAgency="matAutocomplete"
-                          (optionSelected)="autoFillOriginatingAgencyDescription($event.option.value)"
-                          [displayWith]="displayFn">
-          <mat-option *ngFor="let originatingAgency of $filteredOriginatingAgencies | async"
-                      [value]="originatingAgency">
-            {{originatingAgency.name}}
-          </mat-option>
-        </mat-autocomplete>
-        <mat-hint>Le service producteur est celui qui a produit ou reçu les documents dans le cadre de ses
-          activités.
-        </mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>La description du service producteur
-        </mat-label>
-        <textarea formControlName="originatingAgencyDescription" matInput></textarea>
-        <mat-hint>La description des missions du service producteur permettra de contextualiser la production des
-          documents.
-        </mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Le service versant
-        </mat-label>
-        <input [matAutocomplete]="autoSubmissionAgency"
-               formControlName="submissionAgency"
-               matInput
-               type="text">
-        <mat-autocomplete #autoSubmissionAgency="matAutocomplete"
-                          (optionSelected)="autoFillSubmissionAgencyDescription($event.option.value)"
-                          [displayWith]="displayFn">
-          <mat-option *ngFor="let submissionAgency of $filteredSubmissionAgencies | async"
-                      [value]="submissionAgency">
-            {{submissionAgency.name}}
-          </mat-option>
-        </mat-autocomplete>
-        <mat-hint>Le service versant qui est à l'origine de l'opération de versement des documents.</mat-hint>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>La description du service versant
-        </mat-label>
-        <textarea formControlName="submissionAgencyDescription" matInput></textarea>
-        <mat-hint>La description des missions du service versant permettra de comprendre pourquoi il est à l'origine
-          du versement.
-        </mat-hint>
-      </mat-form-field>
-    </div>
-  </section>
   <div class="button-group">
     <div>
       <button [disabled]="saveButtonDisabled"
@@ -111,4 +16,97 @@
       </button>
     </div>
   </div>
+  <section [formGroup]="contextForm1" class="info-form">
+    <h2>Informations du versement</h2>
+    <p>Afin de contribuer à une meilleure contextualisation de votre versement, veuillez compléter les
+      champs ci-dessous.</p>
+    <mat-form-field>
+      <mat-label>Je renseigne l'intitulé de mon versement
+      </mat-label>
+      <input formControlName="name" matInput/>
+      <mat-hint>L'intitulé du versement doit permettre d'identifier votre versement.</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>J'ajoute une description à mon versement
+      </mat-label>
+      <textarea formControlName="description" matInput rows="5"></textarea>
+      <mat-hint>La description de votre versement permettra d'expliquer le contexte de production des documents et
+        d'en permettre l'exploitation administrative.
+      </mat-hint>
+    </mat-form-field>
+    <div class="date-group">
+      <mat-form-field>
+        <mat-label>Date de début
+        </mat-label>
+        <input [matDatepicker]="pickerStart" formControlName="startDate" matInput/>
+        <mat-datepicker-toggle [for]="pickerStart" matSuffix></mat-datepicker-toggle>
+        <mat-datepicker #pickerStart></mat-datepicker>
+        <mat-hint>Date du document le plus ancien</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Date de fin
+        </mat-label>
+        <input [matDatepicker]="pickerEnd" formControlName="endDate" matInput/>
+        <mat-datepicker-toggle [for]="pickerEnd" matSuffix></mat-datepicker-toggle>
+        <mat-datepicker #pickerEnd></mat-datepicker>
+        <mat-hint>Date du document le plus récent</mat-hint>
+      </mat-form-field>
+    </div>
+  </section>
+  <section [formGroup]="contextForm2" class="info-form">
+    <h2>Informations du service versant / producteur</h2>
+    <p>Corrigez ou modifiez, si besoin, les informations présentes ci-dessous.</p>
+    <mat-form-field appearance="outline">
+      <mat-label>Le service producteur
+      </mat-label>
+      <input [matAutocomplete]="autoOriginatingAgency"
+             formControlName="originatingAgency"
+             matInput
+             type="text">
+      <mat-autocomplete #autoOriginatingAgency="matAutocomplete"
+                        (optionSelected)="autoFillOriginatingAgencyDescription($event.option.value)"
+                        [displayWith]="displayFn">
+        <mat-option *ngFor="let originatingAgency of $filteredOriginatingAgencies | async"
+                    [value]="originatingAgency">
+          {{originatingAgency.name}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>Le service producteur est celui qui a produit ou reçu les documents dans le cadre de ses
+        activités.
+      </mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>La description du service producteur
+      </mat-label>
+      <textarea formControlName="originatingAgencyDescription" matInput></textarea>
+      <mat-hint>La description des missions du service producteur permettra de contextualiser la production des
+        documents.
+      </mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Le service versant
+      </mat-label>
+      <input [matAutocomplete]="autoSubmissionAgency"
+             formControlName="submissionAgency"
+             matInput
+             type="text">
+      <mat-autocomplete #autoSubmissionAgency="matAutocomplete"
+                        (optionSelected)="autoFillSubmissionAgencyDescription($event.option.value)"
+                        [displayWith]="displayFn">
+        <mat-option *ngFor="let submissionAgency of $filteredSubmissionAgencies | async"
+                    [value]="submissionAgency">
+          {{submissionAgency.name}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>Le service versant qui est à l'origine de l'opération de versement des documents.</mat-hint>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>La description du service versant
+      </mat-label>
+      <textarea formControlName="submissionAgencyDescription" matInput></textarea>
+      <mat-hint>La description des missions du service versant permettra de comprendre pourquoi il est à l'origine
+        du versement.
+      </mat-hint>
+    </mat-form-field>
+  </section>
 </form>

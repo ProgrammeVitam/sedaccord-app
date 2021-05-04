@@ -69,13 +69,11 @@ export class FileTreeComponent implements OnInit {
   hasChild = (_: number, node: FileFlatNode) => node.expandable;
 
   /** Select a file. Check all the parents to see if they changed */
-  selectFile(node: FileFlatNode): void {
-    if (node.isDirectory) {
-      this.selection.select(node);
-      const parents = this._checkAllParentsSelection(node);
-      this.selectFileEvent.emit(this._flatNodeMap.get(node));
-      this.updateNavigationEvent.emit(parents);
-    }
+  selectDirectory(node: FileFlatNode): void {
+    this.selection.select(node);
+    const parents = this._checkAllParentsSelection(node);
+    this.selectFileEvent.emit(this._flatNodeMap.get(node));
+    this.updateNavigationEvent.emit(parents);
   }
 
   /** Select the category so we can insert the new item. */

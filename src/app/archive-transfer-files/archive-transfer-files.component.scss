@@ -1,49 +1,39 @@
 @import "variables";
 
 form {
-  background: $background;
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-  height: 100%;
+  grid-column-gap: $default-margin;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
   padding: $default-margin;
-}
-
-nav {
-  padding: 0 $smaller-margin $smaller-margin;
 }
 
 .mat-expansion-panel {
   box-shadow: none;
+
+  & + mat-divider:last-of-type {
+    margin-bottom: $smaller-margin;
+  }
 }
 
-.button-group-top {
+.button-group {
+  border-bottom: 1px solid $border;
   grid-column: 1 / span 2;
   grid-row: 1;
-  justify-content: left;
-}
-
-.button-group-bottom {
-  grid-column: 1 / span 2;
-  grid-row: 3;
-}
-
-.form-content-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 1fr;
-  overflow: hidden;
+  padding-bottom: $default-margin;
 }
 
 .file-tree-form {
   border-right: 1px solid $border;
   grid-column: 1;
-  grid-row: 1;
-  overflow-y: scroll;
+  grid-row: 2;
+  overflow-y: auto;
+  resize: horizontal;
 }
 
 .table-form {
   grid-column: 2;
-  grid-row: 1;
-  overflow-y: auto;
+  grid-row: 2;
+  overflow: auto;
 }
