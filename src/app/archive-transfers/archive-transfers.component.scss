@@ -9,6 +9,33 @@ header {
   grid-row: 1;
 }
 
+.dashboard {
+  display: flex;
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  justify-content: space-around;
+  padding: $default-margin 0 $default-margin;
+
+  .dashboard-card {
+    flex: 1;
+  }
+
+  .dashboard-card + .dashboard-card {
+    margin-left: $default-margin;
+  }
+}
+
+.number {
+  color: mat-color($primary);
+  font-size: mat-font-size($config, display-1);
+  font-weight: bold;
+  text-align: right;
+
+  &.important {
+    color: mat-color($accent);
+  }
+}
+
 .list-title {
   display: flex;
   flex-direction: column;
@@ -20,18 +47,18 @@ header {
 
 .list-header {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 3;
 }
 
 .button-container {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 3;
   text-align: right;
 }
 
 .mat-selection-list {
   grid-column: 1 / span 2;
-  grid-row: 3;
+  grid-row: 4;
 
   button {
     margin: $smaller-margin;
@@ -91,14 +118,14 @@ header {
   position: relative;
 
   .spinner-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    display: flex;
     align-items: center;
+    bottom: 0;
+    display: flex;
     justify-content: center;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
   }
 }

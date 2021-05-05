@@ -115,6 +115,18 @@ export class ArchiveTransfersComponent {
     return archiveTransfer.id === this.loadingArchiveTransferId;
   }
 
+  getInProgressArchiveTransferCount(): number {
+    return this.archiveTransfers?.filter(archiveTransfer => 'En cours' === archiveTransfer.status).length;
+  }
+
+  getPendingArchiveTransferCount(): number {
+    return this.archiveTransfers?.filter(archiveTransfer => 'En attente de correction' === archiveTransfer.status).length;
+  }
+
+  getUnreadCommentCount(): number {
+    return 0; // TODO
+  }
+
   private _getArchiveTransfers(): void {
     this._archiveTransferService.getArchiveTransfers()
       .subscribe(archiveTransfers => this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate));

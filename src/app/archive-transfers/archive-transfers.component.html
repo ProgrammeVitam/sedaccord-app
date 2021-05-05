@@ -2,6 +2,32 @@
   <h1>Bonjour {{name}}</h1>
   <p>Bienvenue sur votre espace SEDAccord.</p>
 </header>
+<div class="dashboard">
+  <mat-card class="dashboard-card">
+    <mat-card-header>
+      <mat-card-subtitle>Versements en cours</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="number important">{{getInProgressArchiveTransferCount()}}</p>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="dashboard-card">
+    <mat-card-header>
+      <mat-card-subtitle>Versements en attente de validation</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="number">{{getPendingArchiveTransferCount()}}</p>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="dashboard-card">
+    <mat-card-header>
+      <mat-card-subtitle>Commentaires non lus</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="number">{{getUnreadCommentCount()}}</p>
+    </mat-card-content>
+  </mat-card>
+</div>
 <div class="list-header">
   <h2>Vos projets de versement</h2>
   <mat-form-field appearance="outline">

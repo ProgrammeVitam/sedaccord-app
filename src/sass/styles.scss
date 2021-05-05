@@ -11,7 +11,8 @@ $theme: mat-light-theme(
   (
     color: (
       primary: $primary,
-      accent: $accent
+      accent: $accent,
+      warn: $warn,
     )
   )
 );
