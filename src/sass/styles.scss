@@ -33,10 +33,10 @@ body {
 
 main {
   display: grid;
+  grid-template-rows: 1fr;
   margin: 0 auto;
   min-height: 100vh;
   width: $width;
-  grid-template-rows: 1fr;
 }
 
 .mat-tab-group.mat-tab-fill-height .mat-tab-body-wrapper {

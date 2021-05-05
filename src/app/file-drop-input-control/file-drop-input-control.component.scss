@@ -1,15 +1,20 @@
 @import "variables";
 
-#drop_zone {
-  border: 2px dashed mat-color($primary);
-  text-align: center;
-  width: 100%;
-}
-
 label {
   color: mat-color($primary);
   font-weight: bold;
   text-decoration: underline;
+}
+
+.drop-zone {
+  background-color: mat-color($primary, 50);
+  border: 2px dashed mat-color($primary);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+  padding: $smallest-margin;
+  text-align: center;
 }
 
 .visually-hidden {

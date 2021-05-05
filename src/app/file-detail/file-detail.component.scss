@@ -52,7 +52,7 @@ h2 {
 .comment {
   margin-top: $smaller-margin;
 
-  & > div:first-child {
+  > div:first-child {
     display: flex;
     justify-content: space-between;
   }

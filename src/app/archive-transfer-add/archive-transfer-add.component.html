@@ -22,18 +22,20 @@
             Ajouter un ensemble
           </button>
         </div>
-        <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
+        <mat-accordion *ngIf="classification" [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
           <mat-expansion-panel *ngFor="let _ of archiveDataPackages.controls; let i=index"
-                               [formGroupName]="i">
+                               [formGroupName]="i" expanded="true">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Ensemble {{i + 1}}
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
-                                           [label]="'Je choisis une branche du plan de classement'"
-                                           [treeData]="classification"></app-tree-autocomplete-control>
-            <app-file-drop [formControlName]="'archiveDataValues'"></app-file-drop>
+            <div class="file-upload-container">
+              <app-file-drop [formControlName]="'archiveDataValues'"></app-file-drop>
+              <app-tree-autocomplete-control [formControlName]="'classificationItem'"
+                                             [label]="'Je choisis une branche du plan de classement'"
+                                             [treeData]="classification"></app-tree-autocomplete-control>
+            </div>
             <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
               <button (click)="removePackage(i)" color="primary" mat-button type="button">
                 Supprimer cet ensemble
