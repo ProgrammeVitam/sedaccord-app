@@ -10,7 +10,7 @@
         Annuler
       </button>
       <button color="primary" disabled mat-flat-button routerLink="/" type="button">
-        Verser aux archives
+        Demander le versement
       </button>
     </div>
   </div>
@@ -29,9 +29,10 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
           <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
-                                         [label]="'Mon niveau de plan de classement'"
+                                         [label]="'Noeud du plan de classement'"
                                          [treeData]="classification"
                                          [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
+          <div class="mat-caption">Arborescence</div>
           <app-file-tree (selectFileEvent)="onSelectFromTree($event)" (updateNavigationEvent)="onNavigateOnTree($event)"
                          [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"></app-file-tree>
           <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">

@@ -47,8 +47,7 @@ export class FileDetailComponent implements OnInit {
       name: [this.file.name],
       creationDate: [this.file.creationDate],
       lastModificationDate: [this.file.lastModificationDate],
-      description: [''],
-      rule: ['']
+      description: ['']
     });
     this.commentForm = this._formBuilder.group({
       text: ['']

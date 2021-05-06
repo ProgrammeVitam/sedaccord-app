@@ -1,4 +1,4 @@
-<button (click)="addFile()" mat-icon-button type="button">
+<button (click)="addFile()" disabled mat-icon-button type="button">
   <mat-icon>add</mat-icon>
   Nouveau dossier
 </button>
@@ -13,6 +13,9 @@
         <mat-icon inline>folder</mat-icon>
         {{node.name}}
       </span>
+      <button (click)="addFile()" disabled mat-icon-button type="button">
+        <mat-icon>add</mat-icon>
+      </button>
     </ng-container>
     <ng-template #elseBlock>
       <span class="tree-node-content">
@@ -32,7 +35,7 @@
       </mat-icon>
     </button>
     <span (click)="selectDirectory(node)" class="tree-node-content">{{node.name}}</span>
-    <button (click)="addFile()" mat-icon-button type="button">
+    <button (click)="addFile()" disabled mat-icon-button type="button">
       <mat-icon>add</mat-icon>
     </button>
   </mat-tree-node>

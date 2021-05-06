@@ -9,7 +9,7 @@
   <span>Projet de versement {{archiveTransfer?.id}}</span>
 </nav>
 <mat-tab-group *ngIf="archiveTransfer" class="mat-tab-fill-height" dynamicHeight>
-  <mat-tab label="Informations générales">
+  <mat-tab label="Description générale">
     <app-archive-transfer-context [archiveTransfer]="archiveTransfer"></app-archive-transfer-context>
   </mat-tab>
   <mat-tab label="Arborescence de dossiers">

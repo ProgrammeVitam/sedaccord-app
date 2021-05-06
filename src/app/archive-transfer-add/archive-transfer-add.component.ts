@@ -20,8 +20,8 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   steps = [
     {
       label: 'Rattachement au plan de classement',
-      description: 'Vous pouvez ici rattacher vos archives à verser à des noeuds du plan de classement.' +
-        ' Il vous est possible de créer différents ensembles chacun étant rattaché à un noeud différent'
+      description: 'Il s\'agit de rattacher vos archives à verser à des noeuds du plan de classement.' +
+        ' Vous pouvez créer différents ensembles chacun étant rattaché à un noeud différent'
     }, {
       label: 'Description générale du versement',
       description: 'La description générale de votre projet de versement permettra de contextualiser les archives que vous souhaitez verser.'
@@ -41,8 +41,6 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   agencies!: Agency[];
   $filteredOriginatingAgencies!: Observable<Agency[]>;
   $filteredSubmissionAgencies!: Observable<Agency[]>;
-
-  archiveTransferId = 1234;
 
   // Workaround for angular component issue #13870
   disableAnimation = true;

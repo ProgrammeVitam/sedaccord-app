@@ -27,6 +27,7 @@ export interface FilePackage {
 })
 export class FileDropInputControlComponent implements ControlValueAccessor {
   @Input() disabled = false;
+  @Input() label = '';
 
   private _filePackages!: FilePackage[];
   get filePackages(): FilePackage[] {

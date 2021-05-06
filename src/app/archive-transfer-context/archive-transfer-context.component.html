@@ -10,7 +10,7 @@
         Annuler
       </button>
       <button (click)="submitArchiveTransfer()" color="primary" disabled mat-flat-button type="button">
-        Verser aux archives
+        Demander le versement
       </button>
     </div>
   </div>
@@ -18,22 +18,22 @@
     <h2>Informations du versement</h2>
     <p>Afin de contribuer à une meilleure contextualisation de votre versement, veuillez compléter les
       champs ci-dessous.</p>
-    <mat-form-field>
+    <mat-form-field appearance="outline">
       <mat-label>Je renseigne l'intitulé de mon versement
       </mat-label>
       <input formControlName="name" matInput/>
       <mat-hint>L'intitulé du versement doit permettre d'identifier votre versement.</mat-hint>
     </mat-form-field>
-    <mat-form-field>
-      <mat-label>J'ajoute une description à mon versement
+    <mat-form-field appearance="outline">
+      <mat-label>J'ajoute une description sommaire à mon versement (optionnel)
       </mat-label>
       <textarea formControlName="description" matInput rows="5"></textarea>
-      <mat-hint>La description de votre versement permettra d'expliquer le contexte de production des documents et
+      <mat-hint>La description de votre versement permettra d'expliquer plus en détail le contexte de production des documents et
         d'en permettre l'exploitation administrative.
       </mat-hint>
     </mat-form-field>
     <div class="date-group">
-      <mat-form-field>
+      <mat-form-field appearance="outline">
         <mat-label>Date de début
         </mat-label>
         <input [matDatepicker]="pickerStart" formControlName="startDate" matInput/>
@@ -41,7 +41,7 @@
         <mat-datepicker #pickerStart></mat-datepicker>
         <mat-hint>Date du document le plus ancien</mat-hint>
       </mat-form-field>
-      <mat-form-field>
+      <mat-form-field appearance="outline">
         <mat-label>Date de fin
         </mat-label>
         <input [matDatepicker]="pickerEnd" formControlName="endDate" matInput/>

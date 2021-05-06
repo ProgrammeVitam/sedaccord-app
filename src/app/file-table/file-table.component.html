@@ -43,7 +43,7 @@
   <ng-container matColumnDef="delete" stickyEnd>
     <th *matHeaderCellDef class="mat-cell-sticky-right" mat-header-cell></th>
     <td *matCellDef="let row" class="mat-cell-sticky-right" mat-cell>
-      <button (click)="$event.stopPropagation()" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'"
+      <button (click)="$event.stopPropagation()" [style.visibility]="!selection.isSelected(row) ? 'hidden': 'visible'" disabled
               mat-icon-button type="button">
         <mat-icon>delete</mat-icon>
       </button>
