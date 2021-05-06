@@ -72,7 +72,7 @@
             <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
               <mat-spinner diameter="24"></mat-spinner>
             </div>
-            <button (click)="download(archiveTransfer)" [disabled]="isLoading(archiveTransfer)" color="primary" mat-mini-fab type="button">
+            <button (click)="download(archiveTransfer)" [disabled]="disabledDownload || isLoading(archiveTransfer)" color="primary" mat-mini-fab type="button">
               <mat-icon>download</mat-icon>
             </button>
           </div>

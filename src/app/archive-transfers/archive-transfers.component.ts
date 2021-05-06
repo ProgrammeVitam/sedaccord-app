@@ -21,6 +21,7 @@ type SortValue = 'creationDate' | 'lastModificationDate';
 export class ArchiveTransfersComponent {
   name = 'Caroline';
 
+  disabledDownload: boolean;
   loadingArchiveTransferId: number | null;
 
   archiveTransfers!: ArchiveTransfer[];
@@ -35,6 +36,9 @@ export class ArchiveTransfersComponent {
     private _dialog: MatDialog
   ) {
     this._getArchiveTransfers();
+    this.disabledDownload = true;
+    this._sipService.isAvailable()
+      .subscribe(response => this.disabledDownload = response.status !== 'UP');
     this.loadingArchiveTransferId = null;
   }
 

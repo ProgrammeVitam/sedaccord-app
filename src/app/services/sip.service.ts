@@ -5,11 +5,14 @@ import {catchError, tap} from 'rxjs/operators';
 import {ArchiveTransfer} from '../dtos/archive-transfer';
 import {SipData} from '../dtos/sip';
 
+const SERVER_URL = 'http://localhost:8080';
+
 @Injectable({
   providedIn: 'root'
 })
 export class SipService {
-  private sipGenerationUrl = 'http://localhost:8080/sip/generate-sync';
+  private sipHealthCheckUrl = `${SERVER_URL}/actuator/health`;
+  private sipGenerationUrl = `${SERVER_URL}/sip/generate-sync`;
   private httpOptions = {
     headers: new HttpHeaders({
       Accept: 'application/octet-stream',
@@ -20,6 +23,13 @@ export class SipService {
   } as const;
 
   constructor(private http: HttpClient) {
+  }
+
+  isAvailable(): Observable<any> {
+    return this.http.get(this.sipHealthCheckUrl)
+      .pipe(
+        tap(_ => this.log('trying to reach SIP service')),
+      );
   }
 
   generateSip(archiveTransfer: ArchiveTransfer): Observable<HttpResponse<Blob>> {
