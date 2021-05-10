@@ -2,7 +2,7 @@
   <button (click)="onCancel()" class="close-button" mat-icon-button type="button">
     <mat-icon>close</mat-icon>
   </button>
-  <h2>{{file.name}}</h2>
+  <h2>{{fileData.name}}</h2>
   <mat-tab-group class="mat-tab-fill-height" dynamicHeight>
 
     <mat-tab label="Informations du fichier">
@@ -11,7 +11,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Nom original du fichier
             </mat-label>
-            <input [value]="file.name" disabled matInput/>
+            <input [value]="fileData.name" disabled matInput/>
           </mat-form-field>
           <mat-form-field appearance="fill">
             <mat-label>Je modifie le nom du fichier
@@ -22,14 +22,14 @@
             <mat-form-field appearance="fill">
               <mat-label>Date de début
               </mat-label>
-              <input [matDatepicker]="pickerStart" formControlName="creationDate" matInput/>
+              <input [matDatepicker]="pickerStart" formControlName="startDate" matInput/>
               <mat-datepicker-toggle [for]="pickerStart" matSuffix></mat-datepicker-toggle>
               <mat-datepicker #pickerStart></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="fill">
               <mat-label>Date de fin
               </mat-label>
-              <input [matDatepicker]="pickerEnd" formControlName="lastModificationDate" matInput/>
+              <input [matDatepicker]="pickerEnd" formControlName="endDate" matInput/>
               <mat-datepicker-toggle [for]="pickerEnd" matSuffix></mat-datepicker-toggle>
               <mat-datepicker #pickerEnd></mat-datepicker>
             </mat-form-field>
@@ -54,19 +54,22 @@
     <mat-tab label="Commentaires">
       <form (ngSubmit)="onSubmitComment()" [formGroup]="commentForm" class="info-form">
         <div class="form-content-wrapper">
-          <div *ngFor="let comment of comments" class="comment">
-            <div class="mat-small">
-              <span>{{comment.user}}</span>
-              <span>{{comment.date | date}}</span>
-            </div>
-            <mat-card>
-              <mat-card-content>
-                <p>
-                  {{comment.text}}
-                </p>
-              </mat-card-content>
-            </mat-card>
-          </div>
+          <mat-card *ngFor="let comment of comments.value; let i=index" class="comment">
+            <mat-card-header>
+              <mat-card-title>{{comment.username}}</mat-card-title>
+              <mat-card-subtitle>{{comment.date | date}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p>
+                {{comment.text}}
+              </p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-icon-button type="button" (click)="deleteComment(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
         </div>
         <mat-form-field appearance="fill">
           <mat-label>Je commente

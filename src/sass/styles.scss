@@ -64,6 +64,35 @@ main {
   width: 100%;
 }
 
+.mat-card.comment {
+  margin-top: mat-font-size($config, caption) * 2;
+
+  .mat-card-header-text {
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .mat-card-title, .mat-card-subtitle {
+    font-size: mat-font-size($config, caption);
+    margin: 0 !important;
+  }
+
+  .mat-card-content {
+    margin-bottom: 0;
+  }
+
+  .mat-card-actions {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+}
+
 nav.breadcrumb {
   align-items: center;
   display: flex;

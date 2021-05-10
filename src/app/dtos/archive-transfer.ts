@@ -1,17 +1,19 @@
 import {Agency, Reference} from './referential';
-import {FileInterface} from './file';
+import {FileMetadata} from './file';
 
-export interface FileComment { // FIXME
-  date: Date;
-  user: string;
-  text: string;
-  file: string;
-}
+export class ArchiveDataUtils {
+  static getRoots(archiveData: FileMetadata[][]): FileMetadata[] {
+    return archiveData.map(data => this._getRoot(data));
+  }
 
-export interface FileMetadata extends FileInterface {
-  path: string;
-  description?: string;
-  format?: string;
+  private static _getRoot(archiveData: FileMetadata[]): FileMetadata {
+    return archiveData.reduce((acc, currentValue) =>
+      this._getLength(currentValue) < this._getLength(acc) ? currentValue : acc);
+  }
+
+  private static _getLength(currentValue: FileMetadata): number {
+    return currentValue.path.split('/').length;
+  }
 }
 
 export interface ArchiveDataPackage {

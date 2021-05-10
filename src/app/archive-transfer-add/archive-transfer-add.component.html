@@ -21,7 +21,7 @@
         </div>
         <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
           <mat-expansion-panel *ngFor="let _ of archiveDataPackages.controls; let i=index"
-                               [formGroupName]="i" expanded="true">
+                               [formGroupName]="i" expanded>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 Ensemble {{i + 1}}

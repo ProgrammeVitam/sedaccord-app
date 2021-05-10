@@ -1,9 +1,20 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
-import {Directory, FileNode, SimpleFile} from '../dtos/file';
-import {FileMetadata} from '../dtos/archive-transfer';
+import {FileInterface, FileMetadata} from '../dtos/file';
+
+export type FileTreeSelectionModel = { parents: FileMetadata[], children: FileMetadata[] };
+
+interface SimpleFile extends FileInterface {
+  format: string;
+}
+
+interface Directory extends FileInterface {
+  children?: FileNode[];
+}
+
+type FileNode = Directory | SimpleFile;
 
 interface FileFlatNode {
   expandable: boolean;
@@ -17,10 +28,10 @@ interface FileFlatNode {
   templateUrl: './file-tree.component.html',
   styleUrls: ['./file-tree.component.scss']
 })
-export class FileTreeComponent implements OnInit {
+export class FileTreeComponent implements OnInit, OnChanges {
   @Input() fileTreeData!: FileMetadata[];
-  @Output() selectFileEvent = new EventEmitter<FileNode>();
-  @Output() updateNavigationEvent = new EventEmitter<string[]>();
+  @Input() focused!: boolean;
+  @Output() selectDirectoryEvent = new EventEmitter<FileTreeSelectionModel>();
 
   treeControl = new FlatTreeControl<FileFlatNode>(
     node => node.level,
@@ -60,8 +71,17 @@ export class FileTreeComponent implements OnInit {
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
   private _nestedNodeMap = new Map<FileNode, FileFlatNode>();
 
+  /** Map from nested node to file metadata. */
+  private _nodeMap = new Map<FileNode, FileMetadata>();
+
   ngOnInit(): void {
     this.dataSource.data = this._buildTreeFromMaterialized(this.fileTreeData);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.focused && !this.focused) {
+      this.selection.clear();
+    }
   }
 
   getLevel = (node: FileFlatNode) => node.level;
@@ -71,9 +91,16 @@ export class FileTreeComponent implements OnInit {
   /** Select a file. Check all the parents to see if they changed */
   selectDirectory(node: FileFlatNode): void {
     this.selection.select(node);
-    const parents = this._checkAllParentsSelection(node);
-    this.selectFileEvent.emit(this._flatNodeMap.get(node));
-    this.updateNavigationEvent.emit(parents);
+    const parents = this._checkAllParentsSelection(node)
+      .map(parent => this._nodeMap.get(this._flatNodeMap.get(parent)!)!)
+      .concat([this._nodeMap.get(this._flatNodeMap.get(node)!)!]);
+    const directory = this._flatNodeMap.get(node) as Directory;
+    let children: FileMetadata[] = [];
+    if (directory.children) {
+      children = directory.children
+        .map(fileNode => this._nodeMap.get(fileNode)!);
+    }
+    this.selectDirectoryEvent.emit({parents, children});
   }
 
   /** Select the category so we can insert the new item. */
@@ -168,6 +195,7 @@ export class FileTreeComponent implements OnInit {
     } else {
       (fileNode as SimpleFile).format = fileMetadata.format || '';
     }
+    this._nodeMap.set(fileNode, fileMetadata);
     return fileNode;
   }
 
@@ -176,12 +204,12 @@ export class FileTreeComponent implements OnInit {
   }
 
   /** Checks all the parents when a leaf node is selected/unselected and return them */
-  private _checkAllParentsSelection(node: FileFlatNode): string[] {
+  private _checkAllParentsSelection(node: FileFlatNode): FileFlatNode[] {
     const parents = [];
     let parent = this._getParentNode(node);
     while (parent) {
       this._checkRootNodeSelection(parent);
-      parents.push(parent.name);
+      parents.push(parent);
       parent = this._getParentNode(parent);
     }
     return parents;

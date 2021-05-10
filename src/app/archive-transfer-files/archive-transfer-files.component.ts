@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
+import {ArchiveDataUtils, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
@@ -7,7 +7,8 @@ import {ComplexDialogService, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/c
 import {FileDetailComponent} from '../file-detail/file-detail.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {ClassificationItemNode} from '../dtos/referential';
-import {Directory, FileNode} from '../dtos/file';
+import {FileMetadata} from '../dtos/file';
+import {FileTreeSelectionModel} from '../file-tree/file-tree.component';
 
 @Component({
   selector: 'app-archive-transfer-files',
@@ -18,10 +19,10 @@ export class ArchiveTransferFilesComponent implements OnInit {
   @Input() archiveTransfer!: ArchiveTransfer;
 
   filesForm!: FormGroup;
-  treeSelection: SelectionModel<FileNode>;
+  treeSelection: SelectionModel<FileTreeSelectionModel>;
   selectedArchiveDataPackageIndex: number;
   selectionPath: string[];
-  tableSelection: SelectionModel<FileNode>;
+  tableSelection: SelectionModel<FileMetadata>;
   saveButtonDisabled: boolean;
 
   classification!: ClassificationItemNode[];
@@ -32,10 +33,10 @@ export class ArchiveTransferFilesComponent implements OnInit {
     private _referentialService: ReferentialService,
     private _archiveTransferService: ArchiveTransferService
   ) {
-    this.treeSelection = new SelectionModel<FileNode>(false);
+    this.treeSelection = new SelectionModel<FileTreeSelectionModel>(false);
     this.selectedArchiveDataPackageIndex = -1;
     this.selectionPath = [];
-    this.tableSelection = new SelectionModel<FileNode>(false);
+    this.tableSelection = new SelectionModel<FileMetadata>(false);
     this.saveButtonDisabled = true;
   }
 
@@ -59,24 +60,34 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   onSelectPackage(archiveDataPackageIndex: number): void {
     this.selectedArchiveDataPackageIndex = archiveDataPackageIndex;
+    this.treeSelection.select({
+      parents: [],
+      children: ArchiveDataUtils.getRoots(this.archiveDataPackages.value[this.selectedArchiveDataPackageIndex].archiveDataValues)
+    });
   }
 
-  onSelectFromTree(file: FileNode): void {
-    this.treeSelection.select(file);
+  onSelectFromTree(directoryAndFiles: FileTreeSelectionModel): void {
+    this.treeSelection.select(directoryAndFiles);
+    this.selectionPath = directoryAndFiles.parents.map(fileMetadata => fileMetadata.name);
   }
 
-  onNavigateOnTree(filePath: string[]): void {
-    this.selectionPath = filePath;
-  }
-
-  onSelectFromTable(file: FileNode): void {
-    this.tableSelection.select(file);
+  onSelectFromTable(fileMetadata: FileMetadata): void {
+    this.tableSelection.select(fileMetadata);
     const fileDetailSidenavRef = this._fileDetailDialogService.open(
       FileDetailComponent,
       FILE_DETAIL_SIDENAV_REF,
       {closeOnBackdropClick: true}
     );
-    fileDetailSidenavRef.componentInstance!.file = file;
+    fileDetailSidenavRef.componentInstance!.fileData = fileMetadata;
+    fileDetailSidenavRef.componentInstance!.updateEvent
+      .subscribe((fileData: FileMetadata) => {
+        fileMetadata.newName = fileData.newName;
+        fileMetadata.comments = fileData.comments;
+        fileMetadata.description = fileData.description;
+        fileMetadata.startDate = fileData.startDate;
+        fileMetadata.endDate = fileData.endDate;
+        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
+      });
   }
 
   onSubmit(): void {
@@ -105,13 +116,6 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   removePackage(index: number): void { // TODO
     this.archiveDataPackages.removeAt(index);
-  }
-
-  listFiles(file: FileNode): FileNode[] {
-    if (file.isDirectory) {
-      return (file as Directory).children || [];
-    }
-    return [];
   }
 
   getDirectoryCount(archiveDataValues: FileMetadata[]): number {

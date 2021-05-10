@@ -6,12 +6,18 @@ export interface FileInterface {
   size: number;
 }
 
-export interface SimpleFile extends FileInterface {
-  format: string;
+export interface FileComment {
+  date: Date;
+  username: string;
+  text: string;
 }
 
-export interface Directory extends FileInterface {
-  children?: FileNode[];
+export interface FileMetadata extends FileInterface {
+  path: string;
+  comments?: FileComment[];
+  newName?: string;
+  description?: string;
+  format?: string;
+  startDate?: Date;
+  endDate?: Date;
 }
-
-export type FileNode = Directory | SimpleFile;

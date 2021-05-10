@@ -48,13 +48,3 @@ h2 {
     width: $form-field-width;
   }
 }
-
-.comment {
-  margin-top: $smaller-margin;
-
-  > div:first-child {
-    display: flex;
-    justify-content: space-between;
-  }
-}
-

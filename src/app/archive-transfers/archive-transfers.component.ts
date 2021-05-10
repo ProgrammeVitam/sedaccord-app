@@ -19,7 +19,7 @@ type SortValue = 'creationDate' | 'lastModificationDate';
   styleUrls: ['./archive-transfers.component.scss']
 })
 export class ArchiveTransfersComponent {
-  name = 'Caroline';
+  name = 'Caroline'; // TODO
 
   disabledDownload: boolean;
   loadingArchiveTransferId: number | null;

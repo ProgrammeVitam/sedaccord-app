@@ -1,4 +1,5 @@
-import {ArchiveDataPackage, ArchiveTransfer, FileMetadata} from './archive-transfer';
+import {ArchiveDataPackage, ArchiveDataUtils, ArchiveTransfer} from './archive-transfer';
+import {FileMetadata} from './file';
 
 interface ArchiveUnitData {
   archiveUnitID: string;
@@ -63,28 +64,16 @@ export class SipData implements SipDataInterface {
         title: `${archiveDataPackage.name} ${archiveDataPackage.classificationItem.name}`,
         description: archiveDataPackage.description || ''
       };
-      const archiveUnits = archiveDataPackage.archiveData
-        .map(archiveData => {
-          const root = this._getRoot(archiveData);
-          return {
+      const archiveUnits = ArchiveDataUtils.getRoots(archiveDataPackage.archiveData)
+        .map(root => { return {
             archiveUnitID: archiveUnitId,
             descriptionLevel: 'RecordGrp',
             title: root.name,
             description: root.description || '',
             path: `/home/helene/Desktop${root.path}` // TODO
-          } as ArchiveUnitData;
-        });
+          } as ArchiveUnitData; });
       return [metaArchiveUnit, ...archiveUnits];
     });
-  }
-
-  private static _getRoot(archiveData: FileMetadata[]): FileMetadata {
-    return archiveData.reduce((acc, currentValue) =>
-      this._getLength(currentValue) < this._getLength(acc) ? currentValue : acc);
-  }
-
-  private static _getLength(currentValue: FileMetadata): number {
-    return currentValue.path.split('/').length;
   }
 
   withComment(value: string): SipData {

@@ -1,10 +1,9 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
+import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {DialogReference, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
-import {FileComment} from '../dtos/archive-transfer';
-import {FileNode} from '../dtos/file';
+import {FileMetadata} from '../dtos/file';
 
 const TRANSITION_DURATION = 300;
 
@@ -25,32 +24,38 @@ const TRANSITION_DURATION = 300;
   ]
 })
 export class FileDetailComponent implements OnInit {
-  @Input() file!: FileNode;
+  @Input() fileData!: FileMetadata;
+  @Output() updateEvent!: EventEmitter<FileMetadata>;
 
   fileForm!: FormGroup;
   commentForm!: FormGroup;
   isOpen = true;
-
-  comments: FileComment[];
 
   constructor(
     @Inject(FILE_DETAIL_SIDENAV_REF) private _sidenavRef: DialogReference<FileDetailComponent>,
     private _formBuilder: FormBuilder,
     private _archiveTransferService: ArchiveTransferService
   ) {
-    this.comments = [];
+    this.updateEvent = new EventEmitter<FileMetadata>();
+  }
+
+  get comments(): FormArray {
+    return this.commentForm.get('comments') as FormArray;
   }
 
   ngOnInit(): void {
-    this._getComments();
     this.fileForm = this._formBuilder.group({
-      name: [this.file.name],
-      creationDate: [this.file.creationDate],
-      lastModificationDate: [this.file.lastModificationDate],
-      description: ['']
+      name: [this.fileData.newName || this.fileData.name],
+      startDate: [this.fileData.creationDate || this.fileData.startDate],
+      endDate: [this.fileData.lastModificationDate || this.fileData.endDate],
+      description: [this.fileData.description]
     });
     this.commentForm = this._formBuilder.group({
+      comments: this._formBuilder.array([]),
       text: ['']
+    });
+    this.fileData.comments?.forEach(comment => {
+      this.comments.push(this._formBuilder.control(comment));
     });
   }
 
@@ -59,29 +64,35 @@ export class FileDetailComponent implements OnInit {
   }
 
   onSubmitFile(): void {
-    // TODO
+    this.fileData.newName = this.fileForm.value.name;
+    this.fileData.startDate = this.fileForm.value.startDate;
+    this.fileData.endDate = this.fileForm.value.endDate;
+    this.fileData.description = this.fileForm.value.description;
+    this.updateEvent.emit(this.fileData);
     this._closeSidenav();
+  }
+
+  deleteComment(index: number): void {
+    this.comments.removeAt(index);
+    this.fileData.comments = this.comments.value;
+    this.updateEvent.emit(this.fileData);
   }
 
   onSubmitComment(): void {
     const comment = {
       date: new Date(),
-      user: 'Patrick',
+      username: 'Patrick', // TODO
       text: this.commentForm.value.text,
-      file: this.file.name
+      file: this.fileData.name
     };
-    this.comments.push(comment);
-    this._archiveTransferService.addComment(comment).subscribe();
-    this.commentForm.reset();
+    this.comments.push(this._formBuilder.control(comment));
+    this.fileData.comments = this.comments.value;
+    this.updateEvent.emit(this.fileData);
+    this.commentForm.get('text')!.reset();
   }
 
   private _closeSidenav(): void {
     setTimeout((_: any) => this._sidenavRef.close(), TRANSITION_DURATION);
     this.isOpen = false;
-  }
-
-  private _getComments(): void {
-    this._archiveTransferService.getComments(this.file.name)
-      .subscribe(comments => this.comments = comments);
   }
 }

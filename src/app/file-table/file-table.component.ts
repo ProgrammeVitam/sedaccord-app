@@ -12,7 +12,7 @@ import {
 import {MatSort} from '@angular/material/sort';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FileNode} from '../dtos/file';
+import {FileMetadata} from '../dtos/file';
 
 @Component({
   selector: 'app-file-table',
@@ -20,14 +20,14 @@ import {FileNode} from '../dtos/file';
   styleUrls: ['./file-table.component.scss']
 })
 export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
-  @Input() elementData!: FileNode[];
-  @Output() selectFileEvent = new EventEmitter<FileNode>();
+  @Input() fileTableData!: FileMetadata[];
+  @Output() selectFileEvent = new EventEmitter<FileMetadata>();
 
   displayedColumns: string[] = ['name', 'creationDate', 'lastModificationDate', 'size', 'format', 'description', 'edit', 'delete'];
-  dataSource!: MatTableDataSource<FileNode>;
-  selection!: SelectionModel<FileNode>;
+  dataSource!: MatTableDataSource<FileMetadata>;
+  selection!: SelectionModel<FileMetadata>;
 
-  @ViewChild(MatTable, {static: true}) table!: MatTable<FileNode[]>;
+  @ViewChild(MatTable, {static: true}) table!: MatTable<FileMetadata[]>;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor() {
@@ -36,20 +36,20 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
   ngOnChanges(changes: SimpleChanges): void {
     // Listen to when data from parent is available
     if (this.dataSource) { // ngOnChanges called before ngOnInit
-      this.dataSource.data = this.elementData;
+      this.dataSource.data = this.fileTableData;
     }
   }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<FileNode>(this.elementData);
-    this.selection = new SelectionModel<FileNode>(false);
+    this.dataSource = new MatTableDataSource<FileMetadata>(this.fileTableData);
+    this.selection = new SelectionModel<FileMetadata>(false);
   }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
-  onHoverIn(row: FileNode): void {
+  onHoverIn(row: FileMetadata): void {
     this.selection.select(row);
   }
 
@@ -57,7 +57,7 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
     this.selection.clear();
   }
 
-  edit(row: FileNode): void {
+  edit(row: FileMetadata): void {
     this.selectFileEvent.emit(row);
   }
 }

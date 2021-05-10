@@ -84,7 +84,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
   clearValue(): void {
     this.value = null;
     this.autoInput.patchValue(null);
-    this.selection.deselect(...this.selection.selected);
+    this.selection.clear();
     this.onChange(this.value);
   }
 

@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {InMemoryDbService} from 'angular-in-memory-web-api';
-import {ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
+import {ArchiveTransfer} from '../dtos/archive-transfer';
 import {Agency} from '../dtos/referential';
+import {FileMetadata} from '../dtos/file';
 
 @Injectable({
   providedIn: 'root'
@@ -171,7 +172,19 @@ export class InMemoryDataService implements InMemoryDbService {
         lastModificationDate: new Date(2014, 0, 6),
         size: 948.55,
         format: 'rtf',
-        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf'
+        path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf',
+        comments: [
+          {
+            date: new Date(2021, 0, 28, 15, 0, 0),
+            username: 'Caroline',
+            text: 'J\'ai un doute sur le format de ce fichier, convient-il pour le versement ?'
+          },
+          {
+            date: new Date(2021, 1, 5, 15, 0, 0),
+            username: 'Sophie Bertrand',
+            text: 'Oui, il convient tout à fait.'
+          }
+        ]
       }]
     ];
     const transfer1 = {
@@ -208,25 +221,10 @@ export class InMemoryDataService implements InMemoryDbService {
       transfer1,
       transfer2
     ];
-    const comments = [
-      {
-        date: new Date(2021, 0, 28, 15, 0, 0),
-        user: 'Caroline',
-        text: 'J\'ai un doute sur le format de ce fichier, convient-il pour le versement ?',
-        file: 'Evaluation_2016_CR'
-      },
-      {
-        date: new Date(2021, 1, 5, 15, 0, 0),
-        user: 'Sophie Bertrand',
-        text: 'Oui, il convient tout à fait.',
-        file: 'Evaluation_2016_CR'
-      }
-    ];
     return {
       agencies,
       classification,
-      archiveTransfers,
-      comments
+      archiveTransfers
     };
   }
 

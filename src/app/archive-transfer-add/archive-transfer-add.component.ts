@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.service';
-import {ArchiveDataPackage, ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
+import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Observable} from 'rxjs';
@@ -9,6 +9,7 @@ import {map, startWith} from 'rxjs/operators';
 import {Agency, ClassificationItemNode} from '../dtos/referential';
 import {FilePackage} from '../file-drop-input-control/file-drop-input-control.component';
 import {Router} from '@angular/router';
+import {FileMetadata} from '../dtos/file';
 
 @Component({
   selector: 'app-archive-transfer-add',

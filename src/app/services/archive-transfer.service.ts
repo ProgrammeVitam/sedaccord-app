@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {ArchiveTransfer, ArchiveTransferInterface, FileComment} from '../dtos/archive-transfer';
+import {ArchiveTransfer, ArchiveTransferInterface} from '../dtos/archive-transfer';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 
@@ -9,7 +9,6 @@ import {catchError, map, tap} from 'rxjs/operators';
 })
 export class ArchiveTransferService {
   private archiveTransfersUrl = 'api/archiveTransfers';  // URL to web api
-  private commentsUrl = 'api/comments';  // URL to web api
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
@@ -60,23 +59,6 @@ export class ArchiveTransferService {
       tap(_ => this.log(`deleted archive transfer id=${id}`)),
       catchError(this.handleError<ArchiveTransfer>('deleteArchiveTransfer'))
     );
-  }
-
-  getComments(file: string): Observable<FileComment[]> {
-    return this.http.get<FileComment[]>(this.commentsUrl) // TODO back end query
-      .pipe(
-        map(value => value.filter(element => element.file === file)),
-        tap(_ => this.log(`fetched comments for file name=${file}`)),
-        catchError(this.handleError<FileComment[]>(`getComments file name=${file}`))
-      );
-  }
-
-  addComment(comment: FileComment): Observable<FileComment> {
-    return this.http.post<FileComment>(this.commentsUrl, comment, this.httpOptions)
-      .pipe(
-        tap((newComment: FileComment) => this.log(`added comment for file=${newComment.file}`)),
-        catchError(this.handleError<FileComment>('addComment'))
-      );
   }
 
   /**
