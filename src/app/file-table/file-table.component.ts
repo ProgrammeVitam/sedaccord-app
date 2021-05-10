@@ -19,7 +19,7 @@ import {FileNode} from '../dtos/file';
   templateUrl: './file-table.component.html',
   styleUrls: ['./file-table.component.scss']
 })
-export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
+export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
   @Input() elementData!: FileNode[];
   @Output() selectFileEvent = new EventEmitter<FileNode>();
 
@@ -33,6 +33,13 @@ export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
   constructor() {
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // Listen to when data from parent is available
+    if (this.dataSource) { // ngOnChanges called before ngOnInit
+      this.dataSource.data = this.elementData;
+    }
+  }
+
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<FileNode>(this.elementData);
     this.selection = new SelectionModel<FileNode>(false);
@@ -40,12 +47,6 @@ export class FileTableComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.dataSource) {
-      this.dataSource.data = this.elementData;
-    }
   }
 
   onHoverIn(row: FileNode): void {

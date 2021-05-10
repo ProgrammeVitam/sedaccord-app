@@ -69,7 +69,10 @@ export class ArchiveTransfersComponent {
       .subscribe((archiveTransfer: ArchiveTransfer) => {
         this.archiveTransfers.push(archiveTransfer);
         this._archiveTransferService.addArchiveTransfer(archiveTransfer)
-          .subscribe(newArchiveTransfer => this._router.navigate([`/detail/${newArchiveTransfer.id}`]));
+          .subscribe(newArchiveTransfer => {
+              this._keepAddDialogUpdated(addDialogRef.componentInstance!, newArchiveTransfer.id);
+            }
+          );
       });
   }
 
@@ -146,5 +149,16 @@ export class ArchiveTransfersComponent {
 
   private _getFilename(response: HttpResponse<Blob>): any {
     return response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1];
+  }
+
+  private _keepAddDialogUpdated(addDialog: ArchiveTransferAddComponent, newArchiveTransferId: number): void {
+    const intervalId = setInterval((_: any) => { // FIXME fake timer to simulate back end processing
+      if (addDialog.progressValue >= 100) {
+        addDialog.newArchiveTransferId = newArchiveTransferId;
+        clearInterval(intervalId);
+      } else {
+        addDialog.progressValue++;
+      }
+    }, 10);
   }
 }

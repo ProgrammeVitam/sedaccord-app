@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Inject, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.service';
 import {ArchiveDataPackage, ArchiveTransfer, FileMetadata} from '../dtos/archive-transfer';
@@ -8,6 +8,7 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {Agency, ClassificationItemNode} from '../dtos/referential';
 import {FilePackage} from '../file-drop-input-control/file-drop-input-control.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-archive-transfer-add',
@@ -15,6 +16,7 @@ import {FilePackage} from '../file-drop-input-control/file-drop-input-control.co
   styleUrls: ['./archive-transfer-add.component.scss']
 })
 export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
+  @Input() newArchiveTransferId: number | undefined;
   @Output() addEvent: EventEmitter<ArchiveTransfer>;
 
   steps = [
@@ -35,7 +37,6 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   ];
   archiveTransferFormWrapper!: FormGroup;
   progressValue = 1;
-  okDisabled = true;
 
   classification!: ClassificationItemNode[];
   agencies!: Agency[];
@@ -47,6 +48,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
 
   constructor(
     @Inject(ADD_DIALOG_REF) private _dialogRef: DialogReference<ArchiveTransferAddComponent>,
+    private _router: Router,
     private _formBuilder: FormBuilder,
     private _referentialService: ReferentialService,
     private _archiveTransferService: ArchiveTransferService
@@ -137,10 +139,10 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
         description: this.archiveTransferForm.at(2).value.submissionAgencyDescription
       }).withArchiveDataPackages(this._buildArchiveDataPackages(this.archiveDataPackages.value));
     this.addEvent.emit(archiveTransfer);
-    this._spin();
   }
 
   onOk(): void {
+    this._router.navigate([`/detail/${this.newArchiveTransferId}`]);
     this._dialogRef.close();
   }
 
@@ -223,16 +225,5 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
         });
         return [...directoryMetadata, ...fileMetadata];
       });
-  }
-
-  private _spin(): void {
-    const intervalId = setInterval((_: any) => {
-      if (this.progressValue >= 100) {
-        this.okDisabled = false;
-        clearInterval(intervalId);
-      } else {
-        this.progressValue++;
-      }
-    }, 20);
   }
 }

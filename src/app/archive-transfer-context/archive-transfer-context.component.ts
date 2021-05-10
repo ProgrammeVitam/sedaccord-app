@@ -80,7 +80,7 @@ export class ArchiveTransferContextComponent implements OnInit {
         name: this.contextForm2.value.submissionAgency.name,
         description: this.contextForm2.value.submissionAgencyDescription
       });
-    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
+    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
     this.saveButtonDisabled = true;
   }
 

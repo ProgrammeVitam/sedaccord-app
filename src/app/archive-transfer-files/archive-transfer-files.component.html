@@ -28,7 +28,7 @@
               / {{getFileCount(archiveDataPackage.get('archiveDataValues')?.value)}} fichiers
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <app-tree-autocomplete-control *ngIf="classification" [formControlName]="'classificationItem'"
+          <app-tree-autocomplete-control [formControlName]="'classificationItem'"
                                          [label]="'Noeud du plan de classement'"
                                          [treeData]="classification"
                                          [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>

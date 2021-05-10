@@ -76,9 +76,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
       FILE_DETAIL_SIDENAV_REF,
       {closeOnBackdropClick: true}
     );
-    if (this.tableSelection.hasValue()) {
-      fileDetailSidenavRef.componentInstance!.file = this.tableSelection.selected[0];
-    }
+    fileDetailSidenavRef.componentInstance!.file = file;
   }
 
   onSubmit(): void {
@@ -94,7 +92,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
         archiveData: archiveDataPackage.archiveDataValues
       };
     });
-    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe(); // TODO emit
+    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
     this.saveButtonDisabled = true;
   }
 

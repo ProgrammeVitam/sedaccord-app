@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, forwardRef, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {NestedTreeControl} from '@angular/cdk/tree';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
@@ -20,7 +20,7 @@ interface SimpleTreeNode {
     multi: true
   }]
 })
-export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implements OnInit, ControlValueAccessor {
+export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implements OnChanges, OnInit, ControlValueAccessor {
   @Input() disabled = false;
   @Input() label = '';
   @Input() treeData!: T[];
@@ -44,6 +44,13 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
 
   constructor() {
     this.value = null;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Listen to when data from parent is available
+    if (this.dataSource) { // ngOnChanges called before ngOnInit
+      this.dataSource.data = this.treeData;
+    }
   }
 
   ngOnInit(): void {

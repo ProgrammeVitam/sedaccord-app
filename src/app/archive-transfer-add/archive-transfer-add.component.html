@@ -19,7 +19,7 @@
             Ajouter un ensemble
           </button>
         </div>
-        <mat-accordion *ngIf="classification" [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
+        <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
           <mat-expansion-panel *ngFor="let _ of archiveDataPackages.controls; let i=index"
                                [formGroupName]="i" expanded="true">
             <mat-expansion-panel-header>
@@ -199,7 +199,7 @@
           </mat-progress-spinner>
         </div>
         <div>
-          <button (click)="onOk()" [disabled]="okDisabled" mat-stroked-button type="button">
+          <button (click)="onOk()" [disabled]="!newArchiveTransferId" mat-stroked-button type="button">
             Valider
           </button>
         </div>

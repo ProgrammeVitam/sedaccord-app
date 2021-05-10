@@ -59,8 +59,8 @@ export class FileDetailComponent implements OnInit {
   }
 
   onSubmitFile(): void {
-    this._closeSidenav();
     // TODO
+    this._closeSidenav();
   }
 
   onSubmitComment(): void {
