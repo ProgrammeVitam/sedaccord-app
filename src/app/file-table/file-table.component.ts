@@ -20,7 +20,7 @@ import {FileMetadata} from '../dtos/file';
   styleUrls: ['./file-table.component.scss']
 })
 export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
-  @Input() fileTableData!: FileMetadata[];
+  @Input() fileTableData: FileMetadata[] = [];
   @Output() selectFileEvent = new EventEmitter<FileMetadata>();
 
   displayedColumns: string[] = ['name', 'startDate', 'endDate', 'size', 'format', 'description', 'edit', 'delete'];
@@ -41,6 +41,7 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.fileTableData = this.fileTableData || [];
     this.dataSource = new MatTableDataSource<FileMetadata>(this.fileTableData);
     this.selection = new SelectionModel<FileMetadata>(false);
   }

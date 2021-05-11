@@ -28,8 +28,8 @@ interface FileFlatNode {
   styleUrls: ['./file-tree.component.scss']
 })
 export class FileTreeComponent implements OnInit, OnChanges {
-  @Input() fileTreeData!: FileMetadata[];
-  @Input() focused!: boolean;
+  @Input() fileTreeData: FileMetadata[] = [];
+  @Input() focused = false;
   @Output() selectDirectoryEvent = new EventEmitter<FileTreeSelectionModel>();
 
   treeControl = new FlatTreeControl<FileFlatNode>(
@@ -74,6 +74,7 @@ export class FileTreeComponent implements OnInit, OnChanges {
   private _nodeMap = new Map<FileNode, FileMetadata>();
 
   ngOnInit(): void {
+    this.fileTreeData = this.fileTreeData || [];
     this.dataSource.data = this._buildTreeFromMaterialized(this.fileTreeData);
   }
 

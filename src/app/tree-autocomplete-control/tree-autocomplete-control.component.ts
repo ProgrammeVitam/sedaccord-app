@@ -23,7 +23,7 @@ interface SimpleTreeNode {
 export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implements OnChanges, OnInit, ControlValueAccessor {
   @Input() disabled = false;
   @Input() label = '';
-  @Input() treeData!: T[];
+  @Input() treeData: T[] = [];
 
   autoInput = new FormControl();
   treeControl = new NestedTreeControl<T>(node => node.children);
@@ -54,6 +54,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
   }
 
   ngOnInit(): void {
+    this.treeData = this.treeData || [];
     this.dataSource.data = this.treeData;
     this.autoInput.valueChanges
       .pipe(
@@ -61,7 +62,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
         map(value => value === null ? '' : typeof value === 'string' ? value : value.name),
         tap(searchTerm => {
           if (searchTerm) {
-            this.dataSource.data = this._filter(searchTerm, this.treeData);
+            this.dataSource.data = this._filter(searchTerm, this.dataSource.data);
           } else {
             this.dataSource.data = this.treeData;
           }
