@@ -173,18 +173,21 @@ export class InMemoryDataService implements InMemoryDbService {
         size: 948.55,
         format: 'rtf',
         path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf',
-        comments: [
-          {
-            date: new Date(2021, 0, 28, 15, 0, 0),
-            username: 'Caroline',
-            text: 'J\'ai un doute sur le format de ce fichier, convient-il pour le versement ?'
-          },
-          {
-            date: new Date(2021, 1, 5, 15, 0, 0),
-            username: 'Sophie Bertrand',
-            text: 'Oui, il convient tout à fait.'
-          }
-        ]
+        comments: {
+          status: 'unresolved',
+          thread: [
+            {
+              date: new Date(2021, 0, 28, 15, 0, 0),
+              username: 'Caroline',
+              text: 'J\'ai un doute sur le format de ce fichier, convient-il pour le versement ?'
+            },
+            {
+              date: new Date(2021, 1, 5, 15, 0, 0),
+              username: 'Sophie Bertrand',
+              text: 'Oui, il convient tout à fait.'
+            }
+          ]
+        }
       }]
     ];
     const transfer1 = {

@@ -13,10 +13,6 @@ $border: mat-color($mat-blue-gray, 50);
 
 $config: mat-typography-config();
 
-.mat-badge-content {
-  font-family: 'Material Icons', mat-font-family($config);
-}
-
 $default-margin: 2em;
 $smaller-margin: $default-margin / 2;
 $smallest-margin: $smaller-margin / 2;

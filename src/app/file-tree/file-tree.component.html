@@ -4,29 +4,42 @@
 </button>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <!-- This is the tree node template for leaf nodes -->
-  <mat-tree-node *matTreeNodeDef="let node" [ngClass]="{'selectable': node.isDirectory, 'selected': isSelected(node)}"
+  <mat-tree-node *matTreeNodeDef="let node" [ngClass]="{'selectable': isDirectory(node), 'selected': isSelected(node)}"
                  matTreeNodePadding>
     <!-- use a disabled button to provide padding for tree leaf -->
     <button disabled mat-icon-button type="button"></button>
-    <ng-container *ngIf="node.isDirectory; else elseBlock">
-      <span (click)="selectDirectory(node)" class="tree-node-content">
-        <mat-icon inline>folder</mat-icon>
-        {{node.name}}
-      </span>
+    <ng-container *ngIf="isDirectory(node); else elseBlock">
+      <div (click)="selectDirectory(node)" [matBadgeColor]="hasUnresolvedThread(node) ? 'accent' : 'primary'"
+           [matBadgeHidden]="!hasComment(node)" [matBadge]="getCommentCount(node)" class="text-ellipsis-flex-container"
+           matBadgeOverlap="false"
+           matBadgePosition="below before" matBadgeSize="small">
+        <div [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
+             [matBadgeHidden]="!descendantsHaveComment(node)" [matBadge]="getDescendantCommentCount(node)"
+             class="badge-show" matBadgePosition="below before" matBadgeSize="small">
+          <div class="text-ellipsis">
+            <mat-icon inline>folder</mat-icon>
+            {{node.name}}
+          </div>
+        </div>
+      </div>
       <button (click)="addFile()" disabled mat-icon-button type="button">
         <mat-icon>add</mat-icon>
       </button>
     </ng-container>
     <ng-template #elseBlock>
-      <span class="tree-node-content">
-        <mat-icon inline>text_snippet</mat-icon>
-        {{node.name}}
-      </span>
+      <div [matBadgeColor]="hasUnresolvedThread(node) ? 'accent' : 'primary'" [matBadgeHidden]="!hasComment(node)"
+           [matBadge]="getCommentCount(node)"
+           class="text-ellipsis-flex-container" matBadgePosition="below before" matBadgeSize="small">
+        <div class="text-ellipsis">
+          <mat-icon inline>text_snippet</mat-icon>
+          {{node.name}}
+        </div>
+      </div>
     </ng-template>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                 [ngClass]="{'selectable': node.isDirectory, 'selected': isSelected(node)}"
+                 [ngClass]="{'selectable': isDirectory(node), 'selected': isSelected(node)}"
                  matTreeNodePadding>
     <mat-icon inline>folder</mat-icon>
     <button [attr.aria-label]="'Toggle ' + node.name" mat-icon-button matTreeNodeToggle type="button">
@@ -34,7 +47,19 @@
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    <span (click)="selectDirectory(node)" class="tree-node-content">{{node.name}}</span>
+    <div (click)="selectDirectory(node)" [matBadgeColor]="hasUnresolvedThread(node) ? 'accent' : 'primary'"
+         [matBadgeHidden]="!hasComment(node)" [matBadge]="getCommentCount(node)" class="text-ellipsis-flex-container"
+         matBadgeOverlap="false"
+         matBadgePosition="below before" matBadgeSize="small">
+      <div [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
+           [matBadgeHidden]="!descendantsHaveComment(node)"
+           [matBadge]="getDescendantCommentCount(node)" class="badge-show"
+           matBadgePosition="below before" matBadgeSize="small">
+        <div class="text-ellipsis">
+          {{node.name}}
+        </div>
+      </div>
+    </div>
     <button (click)="addFile()" disabled mat-icon-button type="button">
       <mat-icon>add</mat-icon>
     </button>

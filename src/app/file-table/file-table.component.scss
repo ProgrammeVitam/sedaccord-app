@@ -13,13 +13,7 @@ th.mat-cell-sticky-right {
   width: 50px;
 }
 
-td.mat-cell {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &.mat-cell-sticky-right {
-    padding-right: 0;
-    width: 50px;
-  }
+td.mat-cell.mat-cell-sticky-right {
+  padding-right: 0;
+  width: 50px;
 }

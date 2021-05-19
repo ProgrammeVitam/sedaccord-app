@@ -20,7 +20,6 @@ interface FileFlatNode {
   expandable: boolean;
   name: string;
   level: number;
-  isDirectory: boolean;
 }
 
 @Component({
@@ -95,11 +94,8 @@ export class FileTreeComponent implements OnInit, OnChanges {
       .map(parent => this._nodeMap.get(this._flatNodeMap.get(parent)!)!)
       .concat([this._nodeMap.get(this._flatNodeMap.get(node)!)!]);
     const directory = this._flatNodeMap.get(node) as Directory;
-    let children: FileMetadata[] = [];
-    if (directory.children) {
-      children = directory.children
-        .map(fileNode => this._nodeMap.get(fileNode)!);
-    }
+    const children = (directory.children || [])
+      .map(fileNode => this._nodeMap.get(fileNode)!);
     this.selectDirectoryEvent.emit({parents, children});
   }
 
@@ -108,8 +104,36 @@ export class FileTreeComponent implements OnInit, OnChanges {
     // TODO
   }
 
+  isDirectory(node: FileFlatNode): boolean {
+    return this._flatNodeMap.get(node)!.isDirectory;
+  }
+
   isSelected(node: FileFlatNode): boolean {
     return this._descendantsOneOfSelected(node);
+  }
+
+  hasUnresolvedThread(node: FileFlatNode): boolean {
+    return this._hasUnresolvedThread(node);
+  }
+
+  descendantsHaveUnresolvedThread(node: FileFlatNode): boolean {
+    return this._descendantsOnlyOneOfHasUnresolvedThread(node);
+  }
+
+  hasComment(node: FileFlatNode): boolean {
+    return this._getCommentCount(node) > 0;
+  }
+
+  descendantsHaveComment(node: FileFlatNode): boolean {
+    return this._getDescendantsOnlyCommentCount(node) > 0;
+  }
+
+  getCommentCount(node: FileFlatNode): number {
+    return this._getCommentCount(node);
+  }
+
+  getDescendantCommentCount(node: FileFlatNode): number {
+    return this._getDescendantsOnlyCommentCount(node);
   }
 
   private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
@@ -256,5 +280,29 @@ export class FileTreeComponent implements OnInit, OnChanges {
     }
     const descendants = this.treeControl.getDescendants(node);
     return descendants.length > 0 && descendants.some(child => this.selection.isSelected(child));
+  }
+
+  private _descendantsOnlyOneOfHasUnresolvedThread(node: FileFlatNode): boolean {
+    const descendants = this.treeControl.getDescendants(node);
+    return descendants.length > 0 && descendants.some(child => this._hasUnresolvedThread(child));
+  }
+
+  private _hasUnresolvedThread(node: FileFlatNode): boolean {
+    const comments = this._nodeMap.get(this._flatNodeMap.get(node)!)!.comments;
+    if (!comments) {
+      return false;
+    } else {
+      return comments.status === 'unresolved';
+    }
+  }
+
+  private _getDescendantsOnlyCommentCount(node: FileFlatNode): number {
+    const descendantCommentCounts = this.treeControl.getDescendants(node)
+      .map(child => this._getCommentCount(child));
+    return descendantCommentCounts.reduce((acc, currentValue) => acc + currentValue, 0);
+  }
+
+  private _getCommentCount(node: FileFlatNode): number {
+    return (this._nodeMap.get(this._flatNodeMap.get(node)!)!.comments?.thread || []).length;
   }
 }

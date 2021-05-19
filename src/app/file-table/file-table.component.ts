@@ -23,7 +23,7 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
   @Input() fileTableData!: FileMetadata[];
   @Output() selectFileEvent = new EventEmitter<FileMetadata>();
 
-  displayedColumns: string[] = ['name', 'creationDate', 'lastModificationDate', 'size', 'format', 'description', 'edit', 'delete'];
+  displayedColumns: string[] = ['name', 'startDate', 'endDate', 'size', 'format', 'description', 'edit', 'delete'];
   dataSource!: MatTableDataSource<FileMetadata>;
   selection!: SelectionModel<FileMetadata>;
 
@@ -57,7 +57,27 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
     this.selection.clear();
   }
 
-  edit(row: FileMetadata): void {
-    this.selectFileEvent.emit(row);
+  hasUnresolvedThread(element: FileMetadata): boolean {
+    return this._hasUnresolvedThread(element);
+  }
+
+  hasComment(element: FileMetadata): boolean {
+    return this._getCommentCount(element) > 0;
+  }
+
+  getCommentCount(element: FileMetadata): number {
+    return this._getCommentCount(element);
+  }
+
+  edit(element: FileMetadata): void {
+    this.selectFileEvent.emit(element);
+  }
+
+  private _hasUnresolvedThread(element: FileMetadata): boolean {
+    return !!element.comments && element.comments.status === 'unresolved';
+  }
+
+  private _getCommentCount(element: FileMetadata): number {
+    return (element.comments?.thread || []).length;
   }
 }

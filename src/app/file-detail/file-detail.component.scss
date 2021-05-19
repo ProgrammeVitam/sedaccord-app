@@ -9,11 +9,6 @@
   width: 25%;
 }
 
-h2 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .mat-tab-group {
   height: calc(100% - 2 * #{$default-margin});
 }
@@ -34,6 +29,7 @@ h2 {
   display: flex;
   flex-direction: column;
   height: 100%;
+  row-gap: $smaller-margin;
 }
 
 .form-content-wrapper {
@@ -47,4 +43,8 @@ h2 {
   .mat-form-field {
     width: $form-field-width;
   }
+}
+
+p.disabled {
+  font-style: italic;
 }

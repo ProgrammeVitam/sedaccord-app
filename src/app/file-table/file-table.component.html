@@ -2,17 +2,22 @@
 
   <ng-container matColumnDef="name">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Nom</th>
-    <td *matCellDef="let element" mat-cell matTooltip="{{element.name}}"> {{element.name}} </td>
+    <td *matCellDef="let element" class="text-ellipsis" mat-cell matTooltip="{{element.newName || element.name}}">
+      <span [matBadgeColor]="hasUnresolvedThread(element) ? 'accent' : 'primary'" [matBadgeHidden]="!hasComment(element)"
+            [matBadge]="getCommentCount(element)" matBadgePosition="below before" matBadgeSize="small">
+        {{element.newName || element.name}}
+      </span>
+    </td>
   </ng-container>
 
-  <ng-container matColumnDef="creationDate">
+  <ng-container matColumnDef="startDate">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Date de début</th>
-    <td *matCellDef="let element" mat-cell> {{element.creationDate | date}} </td>
+    <td *matCellDef="let element" mat-cell> {{(element.startDate || element.creationDate) | date}} </td>
   </ng-container>
 
-  <ng-container matColumnDef="lastModificationDate">
+  <ng-container matColumnDef="endDate">
     <th *matHeaderCellDef mat-header-cell mat-sort-header> Date de fin</th>
-    <td *matCellDef="let element" mat-cell> {{element.lastModificationDate | date}} </td>
+    <td *matCellDef="let element" mat-cell> {{(element.endDate || element.lastModificationDate) | date}} </td>
   </ng-container>
 
   <ng-container matColumnDef="size">

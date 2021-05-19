@@ -17,7 +17,7 @@
   <section [formGroup]="filesForm" class="file-tree-form">
     <mat-accordion formArrayName="archiveDataPackages">
       <ng-container *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index">
-        <mat-expansion-panel #panel (opened)="onSelectPackage(i)" [formGroupName]="i">
+        <mat-expansion-panel  #panel (opened)="onSelectPackage(i)" [formGroupName]="i" class="mat-elevation-z0">
           <mat-expansion-panel-header>
             <mat-panel-title>
               <mat-icon>topic</mat-icon>
@@ -33,8 +33,8 @@
                                          [treeData]="classification"
                                          [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
           <div class="mat-caption">Arborescence</div>
-          <app-file-tree (selectDirectoryEvent)="onSelectFromTree($event)" [focused]="panel.expanded"
-                         [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"></app-file-tree>
+          <app-file-tree (selectDirectoryEvent)="onSelectFromTree($event)" [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"
+                         [focused]="panel.expanded"></app-file-tree>
           <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
             <button (click)="removePackage(i)" color="primary" mat-button type="button">
               Supprimer cet ensemble

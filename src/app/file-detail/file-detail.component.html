@@ -2,7 +2,7 @@
   <button (click)="onCancel()" class="close-button" mat-icon-button type="button">
     <mat-icon>close</mat-icon>
   </button>
-  <h2>{{fileData.name}}</h2>
+  <h2 class="text-ellipsis">{{fileData.name}}</h2>
   <mat-tab-group class="mat-tab-fill-height" dynamicHeight>
 
     <mat-tab label="Informations du fichier">
@@ -51,7 +51,7 @@
       </form>
     </mat-tab>
 
-    <mat-tab label="Commentaires">
+    <mat-tab label="Discussion">
       <form (ngSubmit)="onSubmitComment()" [formGroup]="commentForm" class="info-form">
         <div class="form-content-wrapper">
           <mat-card *ngFor="let comment of comments.value; let i=index" class="comment">
@@ -60,14 +60,12 @@
               <mat-card-subtitle>{{comment.date | date}}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>
+              <p [class.disabled]="fileData.comments!.status === 'resolved'">
                 {{comment.text}}
               </p>
             </mat-card-content>
-            <mat-card-actions>
-              <button mat-icon-button type="button" (click)="deleteComment(i)">
-                <mat-icon>delete</mat-icon>
-              </button>
+            <mat-card-actions *ngIf="comment.username === 'Caroline'">
+              <button (click)="deleteComment(i)" mat-button type="button">Supprimer</button>
             </mat-card-actions>
           </mat-card>
         </div>
@@ -75,14 +73,20 @@
           <mat-label>Je commente
           </mat-label>
           <textarea formControlName="text" matInput></textarea>
+          <mat-hint>Ajouter un commentaire rouvrira une discussion fermée.</mat-hint>
         </mat-form-field>
         <div class="button-group">
           <button (click)="onCancel()" mat-stroked-button type="button">
             Annuler
           </button>
-          <button color="primary" mat-flat-button type="submit">
-            Envoyer
-          </button>
+          <div>
+            <button color="primary" mat-flat-button type="submit">
+              Envoyer
+            </button>
+            <button (click)="closeThread()" [disabled]="!fileData.comments || fileData.comments.status === 'resolved'" class="mat-elevation-z0" color="primary" mat-mini-fab matTooltip="Marquer la discussion comme fermée" type="button">
+              <mat-icon>check</mat-icon>
+            </button>
+          </div>
         </div>
       </form>
     </mat-tab>

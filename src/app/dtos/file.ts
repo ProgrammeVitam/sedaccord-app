@@ -12,9 +12,11 @@ export interface FileComment {
   text: string;
 }
 
+type Comments = {status: 'unresolved' | 'resolved', thread: FileComment[]};
+
 export interface FileMetadata extends FileInterface {
   path: string;
-  comments?: FileComment[];
+  comments?: Comments;
   newName?: string;
   description?: string;
   format?: string;

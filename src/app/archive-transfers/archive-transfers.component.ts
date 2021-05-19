@@ -130,8 +130,12 @@ export class ArchiveTransfersComponent {
     return this.archiveTransfers?.filter(archiveTransfer => 'En attente de correction' === archiveTransfer.status).length;
   }
 
-  getUnreadCommentCount(): number {
-    return 0; // TODO
+  getUnresolvedThreadCount(): number {
+    return this.archiveTransfers?.filter(archiveTransfer => archiveTransfer.archiveDataPackages)
+      .flatMap(archiveTransfer => archiveTransfer.archiveDataPackages)
+      .flatMap(archiveDataPackage => archiveDataPackage.archiveData)
+      .flat()
+      .filter(fileMetadata => fileMetadata.comments && fileMetadata.comments.status === 'unresolved').length;
   }
 
   private _getArchiveTransfers(): void {

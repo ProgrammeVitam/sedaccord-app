@@ -53,7 +53,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     // CdkTreeModule,
     // DragDropModule,
     MatAutocompleteModule,
-    // MatBadgeModule,
+    MatBadgeModule,
     // MatBottomSheetModule,
     MatButtonModule,
     // MatButtonToggleModule,

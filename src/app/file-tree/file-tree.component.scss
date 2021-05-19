@@ -1,15 +1,13 @@
 @import "variables";
 
+.text-ellipsis-flex-container {
+  min-width: 0;
+}
+
 .mat-tree-node.selectable {
   cursor: pointer;
 }
 
 .selected {
   background-color: $badge-background;
-}
-
-.tree-node-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }

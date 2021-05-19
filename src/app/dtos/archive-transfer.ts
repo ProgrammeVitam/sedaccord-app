@@ -11,8 +11,8 @@ export class ArchiveDataUtils {
       this._getLength(currentValue) < this._getLength(acc) ? currentValue : acc);
   }
 
-  private static _getLength(currentValue: FileMetadata): number {
-    return currentValue.path.split('/').length;
+  private static _getLength(fileMetadata: FileMetadata): number {
+    return fileMetadata.path.split('/').length;
   }
 }
 

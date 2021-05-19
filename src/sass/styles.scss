@@ -67,6 +67,10 @@ main {
 .mat-card.comment {
   margin-top: mat-font-size($config, caption) * 2;
 
+  &:last-of-type {
+    margin-bottom: mat-font-size($config, caption);
+  }
+
   .mat-card-header-text {
     align-items: baseline;
     display: flex;
@@ -93,6 +97,10 @@ main {
   }
 }
 
+.badge-show:not(.mat-badge-hidden) .mat-badge-content {
+  display: inline-block;
+}
+
 nav.breadcrumb {
   align-items: center;
   display: flex;
@@ -116,4 +124,10 @@ nav.breadcrumb {
 .date-group {
   display: flex;
   justify-content: space-between;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

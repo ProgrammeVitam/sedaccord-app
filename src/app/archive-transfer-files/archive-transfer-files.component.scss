@@ -9,12 +9,8 @@ form {
   padding: $default-margin;
 }
 
-.mat-expansion-panel {
-  box-shadow: none;
-
-  + mat-divider:last-of-type {
-    margin-bottom: $smaller-margin;
-  }
+.mat-expansion-panel + mat-divider:last-of-type {
+  margin-bottom: $smaller-margin;
 }
 
 .mat-caption {

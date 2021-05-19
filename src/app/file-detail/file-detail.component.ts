@@ -4,6 +4,8 @@ import {DialogReference, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/comple
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FileMetadata} from '../dtos/file';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 const TRANSITION_DURATION = 300;
 
@@ -34,7 +36,8 @@ export class FileDetailComponent implements OnInit {
   constructor(
     @Inject(FILE_DETAIL_SIDENAV_REF) private _sidenavRef: DialogReference<FileDetailComponent>,
     private _formBuilder: FormBuilder,
-    private _archiveTransferService: ArchiveTransferService
+    private _archiveTransferService: ArchiveTransferService,
+    private _dialog: MatDialog
   ) {
     this.updateEvent = new EventEmitter<FileMetadata>();
   }
@@ -54,7 +57,7 @@ export class FileDetailComponent implements OnInit {
       comments: this._formBuilder.array([]),
       text: ['']
     });
-    this.fileData.comments?.forEach(comment => {
+    this.fileData.comments?.thread.forEach(comment => {
       this.comments.push(this._formBuilder.control(comment));
     });
   }
@@ -73,20 +76,42 @@ export class FileDetailComponent implements OnInit {
   }
 
   deleteComment(index: number): void {
-    this.comments.removeAt(index);
-    this.fileData.comments = this.comments.value;
+    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirmer la suppression',
+        content: `Confirmez-vous la suppression du commentaire ?`
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.comments.removeAt(index);
+        this.fileData.comments!.thread = this.comments.value;
+        this.updateEvent.emit(this.fileData);
+      }
+    });
+  }
+
+  closeThread(): void {
+    this.fileData.comments!.status = 'resolved';
     this.updateEvent.emit(this.fileData);
   }
 
   onSubmitComment(): void {
     const comment = {
       date: new Date(),
-      username: 'Patrick', // TODO
-      text: this.commentForm.value.text,
-      file: this.fileData.name
+      username: 'Caroline', // TODO
+      text: this.commentForm.value.text
     };
     this.comments.push(this._formBuilder.control(comment));
-    this.fileData.comments = this.comments.value;
+    if (this.fileData.comments) {
+      this.fileData.comments.status = 'unresolved';
+      this.fileData.comments.thread = this.comments.value;
+    } else {
+      this.fileData.comments = {
+        status: 'unresolved',
+        thread: this.comments.value
+      };
+    }
     this.updateEvent.emit(this.fileData);
     this.commentForm.get('text')!.reset();
   }
