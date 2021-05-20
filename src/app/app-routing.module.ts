@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {ArchiveTransferDetailComponent} from "./archive-transfer-detail/archive-transfer-detail.component";
-import {ArchiveTransfersComponent} from "./archive-transfers/archive-transfers.component";
+import {ArchiveTransferDetailComponent} from './archive-transfer-detail/archive-transfer-detail.component';
+import {ArchiveTransfersComponent} from './archive-transfers/archive-transfers.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/archiveTransfers', pathMatch: 'full' },

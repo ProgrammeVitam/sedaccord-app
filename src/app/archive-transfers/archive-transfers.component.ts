@@ -10,6 +10,9 @@ import {Router} from '@angular/router';
 import {SipService} from '../services/sip.service';
 import { saveAs } from 'file-saver';
 import {HttpResponse} from '@angular/common/http';
+import {AuthService} from '../services/auth.service';
+import {Observable} from 'rxjs';
+import {User} from '../dtos/user';
 import {FileMetadata} from '../dtos/file';
 
 type SortValue = 'creationDate' | 'lastModificationDate';
@@ -20,7 +23,7 @@ type SortValue = 'creationDate' | 'lastModificationDate';
   styleUrls: ['./archive-transfers.component.scss']
 })
 export class ArchiveTransfersComponent {
-  name = 'Caroline'; // TODO
+  currentUser$: Observable<User>;
 
   disabledDownload: boolean;
   loadingArchiveTransferId: number | null;
@@ -32,12 +35,14 @@ export class ArchiveTransfersComponent {
   constructor(
     private _router: Router,
     private _addDialogService: ComplexDialogService<ArchiveTransferAddComponent>,
+    private _authService: AuthService,
     private _archiveTransferService: ArchiveTransferService,
     private _sipService: SipService,
     private _dialog: MatDialog
   ) {
     this._getArchiveTransfers();
     this.disabledDownload = true;
+    this.currentUser$ = this._authService.getCurrentUser();
     this._sipService.isAvailable()
       .subscribe(response => this.disabledDownload = response.status !== 'UP');
     this.loadingArchiveTransferId = null;

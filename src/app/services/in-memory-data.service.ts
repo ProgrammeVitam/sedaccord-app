@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {InMemoryDbService} from 'angular-in-memory-web-api';
 import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
-import {Agency} from '../dtos/referential';
+import {Agency, ClassificationItemNode} from '../dtos/referential';
 import {FileMetadata} from '../dtos/file';
+import {User} from '../dtos/user';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class InMemoryDataService implements InMemoryDbService {
       {id: 4, name: 'DGCS', description: 'Direction générale de la cohésion sociale'},
       {id: 5, name: 'DRH', description: 'Direction des ressources humaines'}
     ];
-    const classification = [
+    const classification: ClassificationItemNode[] = [
       {
         id: 1,
         name: 'Gestion individuelle',
@@ -178,7 +179,7 @@ export class InMemoryDataService implements InMemoryDbService {
           thread: [
             {
               date: new Date(2021, 0, 28, 15, 0, 0),
-              username: 'Caroline',
+              username: 'Patrick Dupont',
               text: 'J\'ai un doute sur le format de ce fichier, convient-il pour le versement ?'
             },
             {
@@ -204,10 +205,10 @@ export class InMemoryDataService implements InMemoryDbService {
       archiveDataPackages: [{
         id: 1,
         name: '',
-        classificationItem: classification[0].children[0],
+        classificationItem: classification[0].children![0],
         archiveData: data1
       }]
-    };
+    } as ArchiveTransfer;
     const transfer2 = {
       id: 2,
       creationDate: new Date(2021, 0, 2),
@@ -220,15 +221,28 @@ export class InMemoryDataService implements InMemoryDbService {
       originatingAgency: agencies[4],
       submissionAgency: agencies[4],
       archiveDataPackages: [] as ArchiveDataPackage[]
-    };
-    const archiveTransfers = [
+    } as ArchiveTransfer;
+    const archiveTransfers: ArchiveTransfer[] = [
       transfer1,
       transfer2
+    ];
+    const users: User[] = [
+      {
+        id: 1,
+        name: 'Sophie Bertrand',
+        role: 'archive'
+      },
+      {
+        id: 2,
+        name: 'Patrick Dupont',
+        role: 'transfer'
+      }
     ];
     return {
       agencies,
       classification,
-      archiveTransfers
+      archiveTransfers,
+      users
     };
   }
 

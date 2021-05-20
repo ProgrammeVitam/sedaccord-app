@@ -59,7 +59,7 @@
         <span [matBadgeColor]="hasUnresolvedThread() ? 'accent' : 'primary'"
               [matBadgeHidden]="!hasComment()" [matBadge]="getCommentCount()" matBadgeSize="small">Discussion</span>
       </ng-template>
-      <form (ngSubmit)="onSubmitComment()" [formGroup]="commentForm" class="info-form">
+      <form (ngSubmit)="onSubmitComment()" *ngIf="currentUser" [formGroup]="commentForm" class="info-form">
         <div class="form-content-wrapper">
           <mat-card *ngFor="let comment of comments.value; let i=index" class="comment">
             <mat-card-header>
@@ -71,7 +71,7 @@
                 {{comment.text}}
               </p>
             </mat-card-content>
-            <mat-card-actions *ngIf="comment.username === 'Caroline'">
+            <mat-card-actions *ngIf="comment.username === currentUser.name">
               <button (click)="deleteComment(i)" mat-button type="button">Supprimer</button>
             </mat-card-actions>
           </mat-card>

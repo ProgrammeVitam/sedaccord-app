@@ -1,5 +1,5 @@
 <header>
-  <h1>Bonjour {{name}}</h1>
+  <h1>Bonjour {{(currentUser$ | async)?.name}}</h1>
   <p>Bienvenue sur votre espace SEDAccord.</p>
 </header>
 <div class="dashboard">

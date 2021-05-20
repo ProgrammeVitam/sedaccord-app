@@ -1,5 +1,4 @@
 import {ArchiveDataPackage, ArchiveDataUtils, ArchiveTransfer} from './archive-transfer';
-import {FileMetadata} from './file';
 
 interface ArchiveUnitData {
   archiveUnitID: string;

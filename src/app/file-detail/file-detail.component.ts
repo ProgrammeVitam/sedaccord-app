@@ -6,6 +6,8 @@ import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FileMetadata} from '../dtos/file';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import {AuthService} from '../services/auth.service';
+import {User} from '../dtos/user';
 
 const TRANSITION_DURATION = 300;
 
@@ -29,6 +31,8 @@ export class FileDetailComponent implements OnInit {
   @Input() fileData!: FileMetadata;
   @Output() updateEvent!: EventEmitter<FileMetadata>;
 
+  currentUser!: User;
+
   fileForm!: FormGroup;
   commentForm!: FormGroup;
   isOpen = true;
@@ -36,10 +40,12 @@ export class FileDetailComponent implements OnInit {
   constructor(
     @Inject(FILE_DETAIL_SIDENAV_REF) private _sidenavRef: DialogReference<FileDetailComponent>,
     private _formBuilder: FormBuilder,
+    private _authService: AuthService,
     private _archiveTransferService: ArchiveTransferService,
     private _dialog: MatDialog
   ) {
     this.updateEvent = new EventEmitter<FileMetadata>();
+    this._getCurrentUser();
   }
 
   get comments(): FormArray {
@@ -111,7 +117,7 @@ export class FileDetailComponent implements OnInit {
   onSubmitComment(): void {
     const comment = {
       date: new Date(),
-      username: 'Caroline', // TODO
+      username: this.currentUser.name,
       text: this.commentForm.value.text
     };
     this.comments.push(this._formBuilder.control(comment));
@@ -126,6 +132,10 @@ export class FileDetailComponent implements OnInit {
     }
     this.updateEvent.emit(this.fileData);
     this.commentForm.get('text')!.reset();
+  }
+
+  private _getCurrentUser(): void {
+    this._authService.getCurrentUser().subscribe(currentUser => this.currentUser = currentUser);
   }
 
   private _closeSidenav(): void {
