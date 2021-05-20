@@ -14,6 +14,18 @@ export class InMemoryDataService implements InMemoryDbService {
   }
 
   createDb() {
+    const users: User[] = [
+      {
+        id: 1,
+        name: 'Sophie Bertrand',
+        role: 'archive'
+      },
+      {
+        id: 2,
+        name: 'Patrick Dupont',
+        role: 'transfer'
+      }
+    ];
     const agencies: Agency[] = [
       {id: 1, name: 'DGT', description: 'Direction générale du travail'},
       {id: 2, name: 'DGAS', description: 'Direction générale de l\'action sociale'},
@@ -195,7 +207,8 @@ export class InMemoryDataService implements InMemoryDbService {
       id: 1,
       creationDate: new Date(2021, 0, 1),
       lastModificationDate: new Date(2021, 1, 11),
-      status: 'En cours',
+      status: 'En attente de correction',
+      submissionUserId: users[1].id,
       name: 'Dossiers de carrière - Agents partis en 2017 et 2018',
       description: 'Dossiers de carrière d’agents du ministère des affaires sociales ayant quitté leurs fonctions en 2017 et 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
       startDate: new Date(1978, 0, 11),
@@ -214,6 +227,7 @@ export class InMemoryDataService implements InMemoryDbService {
       creationDate: new Date(2021, 0, 2),
       lastModificationDate: new Date(2021, 0, 1),
       status: 'En cours',
+      submissionUserId: users[1].id,
       name: 'Dossiers médicaux – Agents partis en 2018',
       description: 'Dossiers médicaux des agents du ministère des affaires sociales ayant quitté leurs fonctions en 2018. Les dossiers sont classés par mois puis par ordre alphabétique.',
       startDate: new Date(1965, 0, 4),
@@ -226,23 +240,11 @@ export class InMemoryDataService implements InMemoryDbService {
       transfer1,
       transfer2
     ];
-    const users: User[] = [
-      {
-        id: 1,
-        name: 'Sophie Bertrand',
-        role: 'archive'
-      },
-      {
-        id: 2,
-        name: 'Patrick Dupont',
-        role: 'transfer'
-      }
-    ];
     return {
+      users,
       agencies,
       classification,
-      archiveTransfers,
-      users
+      archiveTransfers
     };
   }
 

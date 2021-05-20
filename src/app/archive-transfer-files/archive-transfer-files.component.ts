@@ -9,6 +9,11 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {ClassificationItemNode} from '../dtos/referential';
 import {FileMetadata} from '../dtos/file';
 import {FileTreeSelectionModel} from '../file-tree/file-tree.component';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {Router} from '@angular/router';
+import {User} from '../dtos/user';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-archive-transfer-files',
@@ -25,19 +30,24 @@ export class ArchiveTransferFilesComponent implements OnInit {
   tableSelection: SelectionModel<FileMetadata>;
   saveButtonDisabled: boolean;
 
+  currentUser!: User;
   classification!: ClassificationItemNode[];
 
   constructor(
+    private _router: Router,
     private _formBuilder: FormBuilder,
     private _fileDetailDialogService: ComplexDialogService<FileDetailComponent>,
     private _referentialService: ReferentialService,
-    private _archiveTransferService: ArchiveTransferService
+    private _archiveTransferService: ArchiveTransferService,
+    private _authService: AuthService,
+    private _dialog: MatDialog
   ) {
     this.treeSelection = new SelectionModel<FileTreeSelectionModel>(false);
     this.selectedArchiveDataPackageIndex = -1;
     this.selectionPath = [];
     this.tableSelection = new SelectionModel<FileMetadata>(false);
     this.saveButtonDisabled = true;
+    this._getCurrentUser();
   }
 
   get archiveDataPackages(): FormArray {
@@ -117,6 +127,22 @@ export class ArchiveTransferFilesComponent implements OnInit {
     this.saveButtonDisabled = true;
   }
 
+  submitArchiveTransfer(): void {
+    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirmer la soumission',
+        content: `Confirmez-vous la soumission du versement ${this.archiveTransfer.id} ?`
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.archiveTransfer.share();
+        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer)
+          .subscribe(_ => this._router.navigate(['']));
+      }
+    });
+  }
+
   addPackage(): void {
     this.archiveDataPackages.push(this._formBuilder.group({
       archiveDataValues: [[]],
@@ -134,6 +160,10 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   getFileCount(archiveDataValues: FileMetadata[]): number {
     return archiveDataValues.flat().filter(file => !file.isDirectory).length;
+  }
+
+  private _getCurrentUser(): void {
+    this.currentUser = this._authService.getCurrentUserValue();
   }
 
   private _getClassification(): void {

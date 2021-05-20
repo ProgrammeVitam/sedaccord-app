@@ -8,12 +8,14 @@ import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component
 import {MatListOption, MatSelectionList} from '@angular/material/list';
 import {Router} from '@angular/router';
 import {SipService} from '../services/sip.service';
-import { saveAs } from 'file-saver';
+import {saveAs} from 'file-saver';
 import {HttpResponse} from '@angular/common/http';
 import {AuthService} from '../services/auth.service';
-import {Observable} from 'rxjs';
 import {User} from '../dtos/user';
 import {FileMetadata} from '../dtos/file';
+import {FakeLoginDialogComponent} from '../fake-login-dialog/fake-login-dialog.component';
+import {switchMap} from 'rxjs/operators';
+import {forkJoin, of} from 'rxjs';
 
 type SortValue = 'creationDate' | 'lastModificationDate';
 
@@ -23,11 +25,11 @@ type SortValue = 'creationDate' | 'lastModificationDate';
   styleUrls: ['./archive-transfers.component.scss']
 })
 export class ArchiveTransfersComponent {
-  currentUser$: Observable<User>;
-
   disabledDownload: boolean;
+  loading: boolean;
   loadingArchiveTransferId: number | null;
 
+  currentUser!: User;
   archiveTransfers!: ArchiveTransfer[];
 
   @ViewChild('archiveTransferList') archiveTransferList!: MatSelectionList;
@@ -40,12 +42,12 @@ export class ArchiveTransfersComponent {
     private _sipService: SipService,
     private _dialog: MatDialog
   ) {
-    this._getArchiveTransfers();
+    this._getCurrentUserAndHisArchiveTransfers(this._authService.getCurrentUserValue()?.name || 'Patrick Dupont');
     this.disabledDownload = true;
-    this.currentUser$ = this._authService.getCurrentUser();
+    this.loading = true;
+    this.loadingArchiveTransferId = null;
     this._sipService.isAvailable()
       .subscribe(response => this.disabledDownload = response.status !== 'UP');
-    this.loadingArchiveTransferId = null;
   }
 
   _sortByLastModificationDate = (archiveTransfer1: ArchiveTransfer, archiveTransfer2: ArchiveTransfer) =>
@@ -66,6 +68,18 @@ export class ArchiveTransfersComponent {
     }
   }
 
+  openFakeLoginDialog(currentUserName: string): void {
+    const dialogRef = this._dialog.open(FakeLoginDialogComponent, {
+      data: { currentUserName }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this._switchUser(result);
+      }
+    });
+  }
+
   openAddDialog(): void {
     const addDialogRef = this._addDialogService.open(
       ArchiveTransferAddComponent,
@@ -73,6 +87,7 @@ export class ArchiveTransfersComponent {
     );
     addDialogRef.componentInstance!.addEvent
       .subscribe((archiveTransfer: ArchiveTransfer) => {
+        archiveTransfer.submissionUserId = this.currentUser.id;
         this.archiveTransfers.push(archiveTransfer);
         this._archiveTransferService.addArchiveTransfer(archiveTransfer)
           .subscribe(newArchiveTransfer => {
@@ -115,7 +130,9 @@ export class ArchiveTransfersComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // TODO
-        this._archiveTransferService.updateArchiveTransfer(archiveTransfer).subscribe();
+        archiveTransfer.share();
+        this._archiveTransferService.updateArchiveTransfer(archiveTransfer)
+          .subscribe();
       }
     });
   }
@@ -158,13 +175,28 @@ export class ArchiveTransfersComponent {
       .filter((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata)).length;
   }
 
-  private _getArchiveTransfers(): void {
-    this._archiveTransferService.getArchiveTransfers()
-      .subscribe(archiveTransfers => this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate));
+  private _getCurrentUserAndHisArchiveTransfers(name: string): void {
+    this._authService.login(name).pipe(
+      switchMap((user: User) =>
+        forkJoin({
+          user: of(user),
+          archiveTransfers: this._archiveTransferService.findArchiveTransfersForUser(user.id, user.role)
+        })
+      )
+    ).subscribe(({user, archiveTransfers}) => {
+      this.currentUser = user;
+      this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate);
+      this.loading = false;
+    });
   }
 
   private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
     return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+  }
+
+  private _switchUser(name: string): void {
+    this.loading = true;
+    this._getCurrentUserAndHisArchiveTransfers(name);
   }
 
   private _generateSip(archiveTransfer: ArchiveTransfer): void {

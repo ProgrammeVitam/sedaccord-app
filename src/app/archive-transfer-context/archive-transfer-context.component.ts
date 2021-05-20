@@ -7,6 +7,10 @@ import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {Agency} from '../dtos/referential';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {User} from '../dtos/user';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-archive-transfer-context',
@@ -20,6 +24,7 @@ export class ArchiveTransferContextComponent implements OnInit {
   contextForm2!: FormGroup;
   saveButtonDisabled: boolean;
 
+  currentUser!: User;
   agencies!: Agency[];
   $filteredOriginatingAgencies!: Observable<Agency[]>;
   $filteredSubmissionAgencies!: Observable<Agency[]>;
@@ -28,9 +33,12 @@ export class ArchiveTransferContextComponent implements OnInit {
     private _router: Router,
     private _formBuilder: FormBuilder,
     private _referentialService: ReferentialService,
-    private _archiveTransferService: ArchiveTransferService
+    private _archiveTransferService: ArchiveTransferService,
+    private _authService: AuthService,
+    private _dialog: MatDialog
   ) {
     this.saveButtonDisabled = true;
+    this._getCurrentUser();
   }
 
   ngOnInit(): void {
@@ -85,8 +93,23 @@ export class ArchiveTransferContextComponent implements OnInit {
   }
 
   submitArchiveTransfer(): void {
-    // TODO
-    this._router.navigate(['/']);
+    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirmer la soumission',
+        content: `Confirmez-vous la soumission du versement ${this.archiveTransfer.id} ?`
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.archiveTransfer.share();
+        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer)
+          .subscribe(_ => this._router.navigate(['']));
+      }
+    });
+  }
+
+  private _getCurrentUser(): void {
+    this.currentUser = this._authService.getCurrentUserValue();
   }
 
   private _getAgencies(): void {

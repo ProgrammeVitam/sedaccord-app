@@ -1,90 +1,102 @@
-<header>
-  <h1>Bonjour {{(currentUser$ | async)?.name}}</h1>
-  <p>Bienvenue sur votre espace SEDAccord.</p>
-</header>
-<div class="dashboard">
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-subtitle>Versements en cours</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p class="number">{{getInProgressArchiveTransferCount()}}</p>
-    </mat-card-content>
-  </mat-card>
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-subtitle>Versements en attente de validation</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p class="number">{{getPendingArchiveTransferCount()}}</p>
-    </mat-card-content>
-  </mat-card>
-  <mat-card class="dashboard-card">
-    <mat-card-header>
-      <mat-card-subtitle>Discussions non résolues</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p class="number important">{{getAllUnresolvedThreadCount()}}</p>
-    </mat-card-content>
-  </mat-card>
-</div>
-<div class="list-header">
-  <h2>Vos projets de versement</h2>
-  <mat-form-field appearance="outline">
-    <mat-label>Trier par</mat-label>
-    <mat-select (selectionChange)="sortArchiveTransfers($event.value)" value="lastModificationDate">
-      <mat-option value="creationDate">Date de création</mat-option>
-      <mat-option value="lastModificationDate">Date de dernière modification</mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-<div class="button-container">
-  <button (click)="openAddDialog()" color="primary" mat-flat-button type="button">
-    Créer un projet de versement
-  </button>
-</div>
-<mat-selection-list #archiveTransferList [multiple]="false">
-  <mat-list-option #archiveTransferOption (mouseenter)="onHoverIn(archiveTransferOption)"
-                   (mouseleave)="onHoverOut()" *ngFor="let archiveTransfer of archiveTransfers"
-                   [value]="archiveTransfer">
-    <mat-icon matListIcon>folder</mat-icon>
-    <div class="table-row" mat-line>
-      <div class="table-cell table-cell-2 list-title">
-        <span>Projet de versement {{archiveTransfer.id}}</span>
-        <span class="mat-small">Créé le {{archiveTransfer.creationDate | date}}</span>
-      </div>
-      <ng-template [ngIfElse]="hovered"
-                   [ngIf]="archiveTransfer !== archiveTransferList.selectedOptions.selected[0]?.value">
-        <div class="table-cell">{{archiveTransfer.submissionAgency?.name}}</div>
-        <div class="table-cell table-cell-4">{{archiveTransfer.name}}</div>
-        <div class="table-cell table-cell-right"><span class="badge">{{archiveTransfer.status}}</span></div>
-      </ng-template>
-      <ng-template #hovered>
-        <div class="table-cell"><span class="badge">{{archiveTransfer.status}}</span></div>
-        <div class="table-cell table-cell-4 table-cell-right">
-          <button [matBadgeHidden]="!hasUnresolvedThread(archiveTransfer)"
-                  [matBadge]="getUnresolvedThreadCount(archiveTransfer)"
-                  color="primary" mat-flat-button matBadgeColor="accent"
-                  routerLink="/detail/{{archiveTransfer.id}}" type="button">
-            Voir le versement
-          </button>
-          <button (click)="submit(archiveTransfer)" color="primary" disabled mat-flat-button type="button">
-            Demander le versement
-          </button>
-          <div class="progress-button-container">
-            <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
-              <mat-spinner diameter="24"></mat-spinner>
+<ng-container *ngIf="!loading">
+  <header>
+    <h1>
+      <span *ngIf="currentUser.role === 'transfer'; else elseBlock">🏛️️</span>
+      <ng-template #elseBlock><span>📁</span></ng-template>
+      Bonjour {{currentUser.name}}
+      <button (click)="openFakeLoginDialog(currentUser.name)" mat-raised-button type="button">Changer</button>
+    </h1>
+    <p>Bienvenue sur votre espace SEDAccord.</p>
+  </header>
+  <div class="dashboard">
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-subtitle>Versements en cours</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="number">{{getInProgressArchiveTransferCount()}}</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-subtitle>Versements en attente de validation</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="number">{{getPendingArchiveTransferCount()}}</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-subtitle>Discussions non résolues</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="number important">{{getAllUnresolvedThreadCount()}}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="list-header">
+    <h2>Vos projets de versement</h2>
+    <mat-form-field appearance="outline">
+      <mat-label>Trier par</mat-label>
+      <mat-select (selectionChange)="sortArchiveTransfers($event.value)" value="lastModificationDate">
+        <mat-option value="creationDate">Date de création</mat-option>
+        <mat-option value="lastModificationDate">Date de dernière modification</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="button-container">
+    <button (click)="openAddDialog()" color="primary" mat-flat-button type="button">
+      Créer un projet de versement
+    </button>
+  </div>
+  <mat-selection-list #archiveTransferList *ngIf="archiveTransfers.length > 0; else empty" [multiple]="false">
+    <mat-list-option #archiveTransferOption (mouseenter)="onHoverIn(archiveTransferOption)"
+                     (mouseleave)="onHoverOut()" *ngFor="let archiveTransfer of archiveTransfers"
+                     [value]="archiveTransfer">
+      <mat-icon matListIcon>folder</mat-icon>
+      <div class="table-row" mat-line>
+        <div class="table-cell table-cell-2 list-title">
+          <span>Projet de versement {{archiveTransfer.id}}</span>
+          <span class="mat-small">Créé le {{archiveTransfer.creationDate | date}}</span>
+        </div>
+        <ng-template [ngIfElse]="hovered"
+                     [ngIf]="archiveTransfer !== archiveTransferList.selectedOptions.selected[0]?.value">
+          <div class="table-cell">{{archiveTransfer.submissionAgency?.name}}</div>
+          <div class="table-cell table-cell-4">{{archiveTransfer.name}}</div>
+          <div class="table-cell table-cell-right"><span class="text-ellipsis badge">{{archiveTransfer.status}}</span></div>
+        </ng-template>
+        <ng-template #hovered>
+          <div class="table-cell"><span class="text-ellipsis badge">{{archiveTransfer.status}}</span></div>
+          <div class="table-cell table-cell-4 table-cell-right">
+            <button [matBadgeHidden]="!hasUnresolvedThread(archiveTransfer)"
+                    [matBadge]="getUnresolvedThreadCount(archiveTransfer)"
+                    color="primary" mat-flat-button matBadgeColor="accent"
+                    routerLink="/detail/{{archiveTransfer.id}}" type="button">
+              Voir le versement
+            </button>
+            <button (click)="submit(archiveTransfer)" *ngIf="currentUser.role === 'transfer'"
+                    [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
+                    type="button">
+              Demander le versement
+            </button>
+            <div class="progress-button-container">
+              <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
+                <mat-spinner diameter="24"></mat-spinner>
+              </div>
+              <button (click)="download(archiveTransfer)" *ngIf="currentUser.role === 'archive'"
+                      [disabled]="disabledDownload || isLoading(archiveTransfer)"
+                      color="primary" mat-flat-button type="button">
+                Exporter dans le SAE
+              </button>
             </div>
-            <button (click)="download(archiveTransfer)" [disabled]="disabledDownload || isLoading(archiveTransfer)" color="primary" mat-mini-fab type="button">
-              <mat-icon>download</mat-icon>
+            <button (click)="delete(archiveTransfer)" *ngIf="currentUser.id === archiveTransfer.submissionUserId" color="primary" mat-mini-fab type="button">
+              <mat-icon>delete</mat-icon>
             </button>
           </div>
-          <button (click)="delete(archiveTransfer)" color="primary" mat-mini-fab type="button">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </ng-template>
-    </div>
-    <div mat-line>Date de dernière modification : {{archiveTransfer.lastModificationDate | date}}</div>
-  </mat-list-option>
-</mat-selection-list>
+        </ng-template>
+      </div>
+      <div mat-line>Date de dernière modification : {{archiveTransfer.lastModificationDate | date}}</div>
+    </mat-list-option>
+  </mat-selection-list>
+  <ng-template #empty>Pas de versements à afficher.</ng-template>
+</ng-container>

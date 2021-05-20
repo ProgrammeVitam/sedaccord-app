@@ -13,6 +13,10 @@
 }
 
 nav.breadcrumb {
+  a {
+    text-decoration: none;
+  }
+
   span:nth-child(2) {
     color: mat.get-color-from-palette($primary);;
   }

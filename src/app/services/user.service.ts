@@ -26,7 +26,7 @@ export class UserService {
     return this.http.get<User[]>(url)
       .pipe(
         tap(value => value.length ?
-          this.log(`found users matching "${name}"`) : this.log(`no users matching "${name}"`)),
+          this.log(`found users whose name matching "${name}"`) : this.log(`no users whose name matching "${name}"`)),
         catchError(this.handleError<User[]>(`findUserByName name=${name}`, []))
       );
   }

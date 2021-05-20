@@ -135,7 +135,7 @@ export class FileDetailComponent implements OnInit {
   }
 
   private _getCurrentUser(): void {
-    this._authService.getCurrentUser().subscribe(currentUser => this.currentUser = currentUser);
+    this.currentUser = this._authService.getCurrentUserValue();
   }
 
   private _closeSidenav(): void {

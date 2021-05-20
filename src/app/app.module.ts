@@ -20,6 +20,7 @@ import {FileTreeComponent} from './file-tree/file-tree.component';
 import {TreeAutocompleteControlComponent} from './tree-autocomplete-control/tree-autocomplete-control.component';
 import {MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats} from '@angular/material/core';
 import {ConfirmDialogComponent} from './confirm-dialog/confirm-dialog.component';
+import { FakeLoginDialogComponent } from './fake-login-dialog/fake-login-dialog.component';
 
 export const MY_FORMATS: MatDateFormats = {
   parse: {
@@ -61,7 +62,8 @@ export const MY_FORMATS: MatDateFormats = {
     FileDropInputControlComponent,
     FileTableComponent,
     FileTreeComponent,
-    TreeAutocompleteControlComponent
+    TreeAutocompleteControlComponent,
+    FakeLoginDialogComponent
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},

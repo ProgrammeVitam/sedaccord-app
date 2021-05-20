@@ -1,5 +1,6 @@
 import {Agency, Reference} from './referential';
 import {FileMetadata} from './file';
+import {ANONYMOUS_USER} from '../services/auth.service';
 
 export class ArchiveDataUtils {
   static getRoots(archiveData: FileMetadata[][]): FileMetadata[] {
@@ -24,11 +25,14 @@ export interface ArchiveDataPackage {
   archiveData: FileMetadata[][];
 }
 
+export type ArchiveTransferStatus = 'En cours' | 'En attente de correction';
+
 export interface ArchiveTransferInterface {
   id: number | undefined;
   creationDate: string;
   lastModificationDate: string;
-  status: 'En cours' | 'En attente de correction';
+  status: ArchiveTransferStatus;
+  submissionUserId: number;
   name: string;
   description?: string;
   startDate?: string;
@@ -56,11 +60,12 @@ export class ArchiveTransfer {
     return this._lastModificationDate;
   }
 
-  private _status: 'En cours' | 'En attente de correction';
-  get status(): 'En cours' | 'En attente de correction' {
+  private _status: ArchiveTransferStatus;
+  get status(): ArchiveTransferStatus {
     return this._status;
   }
 
+  submissionUserId: number;
   name: string;
   description?: string;
   startDate?: Date;
@@ -74,6 +79,7 @@ export class ArchiveTransfer {
     this._creationDate = new Date();
     this._lastModificationDate = this.creationDate;
     this._status = 'En cours';
+    this.submissionUserId = ANONYMOUS_USER.id;
     this.name = '';
     this.archiveDataPackages = [];
   }
@@ -83,6 +89,8 @@ export class ArchiveTransfer {
     this._creationDate = new Date(archiveTransferObject.creationDate);
     this._lastModificationDate = new Date(archiveTransferObject.lastModificationDate);
     this._status = archiveTransferObject.status;
+    this._status = archiveTransferObject.status;
+    this.submissionUserId = archiveTransferObject.submissionUserId;
     this.name = archiveTransferObject.name;
     this.description = archiveTransferObject.description;
     this.startDate = archiveTransferObject.startDate ? new Date(archiveTransferObject.startDate) : undefined;
@@ -98,7 +106,8 @@ export class ArchiveTransfer {
       id: this._id > 0 ? this._id : undefined,
       creationDate: this._creationDate.toDateString(),
       lastModificationDate: this._lastModificationDate.toDateString(),
-      status: this.status,
+      status: this._status,
+      submissionUserId: this.submissionUserId,
       name: this.name,
       description: this.description,
       startDate: this.startDate && this.startDate.toDateString(),
@@ -142,6 +151,10 @@ export class ArchiveTransfer {
   withArchiveDataPackages(value: ArchiveDataPackage[]): ArchiveTransfer {
     this.archiveDataPackages.push(...value);
     return this;
+  }
+
+  share(): void {
+    this._status = 'En attente de correction';
   }
 
   update(): void {

@@ -9,8 +9,15 @@
       <button mat-stroked-button routerLink="/" type="button">
         Annuler
       </button>
-      <button (click)="submitArchiveTransfer()" color="primary" disabled mat-flat-button type="button">
+      <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'transfer'"
+              [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
+              type="button">
         Demander le versement
+      </button>
+      <button *ngIf="currentUser.role === 'archive'"
+              color="primary"
+              disabled mat-flat-button type="button">
+        Exporter dans le SAE
       </button>
     </div>
   </div>

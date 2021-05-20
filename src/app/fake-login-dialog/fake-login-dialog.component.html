@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Bonjour</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="standard">
+    <mat-select [(value)]="data.currentUserName">
+      <mat-option *ngIf="!availableUsers" [value]="data.currentUserName">
+        {{data.currentUserName}}
+      </mat-option>
+      <mat-option *ngFor="let user of availableUsers" [value]="user.name">
+        {{user.name}} ({{getDisplayRole(user.role)}})
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button (click)="onNoClick()" mat-button type="button">Annuler</button>
+  <button [mat-dialog-close]="data.currentUserName" cdkFocusInitial mat-button type="button">Changer</button>
+</div>

@@ -9,6 +9,10 @@ header {
   grid-column: 1 / span 2;
   grid-row: 1;
   margin-top: $default-margin;
+
+  button {
+    margin-left: $default-margin;
+  }
 }
 
 .dashboard {
@@ -58,6 +62,7 @@ header {
 .mat-selection-list {
   grid-column: 1 / span 2;
   grid-row: 4;
+  margin-bottom: $default-margin;
 
   button {
     margin: $smaller-margin;
@@ -67,6 +72,7 @@ header {
     background-color: $badge-background;
     border-radius: $badge-radius;
     display: inline-block;
+    max-width: 100%;
     padding: mat.font-size($config, body-1) / 2;
   }
 }
