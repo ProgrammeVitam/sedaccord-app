@@ -5,7 +5,10 @@
   <h2 class="text-ellipsis">{{fileData.name}}</h2>
   <mat-tab-group class="mat-tab-fill-height" dynamicHeight>
 
-    <mat-tab label="Informations du fichier">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Informations<br>du fichier
+      </ng-template>
       <form (ngSubmit)="onSubmitFile()" [formGroup]="fileForm" class="info-form">
         <div class="form-content-wrapper">
           <mat-form-field appearance="fill">
@@ -51,7 +54,11 @@
       </form>
     </mat-tab>
 
-    <mat-tab label="Discussion">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span [matBadgeColor]="hasUnresolvedThread() ? 'accent' : 'primary'"
+              [matBadgeHidden]="!hasComment()" [matBadge]="getCommentCount()" matBadgeSize="small">Discussion</span>
+      </ng-template>
       <form (ngSubmit)="onSubmitComment()" [formGroup]="commentForm" class="info-form">
         <div class="form-content-wrapper">
           <mat-card *ngFor="let comment of comments.value; let i=index" class="comment">

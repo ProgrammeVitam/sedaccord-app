@@ -58,6 +58,16 @@ export class ArchiveTransferFilesComponent implements OnInit {
     this.filesForm.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
   }
 
+  hasUnresolvedThread(archiveData: FileMetadata[][]): boolean {
+    return archiveData.flat()
+      .some((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata));
+  }
+
+  hasComment(archiveData: FileMetadata[][]): boolean {
+    return archiveData.flat()
+      .some((fileMetadata: FileMetadata) => this._getCommentCount(fileMetadata) > 0);
+  }
+
   onSelectPackage(archiveDataPackageIndex: number): void {
     this.selectedArchiveDataPackageIndex = archiveDataPackageIndex;
     this.treeSelection.select({
@@ -129,5 +139,13 @@ export class ArchiveTransferFilesComponent implements OnInit {
   private _getClassification(): void {
     this._referentialService.getClassification()
       .subscribe(classification => this.classification = classification);
+  }
+
+  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+  }
+
+  private _getCommentCount(fileMetadata: FileMetadata): number {
+    return (fileMetadata.comments?.thread || []).length;
   }
 }

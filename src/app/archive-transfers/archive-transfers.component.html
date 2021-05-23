@@ -8,7 +8,7 @@
       <mat-card-subtitle>Versements en cours</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p class="number important">{{getInProgressArchiveTransferCount()}}</p>
+      <p class="number">{{getInProgressArchiveTransferCount()}}</p>
     </mat-card-content>
   </mat-card>
   <mat-card class="dashboard-card">
@@ -24,7 +24,7 @@
       <mat-card-subtitle>Discussions non résolues</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p class="number">{{getUnresolvedThreadCount()}}</p>
+      <p class="number important">{{getAllUnresolvedThreadCount()}}</p>
     </mat-card-content>
   </mat-card>
 </div>
@@ -62,7 +62,10 @@
       <ng-template #hovered>
         <div class="table-cell"><span class="badge">{{archiveTransfer.status}}</span></div>
         <div class="table-cell table-cell-4 table-cell-right">
-          <button color="primary" mat-flat-button routerLink="/detail/{{archiveTransfer.id}}" type="button">
+          <button [matBadgeHidden]="!hasUnresolvedThread(archiveTransfer)"
+                  [matBadge]="getUnresolvedThreadCount(archiveTransfer)"
+                  color="primary" mat-flat-button matBadgeColor="accent"
+                  routerLink="/detail/{{archiveTransfer.id}}" type="button">
             Voir le versement
           </button>
           <button (click)="submit(archiveTransfer)" color="primary" disabled mat-flat-button type="button">

@@ -64,6 +64,10 @@ main {
   width: 100%;
 }
 
+.mat-expansion-panel-header.panel-header-overflow .mat-content {
+  overflow: visible;
+}
+
 .mat-card.comment {
   margin-top: mat-font-size($config, caption) * 2;
 
@@ -97,8 +101,8 @@ main {
   }
 }
 
-.badge-show:not(.mat-badge-hidden) .mat-badge-content {
-  display: inline-block;
+.badge-icon .mat-badge-content {
+  font-family: 'Material Icons', mat-font-family($config);
 }
 
 nav.breadcrumb {

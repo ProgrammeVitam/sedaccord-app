@@ -74,11 +74,11 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
     this.selectFileEvent.emit(element);
   }
 
-  private _hasUnresolvedThread(element: FileMetadata): boolean {
-    return !!element.comments && element.comments.status === 'unresolved';
+  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
   }
 
-  private _getCommentCount(element: FileMetadata): number {
-    return (element.comments?.thread || []).length;
+  private _getCommentCount(fileMetadata: FileMetadata): number {
+    return (fileMetadata.comments?.thread || []).length;
   }
 }

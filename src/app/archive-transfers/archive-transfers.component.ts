@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {ArchiveTransferAddComponent} from '../archive-transfer-add/archive-transfer-add.component';
 import {ADD_DIALOG_REF, ComplexDialogService} from '../complex-dialog/complex-dialog.service';
-import {ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
@@ -10,6 +10,7 @@ import {Router} from '@angular/router';
 import {SipService} from '../services/sip.service';
 import { saveAs } from 'file-saver';
 import {HttpResponse} from '@angular/common/http';
+import {FileMetadata} from '../dtos/file';
 
 type SortValue = 'creationDate' | 'lastModificationDate';
 
@@ -130,17 +131,35 @@ export class ArchiveTransfersComponent {
     return this.archiveTransfers?.filter(archiveTransfer => 'En attente de correction' === archiveTransfer.status).length;
   }
 
-  getUnresolvedThreadCount(): number {
-    return this.archiveTransfers?.filter(archiveTransfer => archiveTransfer.archiveDataPackages)
-      .flatMap(archiveTransfer => archiveTransfer.archiveDataPackages)
-      .flatMap(archiveDataPackage => archiveDataPackage.archiveData)
+  getAllUnresolvedThreadCount(): number {
+    return this.archiveTransfers?.filter((archiveTransfer: ArchiveTransfer) => archiveTransfer.archiveDataPackages.length > 0)
+      .flatMap((archiveTransfer: ArchiveTransfer) => archiveTransfer.archiveDataPackages)
+      .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
       .flat()
-      .filter(fileMetadata => fileMetadata.comments && fileMetadata.comments.status === 'unresolved').length;
+      .filter((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata)).length;
+  }
+
+  hasUnresolvedThread(archiveTransfer: ArchiveTransfer): boolean {
+    return archiveTransfer.archiveDataPackages
+      .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
+      .flat()
+      .some((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata));
+  }
+
+  getUnresolvedThreadCount(archiveTransfer: ArchiveTransfer): number {
+    return archiveTransfer.archiveDataPackages
+      .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
+      .flat()
+      .filter((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata)).length;
   }
 
   private _getArchiveTransfers(): void {
     this._archiveTransferService.getArchiveTransfers()
       .subscribe(archiveTransfers => this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate));
+  }
+
+  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
   }
 
   private _generateSip(archiveTransfer: ArchiveTransfer): void {

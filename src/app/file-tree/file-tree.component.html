@@ -9,17 +9,14 @@
     <!-- use a disabled button to provide padding for tree leaf -->
     <button disabled mat-icon-button type="button"></button>
     <ng-container *ngIf="isDirectory(node); else elseBlock">
-      <div (click)="selectDirectory(node)" [matBadgeColor]="hasUnresolvedThread(node) ? 'accent' : 'primary'"
-           [matBadgeHidden]="!hasComment(node)" [matBadge]="getCommentCount(node)" class="text-ellipsis-flex-container"
-           matBadgeOverlap="false"
+      <div (click)="selectDirectory(node)"
+           [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
+           [matBadgeHidden]="!descendantsHaveComment(node)" class="badge-icon text-ellipsis-flex-container"
+           matBadge="&#8288;"
            matBadgePosition="below before" matBadgeSize="small">
-        <div [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
-             [matBadgeHidden]="!descendantsHaveComment(node)" [matBadge]="getDescendantCommentCount(node)"
-             class="badge-show" matBadgePosition="below before" matBadgeSize="small">
-          <div class="text-ellipsis">
-            <mat-icon inline>folder</mat-icon>
-            {{node.name}}
-          </div>
+        <div class="text-ellipsis">
+          <mat-icon inline>folder</mat-icon>
+          {{node.name}}
         </div>
       </div>
       <button (click)="addFile()" disabled mat-icon-button type="button">
@@ -27,9 +24,7 @@
       </button>
     </ng-container>
     <ng-template #elseBlock>
-      <div [matBadgeColor]="hasUnresolvedThread(node) ? 'accent' : 'primary'" [matBadgeHidden]="!hasComment(node)"
-           [matBadge]="getCommentCount(node)"
-           class="text-ellipsis-flex-container" matBadgePosition="below before" matBadgeSize="small">
+      <div class="text-ellipsis-flex-container">
         <div class="text-ellipsis">
           <mat-icon inline>text_snippet</mat-icon>
           {{node.name}}
@@ -47,17 +42,12 @@
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    <div (click)="selectDirectory(node)" [matBadgeColor]="hasUnresolvedThread(node) ? 'accent' : 'primary'"
-         [matBadgeHidden]="!hasComment(node)" [matBadge]="getCommentCount(node)" class="text-ellipsis-flex-container"
-         matBadgeOverlap="false"
+    <div (click)="selectDirectory(node)" [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
+         [matBadgeHidden]="!descendantsHaveComment(node)" class="badge-icon text-ellipsis-flex-container"
+         matBadge="&#8288;"
          matBadgePosition="below before" matBadgeSize="small">
-      <div [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
-           [matBadgeHidden]="!descendantsHaveComment(node)"
-           [matBadge]="getDescendantCommentCount(node)" class="badge-show"
-           matBadgePosition="below before" matBadgeSize="small">
-        <div class="text-ellipsis">
-          {{node.name}}
-        </div>
+      <div class="text-ellipsis">
+        {{node.name}}
       </div>
     </div>
     <button (click)="addFile()" disabled mat-icon-button type="button">

@@ -17,9 +17,12 @@
   <section [formGroup]="filesForm" class="file-tree-form">
     <mat-accordion formArrayName="archiveDataPackages">
       <ng-container *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index">
-        <mat-expansion-panel  #panel (opened)="onSelectPackage(i)" [formGroupName]="i" class="mat-elevation-z0">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
+        <mat-expansion-panel #panel (opened)="onSelectPackage(i)" [formGroupName]="i" class="mat-elevation-z0">
+          <mat-expansion-panel-header class="panel-header-overflow">
+            <mat-panel-title
+              [matBadgeColor]="hasUnresolvedThread(archiveDataPackage.get('archiveDataValues')!.value) ? 'accent' : 'primary'"
+              [matBadgeHidden]="!hasComment(archiveDataPackage.get('archiveDataValues')!.value)" class="overflow-visible"
+              matBadge="&#8288;" matBadgeColor="accent" matBadgePosition="below before" matBadgeSize="small">
               <mat-icon>topic</mat-icon>
               Ensemble {{i + 1}}
             </mat-panel-title>
@@ -33,7 +36,8 @@
                                          [treeData]="classification"
                                          [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
           <div class="mat-caption">Arborescence</div>
-          <app-file-tree (selectDirectoryEvent)="onSelectFromTree($event)" [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"
+          <app-file-tree (selectDirectoryEvent)="onSelectFromTree($event)"
+                         [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"
                          [focused]="panel.expanded"></app-file-tree>
           <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
             <button (click)="removePackage(i)" color="primary" mat-button type="button">
@@ -59,7 +63,7 @@
         <mat-icon inline>arrow_right_alt</mat-icon>
         <span>
             <mat-icon inline>folder</mat-icon>
-            {{crumb}}
+          {{crumb}}
           </span>
       </ng-container>
     </nav>

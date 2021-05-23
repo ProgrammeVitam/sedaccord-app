@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {InMemoryDbService} from 'angular-in-memory-web-api';
-import {ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
 import {Agency} from '../dtos/referential';
 import {FileMetadata} from '../dtos/file';
 
@@ -218,7 +218,8 @@ export class InMemoryDataService implements InMemoryDbService {
       startDate: new Date(1965, 0, 4),
       endDate: new Date(2018, 7, 18),
       originatingAgency: agencies[4],
-      submissionAgency: agencies[4]
+      submissionAgency: agencies[4],
+      archiveDataPackages: [] as ArchiveDataPackage[]
     };
     const archiveTransfers = [
       transfer1,

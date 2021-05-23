@@ -113,28 +113,12 @@ export class FileTreeComponent implements OnInit, OnChanges {
     return this._descendantsOneOfSelected(node);
   }
 
-  hasUnresolvedThread(node: FileFlatNode): boolean {
-    return this._hasUnresolvedThread(node);
-  }
-
   descendantsHaveUnresolvedThread(node: FileFlatNode): boolean {
     return this._descendantsOnlyOneOfHasUnresolvedThread(node);
   }
 
-  hasComment(node: FileFlatNode): boolean {
-    return this._getCommentCount(node) > 0;
-  }
-
   descendantsHaveComment(node: FileFlatNode): boolean {
     return this._getDescendantsOnlyCommentCount(node) > 0;
-  }
-
-  getCommentCount(node: FileFlatNode): number {
-    return this._getCommentCount(node);
-  }
-
-  getDescendantCommentCount(node: FileFlatNode): number {
-    return this._getDescendantsOnlyCommentCount(node);
   }
 
   private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
@@ -285,25 +269,21 @@ export class FileTreeComponent implements OnInit, OnChanges {
 
   private _descendantsOnlyOneOfHasUnresolvedThread(node: FileFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    return descendants.length > 0 && descendants.some(child => this._hasUnresolvedThread(child));
-  }
-
-  private _hasUnresolvedThread(node: FileFlatNode): boolean {
-    const comments = this._nodeMap.get(this._flatNodeMap.get(node)!)!.comments;
-    if (!comments) {
-      return false;
-    } else {
-      return comments.status === 'unresolved';
-    }
+    return descendants.length > 0 && descendants
+      .some(child => this._hasUnresolvedThread(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
   }
 
   private _getDescendantsOnlyCommentCount(node: FileFlatNode): number {
-    const descendantCommentCounts = this.treeControl.getDescendants(node)
-      .map(child => this._getCommentCount(child));
-    return descendantCommentCounts.reduce((acc, currentValue) => acc + currentValue, 0);
+    const directDescendantCommentCounts = this.treeControl.getDescendants(node)
+      .map(child => this._getCommentCount(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
+    return directDescendantCommentCounts.reduce((acc, currentValue) => acc + currentValue, 0);
   }
 
-  private _getCommentCount(node: FileFlatNode): number {
-    return (this._nodeMap.get(this._flatNodeMap.get(node)!)!.comments?.thread || []).length;
+  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+  }
+
+  private _getCommentCount(fileMetadata: FileMetadata): number {
+    return (fileMetadata.comments?.thread || []).length;
   }
 }

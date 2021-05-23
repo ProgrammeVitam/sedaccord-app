@@ -62,6 +62,18 @@ export class FileDetailComponent implements OnInit {
     });
   }
 
+  hasUnresolvedThread(): boolean {
+    return this._hasUnresolvedThread(this.fileData);
+  }
+
+  hasComment(): boolean {
+    return this._getCommentCount(this.fileData) > 0;
+  }
+
+  getCommentCount(): number {
+    return this._getCommentCount(this.fileData);
+  }
+
   onCancel(): void {
     this._closeSidenav();
   }
@@ -119,5 +131,13 @@ export class FileDetailComponent implements OnInit {
   private _closeSidenav(): void {
     setTimeout((_: any) => this._sidenavRef.close(), TRANSITION_DURATION);
     this.isOpen = false;
+  }
+
+  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+  }
+
+  private _getCommentCount(fileMetadata: FileMetadata): number {
+    return (fileMetadata.comments?.thread || []).length;
   }
 }
