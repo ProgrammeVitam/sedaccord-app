@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "variables";
 
 form {
@@ -14,13 +15,13 @@ form {
 }
 
 .mat-caption {
-  color: mat-color($mat-gray, 700);
+  color: mat.get-color-from-palette(mat.$gray-palette, 700);
   align-items: center;
   column-gap: $smaller-margin;
   display: flex;
 
   &:after {
-    border-bottom: 1px solid mat-color($mat-gray, 300);;
+    border-bottom: 1px solid mat.get-color-from-palette(mat.$gray-palette, 300);;
     content: '';
     flex-grow: 1;
   }

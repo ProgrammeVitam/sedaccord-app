@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "variables";
 
 :host {
@@ -13,6 +14,6 @@
 
 nav.breadcrumb {
   span:nth-child(2) {
-    color: mat-color($primary);;
+    color: mat.get-color-from-palette($primary);;
   }
 }

@@ -1,3 +1,4 @@
+@use '~@angular/material' as mat;
 @import "variables";
 
 :host {
@@ -24,13 +25,13 @@ header {
 }
 
 .number {
-  color: mat-color($primary);
-  font-size: mat-font-size($config, display-1);
+  color: mat.get-color-from-palette($primary);
+  font-size: mat.font-size($config, display-1);
   font-weight: bold;
   text-align: right;
 
   &.important {
-    color: mat-color($accent);
+    color: mat.get-color-from-palette($accent);
   }
 }
 
@@ -39,7 +40,7 @@ header {
   flex-direction: column;
 
   .mat-small {
-    color: mat-color($mat-gray, 600);
+    color: mat.get-color-from-palette(mat.$gray-palette, 600);
   }
 }
 
@@ -66,14 +67,14 @@ header {
     background-color: $badge-background;
     border-radius: $badge-radius;
     display: inline-block;
-    padding: mat-font-size($config, body-1) / 2;
+    padding: mat.font-size($config, body-1) / 2;
   }
 }
 
 .mat-list-option {
   background-color: $item-background;
   cursor: default !important;
-  margin-top: mat-font-size($config, body-1) * 2;
+  margin-top: mat.font-size($config, body-1) * 2;
 }
 
 .mat-list-single-selected-option,

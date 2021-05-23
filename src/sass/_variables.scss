@@ -1,17 +1,17 @@
-@import "~@angular/material/theming";
+@use '~@angular/material' as mat;
 
-$primary: mat-palette($mat-indigo);
-$accent: mat-palette($mat-pink, A200, A100, A400);
-$warn: mat-palette($mat-red);
+$primary: mat.define-palette(mat.$indigo-palette);
+$accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$warn: mat.define-palette(mat.$red-palette);
 
 $background: white;
-$panel-background: mat-color($mat-gray, 100);
-$item-background: mat-color($mat-gray, 200);
-$item-background-selected: mat-color($mat-gray, 300);
-$badge-background: mat-color($mat-gray, 400);
-$border: mat-color($mat-blue-gray, 50);
+$panel-background: mat.get-color-from-palette(mat.$gray-palette, 100);
+$item-background: mat.get-color-from-palette(mat.$gray-palette, 200);
+$item-background-selected: mat.get-color-from-palette(mat.$gray-palette, 300);
+$badge-background: mat.get-color-from-palette(mat.$gray-palette, 400);
+$border: mat.get-color-from-palette(mat.$blue-gray-palette, 50);
 
-$config: mat-typography-config();
+$config: mat.define-typography-config();
 
 $default-margin: 2em;
 $smaller-margin: $default-margin / 2;
