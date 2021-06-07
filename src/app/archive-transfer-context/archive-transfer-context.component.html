@@ -9,12 +9,12 @@
       <button mat-stroked-button routerLink="/" type="button">
         Annuler
       </button>
-      <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'transfer'"
+      <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'TRANSFER'"
               [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
               type="button">
         Demander le versement
       </button>
-      <button *ngIf="currentUser.role === 'archive'"
+      <button *ngIf="currentUser.role === 'ARCHIVE'"
               color="primary"
               disabled mat-flat-button type="button">
         Exporter dans le SAE
@@ -35,7 +35,8 @@
       <mat-label>J'ajoute une description sommaire à mon versement (optionnel)
       </mat-label>
       <textarea formControlName="description" matInput rows="5"></textarea>
-      <mat-hint>La description de votre versement permettra d'expliquer plus en détail le contexte de production des documents et
+      <mat-hint>La description de votre versement permettra d'expliquer plus en détail le contexte de production des
+        documents et
         d'en permettre l'exploitation administrative.
       </mat-hint>
     </mat-form-field>

@@ -15,7 +15,9 @@ import {User} from '../dtos/user';
 import {FileMetadata} from '../dtos/file';
 import {FakeLoginDialogComponent} from '../fake-login-dialog/fake-login-dialog.component';
 import {switchMap} from 'rxjs/operators';
-import {forkJoin, of} from 'rxjs';
+import {forkJoin} from 'rxjs';
+import {Message, MessageService} from '../services/message.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 type SortValue = 'creationDate' | 'lastModificationDate';
 
@@ -26,7 +28,7 @@ type SortValue = 'creationDate' | 'lastModificationDate';
 })
 export class ArchiveTransfersComponent {
   disabledDownload: boolean;
-  loading: boolean;
+  loading!: boolean;
   loadingArchiveTransferId: number | null;
 
   currentUser!: User;
@@ -39,12 +41,13 @@ export class ArchiveTransfersComponent {
     private _addDialogService: ComplexDialogService<ArchiveTransferAddComponent>,
     private _authService: AuthService,
     private _archiveTransferService: ArchiveTransferService,
+    private _messageService: MessageService,
     private _sipService: SipService,
-    private _dialog: MatDialog
+    private _dialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {
     this._getCurrentUserAndHisArchiveTransfers(this._authService.getCurrentUserValue()?.name || 'Patrick Dupont');
     this.disabledDownload = true;
-    this.loading = true;
     this.loadingArchiveTransferId = null;
     this._sipService.isAvailable()
       .subscribe(response => this.disabledDownload = response.status !== 'UP');
@@ -129,9 +132,8 @@ export class ArchiveTransfersComponent {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // TODO
         archiveTransfer.share();
-        this._archiveTransferService.updateArchiveTransfer(archiveTransfer)
+        this._archiveTransferService.updateArchiveTransfer(archiveTransfer, 'SUBMITTED_ARCHIVE_TRANSFER')
           .subscribe();
       }
     });
@@ -154,7 +156,7 @@ export class ArchiveTransfersComponent {
   }
 
   getAllUnresolvedThreadCount(): number {
-    return this.archiveTransfers?.filter((archiveTransfer: ArchiveTransfer) => archiveTransfer.archiveDataPackages.length > 0)
+    return this.archiveTransfers?.filter((archiveTransfer: ArchiveTransfer) => archiveTransfer.archiveDataPackages.length)
       .flatMap((archiveTransfer: ArchiveTransfer) => archiveTransfer.archiveDataPackages)
       .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
       .flat()
@@ -176,27 +178,45 @@ export class ArchiveTransfersComponent {
   }
 
   private _getCurrentUserAndHisArchiveTransfers(name: string): void {
-    this._authService.login(name).pipe(
-      switchMap((user: User) =>
-        forkJoin({
-          user: of(user),
-          archiveTransfers: this._archiveTransferService.findArchiveTransfersForUser(user.id, user.role)
-        })
-      )
-    ).subscribe(({user, archiveTransfers}) => {
-      this.currentUser = user;
-      this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate);
-      this.loading = false;
-    });
+    this.loading = true;
+    const user$ = this._authService.login(name);
+    const archiveTransfers$ = user$.pipe(switchMap(user => this._archiveTransferService.findArchiveTransfersForUser(user.id, user.role)));
+    const messages$ = forkJoin([user$, archiveTransfers$]).pipe(switchMap(([user, archiveTransfers]) => this._messageService
+      .getLatestMessagesForUser(archiveTransfers.map(archiveTransfer => archiveTransfer.id), user.id)));
+    forkJoin([user$, archiveTransfers$, messages$]).subscribe(
+      ([user, archiveTransfers, messages]) => {
+        this.currentUser = user;
+        this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate);
+        const displayMessages = this._getDisplayMessages(messages);
+        if (displayMessages.length) {
+          this._snackBar.open(displayMessages.join('\n'), 'Vu');
+        }
+        this.loading = false;
+      });
   }
 
   private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
   }
 
   private _switchUser(name: string): void {
-    this.loading = true;
     this._getCurrentUserAndHisArchiveTransfers(name);
+  }
+
+  private _getDisplayMessages(messages: Message[]): string[] {
+    return messages.map(message => message.type)
+      .filter((type, i, arr) => arr.indexOf(type) === i) // Filter unique values
+      .reduce((acc: string[], currentValue) => {
+      switch (currentValue) {
+        case 'SUBMITTED_ARCHIVE_TRANSFER':
+          acc.push('Une nouvelle demande de versement est arrivée.');
+          break;
+        case 'UPDATED_ARCHIVE_TRANSFER':
+          acc.push('Un versement a été mis à jour.');
+          break;
+      }
+      return acc;
+    }, []);
   }
 
   private _generateSip(archiveTransfer: ArchiveTransfer): void {

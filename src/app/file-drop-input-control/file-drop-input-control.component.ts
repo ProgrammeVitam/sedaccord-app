@@ -135,7 +135,7 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
     return new Promise((resolve, reject) => {
       let allEntries: any[] = [];
       const readAllEntries = (entries: any[]) => {
-        if (entries.length > 0) {
+        if (entries.length) {
           allEntries = allEntries.concat(entries);
           directoryReader.readEntries(readAllEntries);
         } else {

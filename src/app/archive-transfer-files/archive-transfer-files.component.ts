@@ -101,11 +101,6 @@ export class ArchiveTransferFilesComponent implements OnInit {
     fileDetailSidenavRef.componentInstance!.fileData = fileMetadata;
     fileDetailSidenavRef.componentInstance!.updateEvent
       .subscribe((fileData: FileMetadata) => {
-        fileMetadata.newName = fileData.newName;
-        fileMetadata.comments = fileData.comments;
-        fileMetadata.description = fileData.description;
-        fileMetadata.startDate = fileData.startDate;
-        fileMetadata.endDate = fileData.endDate;
         this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
       });
   }
@@ -137,7 +132,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.archiveTransfer.share();
-        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer)
+        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer, 'SUBMITTED_ARCHIVE_TRANSFER')
           .subscribe(_ => this._router.navigate(['']));
       }
     });
@@ -172,7 +167,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
   }
 
   private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
   }
 
   private _getCommentCount(fileMetadata: FileMetadata): number {

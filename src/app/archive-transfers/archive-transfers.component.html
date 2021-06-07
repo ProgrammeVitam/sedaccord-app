@@ -1,7 +1,7 @@
 <ng-container *ngIf="!loading">
   <header>
     <h1>
-      <span *ngIf="currentUser.role === 'transfer'; else elseBlock">🏛️️</span>
+      <span *ngIf="currentUser.role === 'TRANSFER'; else elseBlock">🏛️️</span>
       <ng-template #elseBlock><span>📁</span></ng-template>
       Bonjour {{currentUser.name}}
       <button (click)="openFakeLoginDialog(currentUser.name)" mat-raised-button type="button">Changer</button>
@@ -49,7 +49,7 @@
       Créer un projet de versement
     </button>
   </div>
-  <mat-selection-list #archiveTransferList *ngIf="archiveTransfers.length > 0; else empty" [multiple]="false">
+  <mat-selection-list #archiveTransferList *ngIf="archiveTransfers.length; else empty" [multiple]="false">
     <mat-list-option #archiveTransferOption (mouseenter)="onHoverIn(archiveTransferOption)"
                      (mouseleave)="onHoverOut()" *ngFor="let archiveTransfer of archiveTransfers"
                      [value]="archiveTransfer">
@@ -63,7 +63,8 @@
                      [ngIf]="archiveTransfer !== archiveTransferList.selectedOptions.selected[0]?.value">
           <div class="table-cell">{{archiveTransfer.submissionAgency?.name}}</div>
           <div class="table-cell table-cell-4">{{archiveTransfer.name}}</div>
-          <div class="table-cell table-cell-right"><span class="text-ellipsis badge">{{archiveTransfer.status}}</span></div>
+          <div class="table-cell table-cell-right"><span class="text-ellipsis badge">{{archiveTransfer.status}}</span>
+          </div>
         </ng-template>
         <ng-template #hovered>
           <div class="table-cell"><span class="text-ellipsis badge">{{archiveTransfer.status}}</span></div>
@@ -74,7 +75,7 @@
                     routerLink="/detail/{{archiveTransfer.id}}" type="button">
               Voir le versement
             </button>
-            <button (click)="submit(archiveTransfer)" *ngIf="currentUser.role === 'transfer'"
+            <button (click)="submit(archiveTransfer)" *ngIf="currentUser.role === 'TRANSFER'"
                     [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
                     type="button">
               Demander le versement
@@ -83,13 +84,14 @@
               <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
                 <mat-spinner diameter="24"></mat-spinner>
               </div>
-              <button (click)="download(archiveTransfer)" *ngIf="currentUser.role === 'archive'"
+              <button (click)="download(archiveTransfer)" *ngIf="currentUser.role === 'ARCHIVE'"
                       [disabled]="disabledDownload || isLoading(archiveTransfer)"
                       color="primary" mat-flat-button type="button">
                 Exporter dans le SAE
               </button>
             </div>
-            <button (click)="delete(archiveTransfer)" *ngIf="currentUser.id === archiveTransfer.submissionUserId" color="primary" mat-mini-fab type="button">
+            <button (click)="delete(archiveTransfer)" *ngIf="currentUser.id === archiveTransfer.submissionUserId"
+                    color="primary" mat-mini-fab type="button">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

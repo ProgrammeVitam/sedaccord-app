@@ -101,7 +101,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     this.disabled = isDisabled;
   }
 
-  hasChild = (_: number, node: T) => !!node.children && node.children.length > 0;
+  hasChild = (_: number, node: T) => !!node.children && node.children.length;
 
   selectOption(node: T): void {
     this.writeValue(node);
@@ -127,7 +127,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
         return {name: node.name, children: node.children} as T;
       } else if (this._hasChild(node)) {
         const filteredChildren = this._filter(searchTerm, node.children!);
-        if (filteredChildren.length > 0) {
+        if (filteredChildren.length) {
           return {
             name: node.name,
             children: filteredChildren
@@ -139,7 +139,7 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
   }
 
   private _hasChild(node: T): boolean {
-    return node.children !== undefined && node.children.length > 0;
+    return node.children !== undefined && !!node.children.length;
   }
 
   private _found(searchTerm: string, value: string): boolean {

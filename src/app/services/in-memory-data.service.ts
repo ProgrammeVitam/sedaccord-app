@@ -18,12 +18,12 @@ export class InMemoryDataService implements InMemoryDbService {
       {
         id: 1,
         name: 'Sophie Bertrand',
-        role: 'archive'
+        role: 'ARCHIVE'
       },
       {
         id: 2,
         name: 'Patrick Dupont',
-        role: 'transfer'
+        role: 'TRANSFER'
       }
     ];
     const agencies: Agency[] = [
@@ -187,7 +187,7 @@ export class InMemoryDataService implements InMemoryDbService {
         format: 'rtf',
         path: '/Agents partis en avril 2017/Agents_C/CRIPOUX Sarah/Evaluation_2016_CR.rtf',
         comments: {
-          status: 'unresolved',
+          status: 'UNRESOLVED',
           thread: [
             {
               date: new Date(2021, 0, 28, 15, 0, 0),
@@ -240,11 +240,19 @@ export class InMemoryDataService implements InMemoryDbService {
       transfer1,
       transfer2
     ];
+    const messages = [
+      {
+        id: 1,
+        archiveTransferId: 1,
+        type: 'NEW_ARCHIVE_TRANSFER'
+      }
+    ];
     return {
       users,
       agencies,
       classification,
-      archiveTransfers
+      archiveTransfers,
+      messages: []
     };
   }
 
@@ -254,6 +262,6 @@ export class InMemoryDataService implements InMemoryDbService {
   // if the archive transfers array is not empty, the method below returns the highest
   // archive transfer id + 1.
   genId(archiveTransfers: ArchiveTransfer[]): number {
-    return archiveTransfers.length > 0 ? Math.max(...archiveTransfers.map(archiveTransfer => archiveTransfer.id!)) + 1 : 1;
+    return archiveTransfers.length ? Math.max(...archiveTransfers.map(archiveTransfer => archiveTransfer.id!)) + 1 : 1;
   }
 }

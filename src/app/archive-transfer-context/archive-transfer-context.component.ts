@@ -102,7 +102,7 @@ export class ArchiveTransferContextComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.archiveTransfer.share();
-        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer)
+        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer, 'SUBMITTED_ARCHIVE_TRANSFER')
           .subscribe(_ => this._router.navigate(['']));
       }
     });

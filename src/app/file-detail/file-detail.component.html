@@ -67,7 +67,7 @@
               <mat-card-subtitle>{{comment.date | date}}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p [class.disabled]="fileData.comments!.status === 'resolved'">
+              <p [class.disabled]="fileData.comments!.status === 'RESOLVED'">
                 {{comment.text}}
               </p>
             </mat-card-content>
@@ -90,7 +90,9 @@
             <button color="primary" mat-flat-button type="submit">
               Envoyer
             </button>
-            <button (click)="closeThread()" [disabled]="!fileData.comments || fileData.comments.status === 'resolved'" class="mat-elevation-z0" color="primary" mat-mini-fab matTooltip="Marquer la discussion comme fermée" type="button">
+            <button (click)="closeThread()" [disabled]="!fileData.comments || fileData.comments.status === 'RESOLVED'"
+                    class="mat-elevation-z0" color="primary" mat-mini-fab
+                    matTooltip="Marquer la discussion comme fermée" type="button">
               <mat-icon>check</mat-icon>
             </button>
           </div>

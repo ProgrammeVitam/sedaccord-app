@@ -110,7 +110,7 @@ export class FileDetailComponent implements OnInit {
   }
 
   closeThread(): void {
-    this.fileData.comments!.status = 'resolved';
+    this.fileData.comments!.status = 'RESOLVED';
     this.updateEvent.emit(this.fileData);
   }
 
@@ -122,11 +122,11 @@ export class FileDetailComponent implements OnInit {
     };
     this.comments.push(this._formBuilder.control(comment));
     if (this.fileData.comments) {
-      this.fileData.comments.status = 'unresolved';
+      this.fileData.comments.status = 'UNRESOLVED';
       this.fileData.comments.thread = this.comments.value;
     } else {
       this.fileData.comments = {
-        status: 'unresolved',
+        status: 'UNRESOLVED',
         thread: this.comments.value
       };
     }
@@ -144,7 +144,7 @@ export class FileDetailComponent implements OnInit {
   }
 
   private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
   }
 
   private _getCommentCount(fileMetadata: FileMetadata): number {

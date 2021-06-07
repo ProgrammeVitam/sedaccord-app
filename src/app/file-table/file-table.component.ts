@@ -75,7 +75,7 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
   }
 
   private _getCommentCount(fileMetadata: FileMetadata): number {

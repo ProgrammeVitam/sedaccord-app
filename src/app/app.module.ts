@@ -43,7 +43,8 @@ export const MY_FORMATS: MatDateFormats = {
     HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, {
         dataEncapsulation: false,
-        passThruUnknownUrl: true
+        passThruUnknownUrl: true,
+        put204: false // HTTP PUT returns object
       }
     ),
     HttpClientModule,

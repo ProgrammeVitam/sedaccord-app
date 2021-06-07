@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {forkJoin, Observable, of} from 'rxjs';
 import {ArchiveTransfer, ArchiveTransferInterface, ArchiveTransferStatus} from '../dtos/archive-transfer';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, mapTo, switchMap, tap} from 'rxjs/operators';
 import {UserRole} from '../dtos/user';
+import {MessageService, MessageType} from './message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class ArchiveTransferService {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private _messageService: MessageService) {
   }
 
   getArchiveTransfers(): Observable<ArchiveTransfer[]> { // TODO return partial objects?
@@ -37,7 +38,7 @@ export class ArchiveTransferService {
   }
 
   findArchiveTransfersForUser(submissionUserId: number, userRole: UserRole): Observable<ArchiveTransfer[]> {
-    if (userRole === 'archive') {
+    if (userRole === 'ARCHIVE') {
       return forkJoin(
         [this._findArchiveTransfersBySubmissionUser(submissionUserId), this._findArchiveTransfersByStatus('En attente de correction')]
       ).pipe(
@@ -69,9 +70,13 @@ export class ArchiveTransferService {
       );
   }
 
-  updateArchiveTransfer(archiveTransfer: ArchiveTransfer): Observable<ArchiveTransfer> {
+  updateArchiveTransfer(archiveTransfer: ArchiveTransfer, message: MessageType = 'UPDATED_ARCHIVE_TRANSFER'): Observable<ArchiveTransfer> {
     return this.http.put<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
       .pipe(
+        switchMap(updatedArchiveTransfer =>
+          this._messageService.addMessage(updatedArchiveTransfer.id, message!).pipe(
+            mapTo(updatedArchiveTransfer))
+        ),
         tap(_ => this.log(`updated archive transfer id=${archiveTransfer.id}`)),
         catchError(this.handleError<any>('updateArchiveTransfer'))
       );

@@ -7,7 +7,7 @@ import {map, tap} from 'rxjs/operators';
 export const ANONYMOUS_USER = {
   id: 0,
   name: '',
-  role: 'transfer'
+  role: 'TRANSFER'
 } as User;
 
 @Injectable({

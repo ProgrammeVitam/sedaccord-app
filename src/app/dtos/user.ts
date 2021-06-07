@@ -1,4 +1,4 @@
-export type UserRole = 'archive' | 'transfer';
+export type UserRole = 'ARCHIVE' | 'TRANSFER';
 
 export interface User {
   id: number;

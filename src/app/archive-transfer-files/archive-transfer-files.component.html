@@ -9,12 +9,12 @@
       <button mat-stroked-button routerLink="/" type="button">
         Annuler
       </button>
-      <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'transfer'"
+      <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'TRANSFER'"
               [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
               type="button">
         Demander le versement
       </button>
-      <button *ngIf="currentUser.role === 'archive'"
+      <button *ngIf="currentUser.role === 'ARCHIVE'"
               color="primary"
               disabled mat-flat-button type="button">
         Exporter dans le SAE
@@ -28,7 +28,8 @@
           <mat-expansion-panel-header class="panel-header-overflow">
             <mat-panel-title
               [matBadgeColor]="hasUnresolvedThread(archiveDataPackage.get('archiveDataValues')!.value) ? 'accent' : 'primary'"
-              [matBadgeHidden]="!hasComment(archiveDataPackage.get('archiveDataValues')!.value)" class="overflow-visible"
+              [matBadgeHidden]="!hasComment(archiveDataPackage.get('archiveDataValues')!.value)"
+              class="overflow-visible"
               matBadge="&#8288;" matBadgeColor="accent" matBadgePosition="below before" matBadgeSize="small">
               <mat-icon>topic</mat-icon>
               Ensemble {{i + 1}}

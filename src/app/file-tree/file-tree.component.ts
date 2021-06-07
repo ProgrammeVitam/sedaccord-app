@@ -122,7 +122,7 @@ export class FileTreeComponent implements OnInit, OnChanges {
   }
 
   private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
-    if (data.length > 0) {
+    if (data.length) {
       const groupByDepth = this._groupByDepth(data);
       const groupByDepthAndNode = this._groupByDepthAndNode(groupByDepth);
 
@@ -209,7 +209,7 @@ export class FileTreeComponent implements OnInit, OnChanges {
   }
 
   private _hasChild(directoryNode: Directory): boolean {
-    return directoryNode.children !== undefined && directoryNode.children.length > 0;
+    return directoryNode.children !== undefined && !!directoryNode.children.length;
   }
 
   /** Checks all the parents when a leaf node is selected/unselected and return them */
@@ -228,7 +228,7 @@ export class FileTreeComponent implements OnInit, OnChanges {
   private _checkRootNodeSelection(node: FileFlatNode): void {
     const nodeSelected = this.selection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected = descendants.length > 0 && descendants.every(child => this.selection.isSelected(child));
+    const descAllSelected = descendants.length && descendants.every(child => this.selection.isSelected(child));
     if (nodeSelected && !descAllSelected) {
       this.selection.deselect(node);
     } else if (!nodeSelected && descAllSelected) {
@@ -264,12 +264,12 @@ export class FileTreeComponent implements OnInit, OnChanges {
       return true;
     }
     const descendants = this.treeControl.getDescendants(node);
-    return descendants.length > 0 && descendants.some(child => this.selection.isSelected(child));
+    return !!descendants.length && descendants.some(child => this.selection.isSelected(child));
   }
 
   private _descendantsOnlyOneOfHasUnresolvedThread(node: FileFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    return descendants.length > 0 && descendants
+    return !!descendants.length && descendants
       .some(child => this._hasUnresolvedThread(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
   }
 
@@ -280,7 +280,7 @@ export class FileTreeComponent implements OnInit, OnChanges {
   }
 
   private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'unresolved';
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
   }
 
   private _getCommentCount(fileMetadata: FileMetadata): number {

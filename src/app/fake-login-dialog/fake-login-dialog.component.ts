@@ -29,9 +29,9 @@ export class FakeLoginDialogComponent {
 
   getDisplayRole(role: UserRole): any {
     switch (role) {
-      case 'archive':
+      case 'ARCHIVE':
         return 'archiviste';
-      case 'transfer':
+      case 'TRANSFER':
         return 'agent versant';
       default:
         return '-';

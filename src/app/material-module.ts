@@ -80,7 +80,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     // MatSidenavModule,
     // MatSliderModule,
     // MatSlideToggleModule,
-    // MatSnackBarModule,
+    MatSnackBarModule,
     MatSortModule,
     MatTableModule,
     MatTabsModule,
