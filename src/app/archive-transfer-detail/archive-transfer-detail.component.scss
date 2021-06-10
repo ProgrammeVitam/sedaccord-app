@@ -1,15 +1,8 @@
 @use '~@angular/material' as mat;
 @import "variables";
 
-:host {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
 .mat-tab-group {
   background: $background;
-  flex-grow: 1;
 }
 
 nav.breadcrumb {
@@ -20,4 +13,9 @@ nav.breadcrumb {
   span:nth-child(2) {
     color: mat.get-color-from-palette($primary);;
   }
+}
+
+.button-group {
+  border-bottom: 1px solid $border;
+  padding: $smaller-margin;
 }

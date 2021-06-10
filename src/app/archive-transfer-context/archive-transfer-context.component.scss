@@ -1,10 +1,10 @@
 @import "variables";
 
-form {
+:host {
   display: grid;
-  grid-gap: $default-margin;
+  grid-column-gap: $default-margin;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto;
   padding: $default-margin;
 }
 
@@ -12,19 +12,14 @@ form {
   margin-bottom: $default-margin;
 }
 
-.button-group {
-  grid-column: 1 / span 2;
-  grid-row: 1;
-}
-
 .info-form:nth-of-type(1) {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1;
 }
 
 .info-form:nth-of-type(2) {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 1;
 }
 
 .info-form {

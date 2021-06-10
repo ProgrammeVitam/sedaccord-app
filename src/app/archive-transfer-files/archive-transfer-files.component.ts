@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ArchiveDataUtils, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
@@ -9,11 +9,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {ClassificationItemNode} from '../dtos/referential';
 import {FileMetadata} from '../dtos/file';
 import {FileTreeSelectionModel} from '../file-tree/file-tree.component';
-import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
-import {User} from '../dtos/user';
-import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-archive-transfer-files',
@@ -22,15 +18,14 @@ import {AuthService} from '../services/auth.service';
 })
 export class ArchiveTransferFilesComponent implements OnInit {
   @Input() archiveTransfer!: ArchiveTransfer;
+  @Output() formChangeEvent: EventEmitter<any>;
 
   filesForm!: FormGroup;
   treeSelection: SelectionModel<FileTreeSelectionModel>;
   selectedArchiveDataPackageIndex: number;
   selectionPath: string[];
   tableSelection: SelectionModel<FileMetadata>;
-  saveButtonDisabled: boolean;
 
-  currentUser!: User;
   classification!: ClassificationItemNode[];
 
   constructor(
@@ -38,16 +33,13 @@ export class ArchiveTransferFilesComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private _fileDetailDialogService: ComplexDialogService<FileDetailComponent>,
     private _referentialService: ReferentialService,
-    private _archiveTransferService: ArchiveTransferService,
-    private _authService: AuthService,
-    private _dialog: MatDialog
+    private _archiveTransferService: ArchiveTransferService
   ) {
     this.treeSelection = new SelectionModel<FileTreeSelectionModel>(false);
     this.selectedArchiveDataPackageIndex = -1;
     this.selectionPath = [];
     this.tableSelection = new SelectionModel<FileMetadata>(false);
-    this.saveButtonDisabled = true;
-    this._getCurrentUser();
+    this.formChangeEvent = new EventEmitter<any>();
   }
 
   get archiveDataPackages(): FormArray {
@@ -65,7 +57,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
         classificationItem: [archiveDataPackage.classificationItem]
       }));
     });
-    this.filesForm.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
+    this.filesForm.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
   }
 
   hasUnresolvedThread(archiveData: FileMetadata[][]): boolean {
@@ -105,39 +97,6 @@ export class ArchiveTransferFilesComponent implements OnInit {
       });
   }
 
-  onSubmit(): void {
-    let i = 1;
-    this.archiveTransfer.archiveDataPackages = this.archiveDataPackages.value.map((archiveDataPackage: any) => {
-      return {
-        id: i++,
-        name: archiveDataPackage.name,
-        classificationItem: {
-          id: archiveDataPackage.classificationItem.id,
-          name: archiveDataPackage.classificationItem.name
-        },
-        archiveData: archiveDataPackage.archiveDataValues
-      };
-    });
-    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
-    this.saveButtonDisabled = true;
-  }
-
-  submitArchiveTransfer(): void {
-    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Confirmer la soumission',
-        content: `Confirmez-vous la soumission du versement ${this.archiveTransfer.id} ?`
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.archiveTransfer.share();
-        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer, 'SUBMITTED_ARCHIVE_TRANSFER')
-          .subscribe(_ => this._router.navigate(['']));
-      }
-    });
-  }
-
   addPackage(): void {
     this.archiveDataPackages.push(this._formBuilder.group({
       archiveDataValues: [[]],
@@ -157,8 +116,19 @@ export class ArchiveTransferFilesComponent implements OnInit {
     return archiveDataValues.flat().filter(file => !file.isDirectory).length;
   }
 
-  private _getCurrentUser(): void {
-    this.currentUser = this._authService.getCurrentUserValue();
+  updateArchiveTransfer(): void {
+    let i = 1;
+    this.archiveTransfer.archiveDataPackages = this.archiveDataPackages.value.map((archiveDataPackage: any) => {
+      return {
+        id: i++,
+        name: archiveDataPackage.name,
+        classificationItem: {
+          id: archiveDataPackage.classificationItem.id,
+          name: archiveDataPackage.classificationItem.name
+        },
+        archiveData: archiveDataPackage.archiveDataValues
+      };
+    });
   }
 
   private _getClassification(): void {

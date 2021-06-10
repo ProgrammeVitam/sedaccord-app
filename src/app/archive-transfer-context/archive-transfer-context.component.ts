@@ -1,16 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {Agency} from '../dtos/referential';
-import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
-import {User} from '../dtos/user';
-import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-archive-transfer-context',
@@ -19,12 +14,11 @@ import {AuthService} from '../services/auth.service';
 })
 export class ArchiveTransferContextComponent implements OnInit {
   @Input() archiveTransfer!: ArchiveTransfer;
+  @Output() formChangeEvent: EventEmitter<any>;
 
   contextForm1!: FormGroup;
   contextForm2!: FormGroup;
-  saveButtonDisabled: boolean;
 
-  currentUser!: User;
   agencies!: Agency[];
   $filteredOriginatingAgencies!: Observable<Agency[]>;
   $filteredSubmissionAgencies!: Observable<Agency[]>;
@@ -32,13 +26,9 @@ export class ArchiveTransferContextComponent implements OnInit {
   constructor(
     private _router: Router,
     private _formBuilder: FormBuilder,
-    private _referentialService: ReferentialService,
-    private _archiveTransferService: ArchiveTransferService,
-    private _authService: AuthService,
-    private _dialog: MatDialog
+    private _referentialService: ReferentialService
   ) {
-    this.saveButtonDisabled = true;
-    this._getCurrentUser();
+    this.formChangeEvent = new EventEmitter<any>();
   }
 
   ngOnInit(): void {
@@ -55,8 +45,8 @@ export class ArchiveTransferContextComponent implements OnInit {
       submissionAgencyDescription: [this.archiveTransfer.submissionAgency?.description]
     });
     this._getAgencies();
-    this.contextForm1.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
-    this.contextForm2.valueChanges.subscribe(_ => this.saveButtonDisabled = false);
+    this.contextForm1.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
+    this.contextForm2.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
   }
 
   displayFn(office: Agency): string {
@@ -73,7 +63,7 @@ export class ArchiveTransferContextComponent implements OnInit {
       .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
   }
 
-  onSubmit(): void {
+  updateArchiveTransfer(): void {
     this.archiveTransfer.withName(this.contextForm1.value.name)
       .withDescription(this.contextForm1.value.description)
       .withStartDate(this.contextForm1.value.startDate)
@@ -88,28 +78,6 @@ export class ArchiveTransferContextComponent implements OnInit {
         name: this.contextForm2.value.submissionAgency.name,
         description: this.contextForm2.value.submissionAgencyDescription
       });
-    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
-    this.saveButtonDisabled = true;
-  }
-
-  submitArchiveTransfer(): void {
-    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Confirmer la soumission',
-        content: `Confirmez-vous la soumission du versement ${this.archiveTransfer.id} ?`
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.archiveTransfer.share();
-        this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer, 'SUBMITTED_ARCHIVE_TRANSFER')
-          .subscribe(_ => this._router.navigate(['']));
-      }
-    });
-  }
-
-  private _getCurrentUser(): void {
-    this.currentUser = this._authService.getCurrentUserValue();
   }
 
   private _getAgencies(): void {
