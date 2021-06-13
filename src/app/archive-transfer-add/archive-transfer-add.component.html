@@ -2,10 +2,10 @@
   <h1><span>{{stepper.selectedIndex + 1}}</span>{{steps[stepper.selectedIndex].label}}</h1>
   <p>{{steps[stepper.selectedIndex].description}}</p>
 </aside>
-<form (ngSubmit)="onSubmit()" [formGroup]="archiveTransferFormWrapper">
-  <mat-horizontal-stepper #stepper class="mat-stepper-fill-height" formArrayName="archiveTransferForm">
+<form (ngSubmit)="onSubmit()" [formGroup]="archiveTransferFormGroup">
+  <mat-horizontal-stepper #stepper class="mat-stepper-fill-height" formArrayName="archiveTransferFormArray">
 
-    <mat-step [stepControl]="archiveTransferForm.get([0])!" formGroupName="0">
+    <mat-step [stepControl]="archiveTransferFormArray.get([0])!" formGroupName="0">
       <section class="step-content step-content-1">
         <div>
           <h2>Nouveau projet de versement</h2>
@@ -19,8 +19,8 @@
             Ajouter un ensemble
           </button>
         </div>
-        <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackages">
-          <mat-expansion-panel *ngFor="let _ of archiveDataPackages.controls; let i=index"
+        <mat-accordion [@.disabled]="disableAnimation" formArrayName="archiveDataPackageFormArray">
+          <mat-expansion-panel *ngFor="let _ of archiveDataPackageFormArray.controls; let i=index"
                                [formGroupName]="i" expanded>
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -28,12 +28,12 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="file-upload-container">
-              <app-file-drop [formControlName]="'archiveDataValues'" label="Je dépose un répertoire d'archives bureautiques"></app-file-drop>
+              <app-file-drop [formControlName]="'fileDropData'" label="Je dépose un répertoire d'archives bureautiques"></app-file-drop>
               <app-tree-autocomplete-control [formControlName]="'classificationItem'"
                                              [label]="'Je choisis un noeud du plan de classement'"
                                              [treeData]="classification"></app-tree-autocomplete-control>
             </div>
-            <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
+            <mat-action-row *ngIf="archiveDataPackageFormArray.controls.length > 1">
               <button (click)="removePackage(i)" color="primary" mat-button type="button">
                 Supprimer cet ensemble
               </button>
@@ -54,7 +54,7 @@
       </section>
     </mat-step>
 
-    <mat-step [stepControl]="archiveTransferForm.get([1])!" formGroupName="1">
+    <mat-step [stepControl]="archiveTransferFormArray.get([1])!" formGroupName="1">
       <section class="step-content step-content-2">
         <div class="info-form">
           <h2>Informations du versement</h2>
@@ -111,7 +111,7 @@
       </section>
     </mat-step>
 
-    <mat-step [stepControl]="archiveTransferForm.get([2])!" formGroupName="2">
+    <mat-step [stepControl]="archiveTransferFormArray.get([2])!" formGroupName="2">
       <section class="step-content step-content-3">
         <div class="info-form">
           <h2>Informations du service versant / producteur</h2>

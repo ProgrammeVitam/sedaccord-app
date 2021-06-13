@@ -33,8 +33,8 @@ export class FileDetailComponent implements OnInit {
 
   currentUser!: User;
 
-  fileForm!: FormGroup;
-  commentForm!: FormGroup;
+  fileFormGroup!: FormGroup;
+  commentFormGroup!: FormGroup;
   isOpen = true;
 
   constructor(
@@ -48,23 +48,23 @@ export class FileDetailComponent implements OnInit {
     this._getCurrentUser();
   }
 
-  get comments(): FormArray {
-    return this.commentForm.get('comments') as FormArray;
+  get commentFormArray(): FormArray {
+    return this.commentFormGroup.get('commentFormArray') as FormArray;
   }
 
   ngOnInit(): void {
-    this.fileForm = this._formBuilder.group({
+    this.fileFormGroup = this._formBuilder.group({
       name: [this.fileData.newName || this.fileData.name],
       startDate: [this.fileData.creationDate || this.fileData.startDate],
       endDate: [this.fileData.lastModificationDate || this.fileData.endDate],
       description: [this.fileData.description]
     });
-    this.commentForm = this._formBuilder.group({
-      comments: this._formBuilder.array([]),
+    this.commentFormGroup = this._formBuilder.group({
+      commentFormArray: this._formBuilder.array([]),
       text: ['']
     });
     this.fileData.comments?.thread.forEach(comment => {
-      this.comments.push(this._formBuilder.control(comment));
+      this.commentFormArray.push(this._formBuilder.control(comment));
     });
   }
 
@@ -85,10 +85,10 @@ export class FileDetailComponent implements OnInit {
   }
 
   onSubmitFile(): void {
-    this.fileData.newName = this.fileForm.value.name;
-    this.fileData.startDate = this.fileForm.value.startDate;
-    this.fileData.endDate = this.fileForm.value.endDate;
-    this.fileData.description = this.fileForm.value.description;
+    this.fileData.newName = this.fileFormGroup.value.name;
+    this.fileData.startDate = this.fileFormGroup.value.startDate;
+    this.fileData.endDate = this.fileFormGroup.value.endDate;
+    this.fileData.description = this.fileFormGroup.value.description;
     this.updateEvent.emit(this.fileData);
     this._closeSidenav();
   }
@@ -102,8 +102,8 @@ export class FileDetailComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.comments.removeAt(index);
-        this.fileData.comments!.thread = this.comments.value;
+        this.commentFormArray.removeAt(index);
+        this.fileData.comments!.thread = this.commentFormArray.value;
         this.updateEvent.emit(this.fileData);
       }
     });
@@ -118,20 +118,20 @@ export class FileDetailComponent implements OnInit {
     const comment = {
       date: new Date(),
       username: this.currentUser.name,
-      text: this.commentForm.value.text
+      text: this.commentFormGroup.value.text
     };
-    this.comments.push(this._formBuilder.control(comment));
+    this.commentFormArray.push(this._formBuilder.control(comment));
     if (this.fileData.comments) {
       this.fileData.comments.status = 'UNRESOLVED';
-      this.fileData.comments.thread = this.comments.value;
+      this.fileData.comments.thread = this.commentFormArray.value;
     } else {
       this.fileData.comments = {
         status: 'UNRESOLVED',
-        thread: this.comments.value
+        thread: this.commentFormArray.value
       };
     }
     this.updateEvent.emit(this.fileData);
-    this.commentForm.get('text')!.reset();
+    this.commentFormGroup.get('text')!.reset();
   }
 
   private _getCurrentUser(): void {

@@ -1,15 +1,14 @@
 import {AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.service';
-import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveData, ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import {Agency, ClassificationItemNode} from '../dtos/referential';
-import {FilePackage} from '../file-drop-input-control/file-drop-input-control.component';
+import {Agency, Classification} from '../dtos/referential';
+import {FileDropPackage} from '../file-drop-input-control/file-drop-input-control.component';
 import {Router} from '@angular/router';
-import {FileMetadata} from '../dtos/file';
 
 @Component({
   selector: 'app-archive-transfer-add',
@@ -36,10 +35,10 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       description: 'Veuillez patienter pendant que le système effectue des opérations de vérification et de nettoyage sur vos répertoires.'
     }
   ];
-  archiveTransferFormWrapper!: FormGroup;
+  archiveTransferFormGroup!: FormGroup;
   progressValue = 1;
 
-  classification!: ClassificationItemNode[];
+  classification!: Classification;
   agencies!: Agency[];
   $filteredOriginatingAgencies!: Observable<Agency[]>;
   $filteredSubmissionAgencies!: Observable<Agency[]>;
@@ -58,19 +57,19 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this.addEvent = new EventEmitter<ArchiveTransfer>();
   }
 
-  get archiveTransferForm(): FormArray {
-    return this.archiveTransferFormWrapper.get('archiveTransferForm') as FormArray;
+  get archiveTransferFormArray(): FormArray {
+    return this.archiveTransferFormGroup.get('archiveTransferFormArray') as FormArray;
   }
 
-  get archiveDataPackages(): FormArray {
-    return this.archiveTransferForm.at(0).get('archiveDataPackages') as FormArray;
+  get archiveDataPackageFormArray(): FormArray {
+    return this.archiveTransferFormArray.at(0).get('archiveDataPackageFormArray') as FormArray;
   }
 
   ngOnInit(): void {
-    this.archiveTransferFormWrapper = this._formBuilder.group({
-      archiveTransferForm: this._formBuilder.array([
+    this.archiveTransferFormGroup = this._formBuilder.group({
+      archiveTransferFormArray: this._formBuilder.array([
         this._formBuilder.group({
-          archiveDataPackages: this._formBuilder.array([])
+          archiveDataPackageFormArray: this._formBuilder.array([])
         }),
         this._formBuilder.group({
           name: [''],
@@ -100,23 +99,23 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   }
 
   addPackage(): void {
-    this.archiveDataPackages.push(this._formBuilder.group({
-      archiveDataValues: [[]],
+    this.archiveDataPackageFormArray.push(this._formBuilder.group({
+      fileDropData: [[]],
       classificationItem: ['']
     }));
   }
 
   removePackage(index: number): void {
-    this.archiveDataPackages.removeAt(index);
+    this.archiveDataPackageFormArray.removeAt(index);
   }
 
   autoFillOriginatingAgencyDescription(originatingAgency: Agency): void {
-    this.archiveTransferForm.at(2)
+    this.archiveTransferFormArray.at(2)
       .patchValue({originatingAgencyDescription: this._findAgency(originatingAgency).description});
   }
 
   autoFillSubmissionAgencyDescription(submissionAgency: Agency): void {
-    this.archiveTransferForm.at(2)
+    this.archiveTransferFormArray.at(2)
       .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
   }
 
@@ -126,19 +125,19 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
     const archiveTransfer = new ArchiveTransfer()
-      .withName(this.archiveTransferForm.at(1).value.name)
-      .withDescription(this.archiveTransferForm.at(1).value.description)
-      .withStartDate(this.archiveTransferForm.at(1).value.startDate)
-      .withEndDate(this.archiveTransferForm.at(1).value.endDate)
+      .withName(this.archiveTransferFormArray.at(1).value.name)
+      .withDescription(this.archiveTransferFormArray.at(1).value.description)
+      .withStartDate(this.archiveTransferFormArray.at(1).value.startDate)
+      .withEndDate(this.archiveTransferFormArray.at(1).value.endDate)
       .withOriginatingAgency({
-        id: this.archiveTransferForm.at(2).value.originatingAgency.id,
-        name: this.archiveTransferForm.at(2).value.originatingAgency.name,
-        description: this.archiveTransferForm.at(2).value.originatingAgencyDescription
+        id: this.archiveTransferFormArray.at(2).value.originatingAgency.id,
+        name: this.archiveTransferFormArray.at(2).value.originatingAgency.name,
+        description: this.archiveTransferFormArray.at(2).value.originatingAgencyDescription
       }).withSubmissionAgency({
-        id: this.archiveTransferForm.at(2).value.submissionAgency.id,
-        name: this.archiveTransferForm.at(2).value.submissionAgency.name,
-        description: this.archiveTransferForm.at(2).value.submissionAgencyDescription
-      }).withArchiveDataPackages(this._buildArchiveDataPackages(this.archiveDataPackages.value));
+        id: this.archiveTransferFormArray.at(2).value.submissionAgency.id,
+        name: this.archiveTransferFormArray.at(2).value.submissionAgency.name,
+        description: this.archiveTransferFormArray.at(2).value.submissionAgencyDescription
+      }).withArchiveDataPackages(this._buildArchiveDataPackages(this.archiveDataPackageFormArray.value));
     this.addEvent.emit(archiveTransfer);
   }
 
@@ -156,13 +155,13 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this._referentialService.getAgencies()
       .subscribe(agencies => {
         this.agencies = agencies;
-        this.$filteredOriginatingAgencies = this.archiveTransferForm.at(2).get('originatingAgency')!.valueChanges
+        this.$filteredOriginatingAgencies = this.archiveTransferFormArray.at(2).get('originatingAgency')!.valueChanges
           .pipe(
             startWith(''),
             map(value => typeof value === 'string' ? value : value.name),
             map(value => this._filterAgency(value))
           );
-        this.$filteredSubmissionAgencies = this.archiveTransferForm.at(2).get('submissionAgency')!.valueChanges
+        this.$filteredSubmissionAgencies = this.archiveTransferFormArray.at(2).get('submissionAgency')!.valueChanges
           .pipe(
             startWith(''),
             map(value => typeof value === 'string' ? value : value.name),
@@ -185,25 +184,25 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     return this.agencies.filter(agency => agency.name.toLowerCase().includes(filterValue));
   }
 
-  private _buildArchiveDataPackages(archiveDataPackageValues: any[]): ArchiveDataPackage[] {
-    return archiveDataPackageValues
-      .map((archiveDataPackageValue: any, index: number) => {
+  private _buildArchiveDataPackages(archiveDataPackageFormArrayValue: any[]): ArchiveDataPackage[] {
+    return archiveDataPackageFormArrayValue
+      .map((archiveDataPackage: any, index: number) => {
         return {
           id: index,
-          name: archiveDataPackageValue.name,
+          name: archiveDataPackage.name,
           classificationItem: {
-            id: archiveDataPackageValue.classificationItem.id,
-            name: archiveDataPackageValue.classificationItem.name
+            id: archiveDataPackage.classificationItem.id,
+            name: archiveDataPackage.classificationItem.name
           },
-          archiveData: this._buildArchiveData(archiveDataPackageValue.archiveDataValues)
+          archiveData: this._buildArchiveData(archiveDataPackage.fileDropData)
         };
       });
   }
 
-  private _buildArchiveData(archiveDataValues: FilePackage[]): FileMetadata[][] {
-    return archiveDataValues
-      .map((filePackage: FilePackage) => {
-        const directoryMetadata = filePackage.directories.map((directory: string) => {
+  private _buildArchiveData(fileDropPackages: FileDropPackage[]): ArchiveData {
+    return fileDropPackages
+      .map(fileDropPackage => {
+        const directoryMetadata = fileDropPackage.directories.map((directory: string) => {
           return {
             isDirectory: true,
             name: directory.split('/').pop()!,
@@ -213,7 +212,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
             size: 0 // TODO update it backend side
           };
         });
-        const fileMetadata = filePackage.files.map((file: File) => {
+        const fileMetadata = fileDropPackage.files.map((file: File) => {
           return {
             isDirectory: false,
             name: file.name,

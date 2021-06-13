@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-export interface FilePackage {
+export interface FileDropPackage {
   name: string;
   files: File[];
   directories: string[];
@@ -29,13 +29,13 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
   @Input() disabled = false;
   @Input() label = '';
 
-  private _filePackages!: FilePackage[];
-  get filePackages(): FilePackage[] {
-    return this._filePackages;
+  private _fileDropPackages!: FileDropPackage[];
+  get fileDropPackages(): FileDropPackage[] {
+    return this._fileDropPackages;
   }
-  set filePackages(filePackages: FilePackage[]) {
-    this._filePackages = filePackages;
-    this.onChange(filePackages);
+  set fileDropPackages(fileDropPackages: FileDropPackage[]) {
+    this._fileDropPackages = fileDropPackages;
+    this.onChange(fileDropPackages);
   }
 
   onChange = (_: any) => {};
@@ -45,8 +45,8 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
     this.writeValue([]);
   }
 
-  writeValue(filePackages: FilePackage[]): void {
-    this.filePackages = filePackages;
+  writeValue(fileDropPackages: FileDropPackage[]): void {
+    this.fileDropPackages = fileDropPackages;
   }
 
   registerOnChange(fn: any): void {
@@ -79,15 +79,15 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
         return file;
       });
       // TODO list directories to make it compatible with D&D + uncomment in html
-      this.writeValue(this.filePackages);
+      this.writeValue(this.fileDropPackages);
     }
   }
 
-  remove(filePackage: FilePackage): void {
-    const index = this.filePackages.indexOf(filePackage);
+  remove(fileDropPackage: FileDropPackage): void {
+    const index = this.fileDropPackages.indexOf(fileDropPackage);
     if (index >= 0) {
-      this.filePackages.splice(index, 1);
-      this.writeValue(this.filePackages);
+      this.fileDropPackages.splice(index, 1);
+      this.writeValue(this.fileDropPackages);
     }
   }
 
@@ -96,15 +96,15 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
       .filter(item => item.kind === 'file')
       .map(item => item.webkitGetAsEntry());
     entries.forEach(entry => {
-      this._listFiles([entry], [], []).then((filePackage: FilePackage) => {
-        this.filePackages.push(filePackage);
-        this.writeValue(this.filePackages);
+      this._listFiles([entry], [], []).then((fileDropPackage: FileDropPackage) => {
+        this.fileDropPackages.push(fileDropPackage);
+        this.writeValue(this.fileDropPackages);
       });
     });
   }
 
   // FIXME types when they are implemented (e.g. FileSystemEntry)
-  private _listFiles(entries: any[], files: File[], directories: string[]): Promise<FilePackage> {
+  private _listFiles(entries: any[], files: File[], directories: string[]): Promise<FileDropPackage> {
     let name = '';
     const promises: Promise<any>[] = [];
     entries.forEach(entry => {
@@ -130,7 +130,7 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
     });
   }
 
-  private _parseDirectoryEntry(directoryEntry: any, files: File[], directories: string[]): Promise<FilePackage> {
+  private _parseDirectoryEntry(directoryEntry: any, files: File[], directories: string[]): Promise<FileDropPackage> {
     const directoryReader = directoryEntry.createReader();
     return new Promise((resolve, reject) => {
       let allEntries: any[] = [];

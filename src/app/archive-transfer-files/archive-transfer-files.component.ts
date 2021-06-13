@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ArchiveDataUtils, ArchiveTransfer} from '../dtos/archive-transfer';
+import {ArchiveData, ArchiveDataUtils, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ComplexDialogService, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
 import {FileDetailComponent} from '../file-detail/file-detail.component';
 import {SelectionModel} from '@angular/cdk/collections';
-import {ClassificationItemNode} from '../dtos/referential';
+import {Classification} from '../dtos/referential';
 import {FileMetadata} from '../dtos/file';
 import {FileTreeSelectionModel} from '../file-tree/file-tree.component';
 import {Router} from '@angular/router';
@@ -20,13 +20,13 @@ export class ArchiveTransferFilesComponent implements OnInit {
   @Input() archiveTransfer!: ArchiveTransfer;
   @Output() formChangeEvent: EventEmitter<any>;
 
-  filesForm!: FormGroup;
+  filesFormGroup!: FormGroup;
   treeSelection: SelectionModel<FileTreeSelectionModel>;
   selectedArchiveDataPackageIndex: number;
   selectionPath: string[];
   tableSelection: SelectionModel<FileMetadata>;
 
-  classification!: ClassificationItemNode[];
+  classification!: Classification;
 
   constructor(
     private _router: Router,
@@ -42,30 +42,30 @@ export class ArchiveTransferFilesComponent implements OnInit {
     this.formChangeEvent = new EventEmitter<any>();
   }
 
-  get archiveDataPackages(): FormArray {
-    return this.filesForm.get('archiveDataPackages') as FormArray;
+  get archiveDataPackageFormArray(): FormArray {
+    return this.filesFormGroup.get('archiveDataPackageFormArray') as FormArray;
   }
 
   ngOnInit(): void {
     this._getClassification();
-    this.filesForm = this._formBuilder.group({
-      archiveDataPackages: this._formBuilder.array([])
+    this.filesFormGroup = this._formBuilder.group({
+      archiveDataPackageFormArray: this._formBuilder.array([])
     });
     this.archiveTransfer.archiveDataPackages.forEach(archiveDataPackage => {
-      this.archiveDataPackages.push(this._formBuilder.group({
-        archiveDataValues: [archiveDataPackage.archiveData],
+      this.archiveDataPackageFormArray.push(this._formBuilder.group({
+        archiveData: [archiveDataPackage.archiveData],
         classificationItem: [archiveDataPackage.classificationItem]
       }));
     });
-    this.filesForm.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
+    this.filesFormGroup.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
   }
 
-  hasUnresolvedThread(archiveData: FileMetadata[][]): boolean {
+  hasUnresolvedThread(archiveData: ArchiveData): boolean {
     return archiveData.flat()
       .some((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata));
   }
 
-  hasComment(archiveData: FileMetadata[][]): boolean {
+  hasComment(archiveData: ArchiveData): boolean {
     return archiveData.flat()
       .some((fileMetadata: FileMetadata) => this._getCommentCount(fileMetadata) > 0);
   }
@@ -74,7 +74,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
     this.selectedArchiveDataPackageIndex = archiveDataPackageIndex;
     this.treeSelection.select({
       parents: [],
-      children: ArchiveDataUtils.getRoots(this.archiveDataPackages.value[this.selectedArchiveDataPackageIndex].archiveDataValues)
+      children: ArchiveDataUtils.getRoots(this.archiveDataPackageFormArray.value[this.selectedArchiveDataPackageIndex].archiveData)
     });
   }
 
@@ -98,35 +98,35 @@ export class ArchiveTransferFilesComponent implements OnInit {
   }
 
   addPackage(): void {
-    this.archiveDataPackages.push(this._formBuilder.group({
-      archiveDataValues: [[]],
+    this.archiveDataPackageFormArray.push(this._formBuilder.group({
+      archiveData: [[]],
       classificationItem: ['']
     }));
   }
 
-  removePackage(index: number): void { // TODO
-    this.archiveDataPackages.removeAt(index);
+  removePackage(index: number): void {
+    this.archiveDataPackageFormArray.removeAt(index);
   }
 
-  getDirectoryCount(archiveDataValues: FileMetadata[]): number {
-    return archiveDataValues.flat().filter(file => file.isDirectory).length;
+  getDirectoryCount(archiveData: ArchiveData): number {
+    return archiveData.flat().filter(fileMetadata => fileMetadata.isDirectory).length;
   }
 
-  getFileCount(archiveDataValues: FileMetadata[]): number {
-    return archiveDataValues.flat().filter(file => !file.isDirectory).length;
+  getFileCount(archiveData: ArchiveData): number {
+    return archiveData.flat().filter(fileMetadata => !fileMetadata.isDirectory).length;
   }
 
   updateArchiveTransfer(): void {
     let i = 1;
-    this.archiveTransfer.archiveDataPackages = this.archiveDataPackages.value.map((archiveDataPackage: any) => {
+    this.archiveTransfer.archiveDataPackages = this.archiveDataPackageFormArray.value.map((archiveDataPackage: any) => {
       return {
         id: i++,
         name: archiveDataPackage.name,
         classificationItem: {
-          id: archiveDataPackage.classificationItem.id,
-          name: archiveDataPackage.classificationItem.name
+          id: archiveDataPackage.classificationItem?.id,
+          name: archiveDataPackage.classificationItem?.name
         },
-        archiveData: archiveDataPackage.archiveDataValues
+        archiveData: archiveDataPackage.archiveData
       };
     });
   }

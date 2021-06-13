@@ -3,9 +3,11 @@ export interface Reference {
     name: string;
 }
 
-export interface ClassificationItemNode extends Reference {
+interface ClassificationItemNode extends Reference {
     children?: this[];
 }
+
+export type Classification = ClassificationItemNode[];
 
 export interface Agency extends Reference {
     description: string;

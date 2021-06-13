@@ -1,30 +1,30 @@
-<section [formGroup]="filesForm" class="file-tree-form">
-  <mat-accordion formArrayName="archiveDataPackages">
-    <ng-container *ngFor="let archiveDataPackage of archiveDataPackages.controls; let i=index">
+<section [formGroup]="filesFormGroup" class="file-tree-form">
+  <mat-accordion formArrayName="archiveDataPackageFormArray">
+    <ng-container *ngFor="let archiveDataPackageControl of archiveDataPackageFormArray.controls; let i=index">
       <mat-expansion-panel #panel (opened)="onSelectPackage(i)" [formGroupName]="i" class="mat-elevation-z0">
         <mat-expansion-panel-header class="panel-header-overflow">
           <mat-panel-title
-            [matBadgeColor]="hasUnresolvedThread(archiveDataPackage.get('archiveDataValues')!.value) ? 'accent' : 'primary'"
-            [matBadgeHidden]="!hasComment(archiveDataPackage.get('archiveDataValues')!.value)"
+            [matBadgeColor]="hasUnresolvedThread(archiveDataPackageControl.get('archiveData')!.value) ? 'accent' : 'primary'"
+            [matBadgeHidden]="!hasComment(archiveDataPackageControl.get('archiveData')!.value)"
             class="overflow-visible"
             matBadge="&#8288;" matBadgeColor="accent" matBadgePosition="below before" matBadgeSize="small">
             <mat-icon>topic</mat-icon>
             Ensemble {{i + 1}}
           </mat-panel-title>
           <mat-panel-description class="mat-small">
-            {{getDirectoryCount(archiveDataPackage.get('archiveDataValues')?.value)}} dossiers
-            / {{getFileCount(archiveDataPackage.get('archiveDataValues')?.value)}} fichiers
+            {{getDirectoryCount(archiveDataPackageControl.get('archiveData')?.value)}} dossiers
+            / {{getFileCount(archiveDataPackageControl.get('archiveData')?.value)}} fichiers
           </mat-panel-description>
         </mat-expansion-panel-header>
         <app-tree-autocomplete-control [formControlName]="'classificationItem'"
                                        [label]="'Noeud du plan de classement'"
                                        [treeData]="classification"
-                                       [value]="archiveDataPackage.get('classificationItem')!.value"></app-tree-autocomplete-control>
+                                       [value]="archiveDataPackageControl.get('classificationItem')!.value"></app-tree-autocomplete-control>
         <div class="mat-caption">Arborescence</div>
         <app-file-tree (selectDirectoryEvent)="onSelectFromTree($event)"
-                       [fileTreeData]="archiveDataPackage.get('archiveDataValues')!.value.flat()"
+                       [fileTreeData]="archiveDataPackageControl.get('archiveData')!.value.flat()"
                        [focused]="panel.expanded"></app-file-tree>
-        <mat-action-row *ngIf="archiveDataPackages.controls.length > 1">
+        <mat-action-row *ngIf="archiveDataPackageFormArray.controls.length > 1">
           <button (click)="removePackage(i)" color="primary" mat-button type="button">
             Supprimer cet ensemble
           </button>

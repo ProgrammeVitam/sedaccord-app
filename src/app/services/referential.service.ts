@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {catchError, tap} from 'rxjs/operators';
-import {Agency, ClassificationItemNode} from '../dtos/referential';
+import {Agency, Classification} from '../dtos/referential';
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +22,11 @@ export class ReferentialService {
       );
   }
 
-  getClassification(): Observable<ClassificationItemNode[]> {
-    return this.http.get<ClassificationItemNode[]>(this.classificationUrl)
+  getClassification(): Observable<Classification> {
+    return this.http.get<Classification>(this.classificationUrl)
       .pipe(
         tap(_ => this.log('fetched classification')),
-        catchError(this.handleError<ClassificationItemNode[]>('getClassification', []))
+        catchError(this.handleError<Classification>('getClassification', []))
       );
   }
 

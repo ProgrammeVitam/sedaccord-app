@@ -9,7 +9,7 @@
       <ng-template mat-tab-label>
         Informations<br>du fichier
       </ng-template>
-      <form (ngSubmit)="onSubmitFile()" [formGroup]="fileForm" class="info-form">
+      <form (ngSubmit)="onSubmitFile()" [formGroup]="fileFormGroup" class="info-form">
         <div class="form-content-wrapper">
           <mat-form-field appearance="fill">
             <mat-label>Nom original du fichier
@@ -59,9 +59,9 @@
         <span [matBadgeColor]="hasUnresolvedThread() ? 'accent' : 'primary'"
               [matBadgeHidden]="!hasComment()" [matBadge]="getCommentCount()" matBadgeSize="small">Discussion</span>
       </ng-template>
-      <form (ngSubmit)="onSubmitComment()" *ngIf="currentUser" [formGroup]="commentForm" class="info-form">
+      <form (ngSubmit)="onSubmitComment()" *ngIf="currentUser" [formGroup]="commentFormGroup" class="info-form">
         <div class="form-content-wrapper">
-          <mat-card *ngFor="let comment of comments.value; let i=index" class="comment">
+          <mat-card *ngFor="let comment of commentFormArray.value; let i=index" class="comment">
             <mat-card-header>
               <mat-card-title>{{comment.username}}</mat-card-title>
               <mat-card-subtitle>{{comment.date | date}}</mat-card-subtitle>

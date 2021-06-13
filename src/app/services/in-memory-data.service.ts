@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {InMemoryDbService} from 'angular-in-memory-web-api';
-import {ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
-import {Agency, ClassificationItemNode} from '../dtos/referential';
-import {FileMetadata} from '../dtos/file';
+import {ArchiveData, ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
+import {Agency, Classification} from '../dtos/referential';
 import {User} from '../dtos/user';
 
 @Injectable({
@@ -33,7 +32,7 @@ export class InMemoryDataService implements InMemoryDbService {
       {id: 4, name: 'DGCS', description: 'Direction générale de la cohésion sociale'},
       {id: 5, name: 'DRH', description: 'Direction des ressources humaines'}
     ];
-    const classification: ClassificationItemNode[] = [
+    const classification: Classification = [
       {
         id: 1,
         name: 'Gestion individuelle',
@@ -61,7 +60,7 @@ export class InMemoryDataService implements InMemoryDbService {
         ]
       }
     ];
-    const data1: FileMetadata[][] = [
+    const data1: ArchiveData = [
       [{
         isDirectory: true,
         name: 'Agents partis en janvier 2017',

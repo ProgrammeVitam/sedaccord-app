@@ -3,7 +3,7 @@ import {FileMetadata} from './file';
 import {ANONYMOUS_USER} from '../services/auth.service';
 
 export class ArchiveDataUtils {
-  static getRoots(archiveData: FileMetadata[][]): FileMetadata[] {
+  static getRoots(archiveData: ArchiveData): FileMetadata[] {
     return archiveData.map(data => this._getRoot(data));
   }
 
@@ -17,12 +17,14 @@ export class ArchiveDataUtils {
   }
 }
 
+export type ArchiveData = FileMetadata[][];
+
 export interface ArchiveDataPackage {
   id: number;
   name: string;
   description?: string;
   classificationItem: Reference;
-  archiveData: FileMetadata[][];
+  archiveData: ArchiveData;
 }
 
 export type ArchiveTransferStatus = 'En cours' | 'En attente de correction';
