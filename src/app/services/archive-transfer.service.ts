@@ -4,7 +4,8 @@ import {ArchiveTransfer, ArchiveTransferInterface, ArchiveTransferStatus} from '
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map, mapTo, switchMap, tap} from 'rxjs/operators';
 import {UserRole} from '../dtos/user';
-import {MessageService, MessageType} from './message.service';
+import {MessageService} from './message.service';
+import {MessageType} from '../dtos/message';
 
 @Injectable({
   providedIn: 'root'

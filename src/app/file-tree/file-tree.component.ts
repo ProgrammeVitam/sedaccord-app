@@ -2,7 +2,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FileInterface, FileMetadata} from '../dtos/file';
+import {FileInterface, FileMetadata, FileUtil} from '../dtos/file';
 
 export type FileTreeSelectionModel = { parents: FileMetadata[], children: FileMetadata[] };
 
@@ -270,20 +270,12 @@ export class FileTreeComponent implements OnInit, OnChanges {
   private _descendantsOnlyOneOfHasUnresolvedThread(node: FileFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     return !!descendants.length && descendants
-      .some(child => this._hasUnresolvedThread(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
+      .some(child => FileUtil.hasUnresolvedThread(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
   }
 
   private _getDescendantsOnlyCommentCount(node: FileFlatNode): number {
     const directDescendantCommentCounts = this.treeControl.getDescendants(node)
-      .map(child => this._getCommentCount(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
+      .map(child => FileUtil.getCommentCount(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
     return directDescendantCommentCounts.reduce((acc, currentValue) => acc + currentValue, 0);
-  }
-
-  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
-  }
-
-  private _getCommentCount(fileMetadata: FileMetadata): number {
-    return (fileMetadata.comments?.thread || []).length;
   }
 }

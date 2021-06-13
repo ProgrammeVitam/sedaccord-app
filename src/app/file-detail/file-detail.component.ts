@@ -3,7 +3,7 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {DialogReference, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ArchiveTransferService} from '../services/archive-transfer.service';
-import {FileMetadata} from '../dtos/file';
+import {FileMetadata, FileUtil} from '../dtos/file';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {AuthService} from '../services/auth.service';
@@ -69,15 +69,15 @@ export class FileDetailComponent implements OnInit {
   }
 
   hasUnresolvedThread(): boolean {
-    return this._hasUnresolvedThread(this.fileData);
+    return FileUtil.hasUnresolvedThread(this.fileData);
   }
 
   hasComment(): boolean {
-    return this._getCommentCount(this.fileData) > 0;
+    return FileUtil.getCommentCount(this.fileData) > 0;
   }
 
   getCommentCount(): number {
-    return this._getCommentCount(this.fileData);
+    return FileUtil.getCommentCount(this.fileData);
   }
 
   onCancel(): void {
@@ -141,13 +141,5 @@ export class FileDetailComponent implements OnInit {
   private _closeSidenav(): void {
     setTimeout((_: any) => this._sidenavRef.close(), TRANSITION_DURATION);
     this.isOpen = false;
-  }
-
-  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
-  }
-
-  private _getCommentCount(fileMetadata: FileMetadata): number {
-    return (fileMetadata.comments?.thread || []).length;
   }
 }

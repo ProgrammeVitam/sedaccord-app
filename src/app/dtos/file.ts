@@ -23,3 +23,13 @@ export interface FileMetadata extends FileInterface {
   startDate?: Date;
   endDate?: Date;
 }
+
+export class FileUtil {
+  static hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
+    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
+  }
+
+  static getCommentCount(fileMetadata: FileMetadata): number {
+    return (fileMetadata.comments?.thread || []).length;
+  }
+}

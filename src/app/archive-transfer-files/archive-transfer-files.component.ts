@@ -7,7 +7,7 @@ import {ComplexDialogService, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/c
 import {FileDetailComponent} from '../file-detail/file-detail.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {Classification} from '../dtos/referential';
-import {FileMetadata} from '../dtos/file';
+import {FileMetadata, FileUtil} from '../dtos/file';
 import {FileTreeSelectionModel} from '../file-tree/file-tree.component';
 import {Router} from '@angular/router';
 
@@ -62,12 +62,12 @@ export class ArchiveTransferFilesComponent implements OnInit {
 
   hasUnresolvedThread(archiveData: ArchiveData): boolean {
     return archiveData.flat()
-      .some((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata));
+      .some((fileMetadata: FileMetadata) => FileUtil.hasUnresolvedThread(fileMetadata));
   }
 
   hasComment(archiveData: ArchiveData): boolean {
     return archiveData.flat()
-      .some((fileMetadata: FileMetadata) => this._getCommentCount(fileMetadata) > 0);
+      .some((fileMetadata: FileMetadata) => FileUtil.getCommentCount(fileMetadata) > 0);
   }
 
   onSelectPackage(archiveDataPackageIndex: number): void {
@@ -134,13 +134,5 @@ export class ArchiveTransferFilesComponent implements OnInit {
   private _getClassification(): void {
     this._referentialService.getClassification()
       .subscribe(classification => this.classification = classification);
-  }
-
-  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
-  }
-
-  private _getCommentCount(fileMetadata: FileMetadata): number {
-    return (fileMetadata.comments?.thread || []).length;
   }
 }

@@ -12,7 +12,7 @@ import {
 import {MatSort} from '@angular/material/sort';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FileMetadata} from '../dtos/file';
+import {FileMetadata, FileUtil} from '../dtos/file';
 
 @Component({
   selector: 'app-file-table',
@@ -59,26 +59,18 @@ export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   hasUnresolvedThread(element: FileMetadata): boolean {
-    return this._hasUnresolvedThread(element);
+    return FileUtil.hasUnresolvedThread(element);
   }
 
   hasComment(element: FileMetadata): boolean {
-    return this._getCommentCount(element) > 0;
+    return FileUtil.getCommentCount(element) > 0;
   }
 
   getCommentCount(element: FileMetadata): number {
-    return this._getCommentCount(element);
+    return FileUtil.getCommentCount(element);
   }
 
   edit(element: FileMetadata): void {
     this.selectFileEvent.emit(element);
-  }
-
-  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
-  }
-
-  private _getCommentCount(fileMetadata: FileMetadata): number {
-    return (fileMetadata.comments?.thread || []).length;
   }
 }

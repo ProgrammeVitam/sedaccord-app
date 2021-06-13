@@ -7,8 +7,8 @@ export class ArchiveDataUtils {
     return archiveData.map(data => this._getRoot(data));
   }
 
-  private static _getRoot(archiveData: FileMetadata[]): FileMetadata {
-    return archiveData.reduce((acc, currentValue) =>
+  private static _getRoot(flatArchiveData: FileMetadata[]): FileMetadata {
+    return flatArchiveData.reduce((acc, currentValue) =>
       this._getLength(currentValue) < this._getLength(acc) ? currentValue : acc);
   }
 

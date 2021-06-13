@@ -3,15 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {forkJoin, Observable, of} from 'rxjs';
 import {catchError, defaultIfEmpty, map, mapTo, switchMap, tap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
-
-export type MessageType = 'SUBMITTED_ARCHIVE_TRANSFER' | 'UPDATED_ARCHIVE_TRANSFER';
-
-export interface Message {
-  id: number;
-  archiveTransferId: number;
-  creationUserId: number;
-  type: MessageType;
-}
+import {Message, MessageType} from '../dtos/message';
 
 @Injectable({
   providedIn: 'root'

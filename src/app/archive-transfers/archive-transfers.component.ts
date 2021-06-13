@@ -12,12 +12,13 @@ import {saveAs} from 'file-saver';
 import {HttpResponse} from '@angular/common/http';
 import {AuthService} from '../services/auth.service';
 import {User} from '../dtos/user';
-import {FileMetadata} from '../dtos/file';
+import {FileMetadata, FileUtil} from '../dtos/file';
 import {FakeLoginDialogComponent} from '../fake-login-dialog/fake-login-dialog.component';
 import {switchMap} from 'rxjs/operators';
 import {forkJoin} from 'rxjs';
-import {Message, MessageService} from '../services/message.service';
+import {MessageService} from '../services/message.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MessageUtil} from '../dtos/message';
 
 type SortValue = 'creationDate' | 'lastModificationDate';
 
@@ -160,21 +161,21 @@ export class ArchiveTransfersComponent {
       .flatMap((archiveTransfer: ArchiveTransfer) => archiveTransfer.archiveDataPackages)
       .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
       .flat()
-      .filter((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata)).length;
+      .filter((fileMetadata: FileMetadata) => FileUtil.hasUnresolvedThread(fileMetadata)).length;
   }
 
   hasUnresolvedThread(archiveTransfer: ArchiveTransfer): boolean {
     return archiveTransfer.archiveDataPackages
       .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
       .flat()
-      .some((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata));
+      .some((fileMetadata: FileMetadata) => FileUtil.hasUnresolvedThread(fileMetadata));
   }
 
   getUnresolvedThreadCount(archiveTransfer: ArchiveTransfer): number {
     return archiveTransfer.archiveDataPackages
       .flatMap((archiveDataPackage: ArchiveDataPackage) => archiveDataPackage.archiveData)
       .flat()
-      .filter((fileMetadata: FileMetadata) => this._hasUnresolvedThread(fileMetadata)).length;
+      .filter((fileMetadata: FileMetadata) => FileUtil.hasUnresolvedThread(fileMetadata)).length;
   }
 
   private _getCurrentUserAndHisArchiveTransfers(name: string): void {
@@ -187,7 +188,7 @@ export class ArchiveTransfersComponent {
       ([user, archiveTransfers, messages]) => {
         this.currentUser = user;
         this.archiveTransfers = archiveTransfers.sort(this._sortByLastModificationDate);
-        const displayMessages = this._getDisplayMessages(messages);
+        const displayMessages = MessageUtil.getDisplayMessages(messages);
         if (displayMessages.length) {
           this._snackBar.open(displayMessages.join('\n'), 'Vu');
         }
@@ -195,28 +196,8 @@ export class ArchiveTransfersComponent {
       });
   }
 
-  private _hasUnresolvedThread(fileMetadata: FileMetadata): boolean {
-    return !!fileMetadata.comments && fileMetadata.comments.status === 'UNRESOLVED';
-  }
-
   private _switchUser(name: string): void {
     this._getCurrentUserAndHisArchiveTransfers(name);
-  }
-
-  private _getDisplayMessages(messages: Message[]): string[] {
-    return messages.map(message => message.type)
-      .filter((type, i, arr) => arr.indexOf(type) === i) // Filter unique values
-      .reduce((acc: string[], currentValue) => {
-      switch (currentValue) {
-        case 'SUBMITTED_ARCHIVE_TRANSFER':
-          acc.push('Une nouvelle demande de versement est arrivée.');
-          break;
-        case 'UPDATED_ARCHIVE_TRANSFER':
-          acc.push('Un versement a été mis à jour.');
-          break;
-      }
-      return acc;
-    }, []);
   }
 
   private _generateSip(archiveTransfer: ArchiveTransfer): void {
