@@ -29,7 +29,7 @@ const TRANSITION_DURATION = 300;
 })
 export class FileDetailComponent implements OnInit {
   @Input() fileData!: FileMetadata;
-  @Output() updateEvent!: EventEmitter<FileMetadata>;
+  @Output() updateEvent!: EventEmitter<any>;
 
   currentUser!: User;
 
@@ -44,7 +44,7 @@ export class FileDetailComponent implements OnInit {
     private _archiveTransferService: ArchiveTransferService,
     private _dialog: MatDialog
   ) {
-    this.updateEvent = new EventEmitter<FileMetadata>();
+    this.updateEvent = new EventEmitter<any>();
     this._getCurrentUser();
   }
 
@@ -89,7 +89,7 @@ export class FileDetailComponent implements OnInit {
     this.fileData.startDate = this.fileFormGroup.value.startDate;
     this.fileData.endDate = this.fileFormGroup.value.endDate;
     this.fileData.description = this.fileFormGroup.value.description;
-    this.updateEvent.emit(this.fileData);
+    this.updateEvent.emit(null);
     this._closeSidenav();
   }
 

@@ -92,7 +92,7 @@ export class ArchiveTransferFilesComponent implements OnInit {
     );
     fileDetailSidenavRef.componentInstance!.fileData = fileMetadata;
     fileDetailSidenavRef.componentInstance!.updateEvent
-      .subscribe((fileData: FileMetadata) => {
+      .subscribe(_ => {
         this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
       });
   }
