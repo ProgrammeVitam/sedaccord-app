@@ -30,29 +30,35 @@ export class ArchiveTransferDetailComponent implements OnInit {
     private _dialog: MatDialog,
     private _router: Router
   ) {
-    this._getCurrentUser();
     this.saveButtonDisabled = true;
   }
 
   ngOnInit(): void {
+    this._getCurrentUser();
     const id = this._route.snapshot.paramMap.get('id');
     if (id) {
       this._getArchiveTransfer(+id);
     }
   }
 
-  onFormChange(): void {
-    this.saveButtonDisabled = false;
+  updateSaveButtonDisabledState(state: boolean): void {
+    this.saveButtonDisabled = state;
   }
 
-  onSubmit(): void {
+  submit(): void {
     this.contextForm.updateArchiveTransfer();
     this.filesForm.updateArchiveTransfer();
-    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer).subscribe();
-    this.saveButtonDisabled = true;
+    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer)
+      .subscribe();
+    this.updateSaveButtonDisabledState(true);
   }
 
-  submitArchiveTransfer(): void {
+  updateArchiveTransfer(): void {
+    this._archiveTransferService.updateArchiveTransfer(this.archiveTransfer)
+      .subscribe();
+  }
+
+  shareArchiveTransfer(): void {
     const dialogRef = this._dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Confirmer la soumission',

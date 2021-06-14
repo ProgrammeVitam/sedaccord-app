@@ -8,7 +8,7 @@
   <mat-icon inline>arrow_right_alt</mat-icon>
   <span>Projet de versement {{archiveTransfer?.id}}</span>
 </nav>
-<form (ngSubmit)="onSubmit()">
+<form (ngSubmit)="submit()">
   <mat-tab-group *ngIf="archiveTransfer" class="mat-tab-fill-height" dynamicHeight>
     <mat-tab label="Description générale">
       <div class="button-group">
@@ -21,7 +21,7 @@
           <button mat-stroked-button routerLink="/" type="button">
             Annuler
           </button>
-          <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'TRANSFER'"
+          <button (click)="shareArchiveTransfer()" *ngIf="currentUser.role === 'TRANSFER'"
                   [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
                   type="button">
             Demander le versement
@@ -33,7 +33,7 @@
           </button>
         </div>
       </div>
-      <app-archive-transfer-context (formChangeEvent)="onFormChange()" [archiveTransfer]="archiveTransfer"></app-archive-transfer-context>
+      <app-archive-transfer-context (formChangeEvent)="updateSaveButtonDisabledState(false)" [archiveTransfer]="archiveTransfer"></app-archive-transfer-context>
     </mat-tab>
     <mat-tab label="Arborescence de dossiers">
       <div class="button-group">
@@ -46,7 +46,7 @@
           <button mat-stroked-button routerLink="/" type="button">
             Annuler
           </button>
-          <button (click)="submitArchiveTransfer()" *ngIf="currentUser.role === 'TRANSFER'"
+          <button (click)="shareArchiveTransfer()" *ngIf="currentUser.role === 'TRANSFER'"
                   [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
                   type="button">
             Demander le versement
@@ -58,7 +58,7 @@
           </button>
         </div>
       </div>
-      <app-archive-transfer-files (formChangeEvent)="onFormChange()" [archiveTransfer]="archiveTransfer"></app-archive-transfer-files>
+      <app-archive-transfer-files (formChangeEvent)="updateSaveButtonDisabledState(false)" (updateEvent)="updateArchiveTransfer()" [archiveTransfer]="archiveTransfer"></app-archive-transfer-files>
     </mat-tab>
   </mat-tab-group>
 </form>

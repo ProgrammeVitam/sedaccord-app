@@ -1,15 +1,16 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {forkJoin, Observable, of} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {catchError, defaultIfEmpty, map, mapTo, switchMap, tap} from 'rxjs/operators';
 import {AuthService} from './auth.service';
 import {Message, MessageType} from '../dtos/message';
+import {ServiceUtil} from './service-util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  private messagesUrl = 'api/messages';  // URL to web api
+  private messagesUrl = 'api/messages';
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
@@ -29,16 +30,6 @@ export class MessageService {
     );
   }
 
-  private _findMessagesByArchiveTransfer(archiveTransferIds: number[]): Observable<Message[]> {
-    const url = `${this.messagesUrl}/?archiveTransferId=${archiveTransferIds.join('|')}`;
-    return this.http.get<Message[]>(url)
-      .pipe(
-        tap(value => value.length ?
-          this.log(`found messages which archive transfer ids matching "${archiveTransferIds}"`) : this.log(`no message which archive transfer ids matching "${archiveTransferIds}"`)),
-        catchError(this.handleError<Message[]>(`findMessagesBySubmissionUser archiveTransferIds=${archiveTransferIds}`, []))
-      );
-  }
-
   addMessage(archiveTransferId: number, type: MessageType): Observable<Message> {
     return this.http.post<Message>(this.messagesUrl, {
       archiveTransferId,
@@ -46,8 +37,18 @@ export class MessageService {
       type
     }, this.httpOptions)
       .pipe(
-        tap((message: Message) => this.log(`added message w/ id=${message.id}`)),
-        catchError(this.handleError<Message>('addMessage'))
+        tap((message: Message) => ServiceUtil.log(`added message w/ id=${message.id}`)),
+        catchError(ServiceUtil.handleError<Message>('addMessage'))
+      );
+  }
+
+  private _findMessagesByArchiveTransfer(archiveTransferIds: number[]): Observable<Message[]> {
+    const url = `${this.messagesUrl}/?archiveTransferId=${archiveTransferIds.join('|')}`;
+    return this.http.get<Message[]>(url)
+      .pipe(
+        tap(value => value.length ?
+          ServiceUtil.log(`found messages which archive transfer ids matching "${archiveTransferIds}"`) : ServiceUtil.log(`no message which archive transfer ids matching "${archiveTransferIds}"`)),
+        catchError(ServiceUtil.handleError<Message[]>(`findMessagesBySubmissionUser archiveTransferIds=${archiveTransferIds}`, []))
       );
   }
 
@@ -56,33 +57,8 @@ export class MessageService {
     const url = `${this.messagesUrl}/${id}`;
 
     return this.http.delete<Message>(url, this.httpOptions).pipe(
-      tap(_ => this.log(`deleted message id=${id}`)),
-      catchError(this.handleError<Message>('deleteMessage'))
+      tap(_ => ServiceUtil.log(`deleted message id=${id}`)),
+      catchError(ServiceUtil.handleError<Message>('deleteMessage'))
     );
-  }
-
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T>(operation: string = 'operation', result?: T): (error: any) => Observable<T> {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
-
-  private log(message: string): void {
-    // this.messageService.add(`HeroService: ${message}`);
-    console.log(`ArchiveTransferService: ${message}`);
   }
 }

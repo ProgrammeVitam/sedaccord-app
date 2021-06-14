@@ -3,12 +3,12 @@ import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ADD_DIALOG_REF, DialogReference} from '../complex-dialog/complex-dialog.service';
 import {ArchiveData, ArchiveDataPackage, ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
-import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {Agency, Classification} from '../dtos/referential';
 import {FileDropPackage} from '../file-drop-input-control/file-drop-input-control.component';
 import {Router} from '@angular/router';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-archive-transfer-add',
@@ -18,6 +18,11 @@ import {Router} from '@angular/router';
 export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   @Input() newArchiveTransferId: number | undefined;
   @Output() addEvent: EventEmitter<ArchiveTransfer>;
+
+  classification: Classification;
+  agencies: Agency[];
+  $filteredOriginatingAgencies!: Observable<Agency[]>;
+  $filteredSubmissionAgencies!: Observable<Agency[]>;
 
   steps = [
     {
@@ -38,11 +43,6 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
   archiveTransferFormGroup!: FormGroup;
   progressValue = 1;
 
-  classification!: Classification;
-  agencies!: Agency[];
-  $filteredOriginatingAgencies!: Observable<Agency[]>;
-  $filteredSubmissionAgencies!: Observable<Agency[]>;
-
   // Workaround for angular component issue #13870
   disableAnimation = true;
 
@@ -51,10 +51,11 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     private _router: Router,
     private _formBuilder: FormBuilder,
     private _referentialService: ReferentialService,
-    private _archiveTransferService: ArchiveTransferService
+    private _authService: AuthService
   ) {
-    this._getClassification();
     this.addEvent = new EventEmitter<ArchiveTransfer>();
+    this.classification = [];
+    this.agencies = [];
   }
 
   get archiveTransferFormArray(): FormArray {
@@ -86,6 +87,7 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
       ])
     });
     this.addPackage();
+    this._getClassification();
     this._getAgencies();
   }
 
@@ -94,8 +96,18 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     setTimeout(() => (this.disableAnimation = false));
   }
 
-  displayFn(office: Agency): string {
-    return office && office.name ? office.name : '';
+  getDisplayAgency(agency: Agency): string {
+    return agency && agency.name ? agency.name : '';
+  }
+
+  autoFillOriginatingAgencyDescription(originatingAgency: Agency): void {
+    this.archiveTransferFormArray.at(2)
+      .patchValue({originatingAgencyDescription: this._findAgency(originatingAgency).description});
+  }
+
+  autoFillSubmissionAgencyDescription(submissionAgency: Agency): void {
+    this.archiveTransferFormArray.at(2)
+      .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
   }
 
   addPackage(): void {
@@ -109,22 +121,8 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this.archiveDataPackageFormArray.removeAt(index);
   }
 
-  autoFillOriginatingAgencyDescription(originatingAgency: Agency): void {
-    this.archiveTransferFormArray.at(2)
-      .patchValue({originatingAgencyDescription: this._findAgency(originatingAgency).description});
-  }
-
-  autoFillSubmissionAgencyDescription(submissionAgency: Agency): void {
-    this.archiveTransferFormArray.at(2)
-      .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
-  }
-
-  onCancel(): void {
-    this._dialogRef.close();
-  }
-
-  onSubmit(): void {
-    const archiveTransfer = new ArchiveTransfer()
+  submit(): void {
+    const archiveTransfer = new ArchiveTransfer(this._authService.getCurrentUserValue().id)
       .withName(this.archiveTransferFormArray.at(1).value.name)
       .withDescription(this.archiveTransferFormArray.at(1).value.description)
       .withStartDate(this.archiveTransferFormArray.at(1).value.startDate)
@@ -141,8 +139,12 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this.addEvent.emit(archiveTransfer);
   }
 
-  onOk(): void {
+  validate(): void {
     this._router.navigate([`/detail/${this.newArchiveTransferId}`]);
+    this._dialogRef.close();
+  }
+
+  cancel(): void {
     this._dialogRef.close();
   }
 
@@ -155,33 +157,31 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     this._referentialService.getAgencies()
       .subscribe(agencies => {
         this.agencies = agencies;
-        this.$filteredOriginatingAgencies = this.archiveTransferFormArray.at(2).get('originatingAgency')!.valueChanges
-          .pipe(
-            startWith(''),
-            map(value => typeof value === 'string' ? value : value.name),
-            map(value => this._filterAgency(value))
-          );
-        this.$filteredSubmissionAgencies = this.archiveTransferFormArray.at(2).get('submissionAgency')!.valueChanges
-          .pipe(
-            startWith(''),
-            map(value => typeof value === 'string' ? value : value.name),
-            map(value => this._filterAgency(value))
-          );
+        this.$filteredOriginatingAgencies = this._observeFilteredAgencies('originatingAgency');
+        this.$filteredSubmissionAgencies = this._observeFilteredAgencies('submissionAgency');
       });
   }
 
-  private _findAgency(agency: Agency): Agency {
-    const foundAgency = this.agencies.find(a => a.id === agency.id);
+  private _observeFilteredAgencies(agencyType: string): Observable<Agency[]> {
+    return this.archiveTransferFormArray.at(2).get(agencyType)!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.name),
+        map(value => this._filterAgency(value))
+      );
+  }
+
+  private _filterAgency(value: string): Agency[] {
+    return this.agencies.filter(agency => agency.name.toLowerCase().includes(value.toLowerCase()));
+  }
+
+  private _findAgency(agencyToFind: Agency): Agency {
+    const foundAgency = this.agencies.find(agency => agency.id === agencyToFind.id);
     if (foundAgency) {
       return foundAgency;
     } else {
       throw new Error('Agency not found.');
     }
-  }
-
-  private _filterAgency(value: string): Agency[] {
-    const filterValue = value.toLowerCase();
-    return this.agencies.filter(agency => agency.name.toLowerCase().includes(filterValue));
   }
 
   private _buildArchiveDataPackages(archiveDataPackageFormArrayValue: any[]): ArchiveDataPackage[] {

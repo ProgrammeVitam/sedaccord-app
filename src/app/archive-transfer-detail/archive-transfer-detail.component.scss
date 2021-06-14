@@ -1,10 +1,6 @@
 @use '~@angular/material' as mat;
 @import "variables";
 
-.mat-tab-group {
-  background: $background;
-}
-
 nav.breadcrumb {
   a {
     text-decoration: none;
@@ -13,6 +9,10 @@ nav.breadcrumb {
   span:nth-child(2) {
     color: mat.get-color-from-palette($primary);;
   }
+}
+
+.mat-tab-group {
+  background: $background;
 }
 
 .button-group {

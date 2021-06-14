@@ -2,7 +2,7 @@
   <h1><span>{{stepper.selectedIndex + 1}}</span>{{steps[stepper.selectedIndex].label}}</h1>
   <p>{{steps[stepper.selectedIndex].description}}</p>
 </aside>
-<form (ngSubmit)="onSubmit()" [formGroup]="archiveTransferFormGroup">
+<form (ngSubmit)="submit()" [formGroup]="archiveTransferFormGroup">
   <mat-horizontal-stepper #stepper class="mat-stepper-fill-height" formArrayName="archiveTransferFormArray">
 
     <mat-step [stepControl]="archiveTransferFormArray.get([0])!" formGroupName="0">
@@ -43,7 +43,7 @@
         <div class="button-group">
           <div></div>
           <div>
-            <button (click)="onCancel()" mat-stroked-button type="button">
+            <button (click)="cancel()" mat-stroked-button type="button">
               Annuler
             </button>
             <button color="primary" mat-flat-button matStepperNext type="button">
@@ -100,7 +100,7 @@
             </button>
           </div>
           <div>
-            <button (click)="onCancel()" mat-stroked-button type="button">
+            <button (click)="cancel()" mat-stroked-button type="button">
               Annuler
             </button>
             <button color="primary" mat-flat-button matStepperNext type="button">
@@ -125,7 +125,7 @@
                    type="text">
             <mat-autocomplete #autoOriginatingAgency="matAutocomplete"
                               (optionSelected)="autoFillOriginatingAgencyDescription($event.option.value)"
-                              [displayWith]="displayFn">
+                              [displayWith]="getDisplayAgency">
               <mat-option *ngFor="let originatingAgency of $filteredOriginatingAgencies | async"
                           [value]="originatingAgency">
                 {{originatingAgency.name}}
@@ -153,7 +153,7 @@
                    type="text">
             <mat-autocomplete #autoSubmissionAgency="matAutocomplete"
                               (optionSelected)="autoFillSubmissionAgencyDescription($event.option.value)"
-                              [displayWith]="displayFn">
+                              [displayWith]="getDisplayAgency">
               <mat-option *ngFor="let submissionAgency of $filteredSubmissionAgencies | async"
                           [value]="submissionAgency">
                 {{submissionAgency.name}}
@@ -179,7 +179,7 @@
             </button>
           </div>
           <div>
-            <button (click)="onCancel()" mat-stroked-button type="button">
+            <button (click)="cancel()" mat-stroked-button type="button">
               Annuler
             </button>
             <button color="primary" mat-flat-button matStepperNext type="submit">
@@ -199,7 +199,7 @@
           </mat-progress-spinner>
         </div>
         <div>
-          <button (click)="onOk()" [disabled]="!newArchiveTransferId" mat-stroked-button type="button">
+          <button (click)="validate()" [disabled]="!newArchiveTransferId" mat-stroked-button type="button">
             Valider
           </button>
         </div>

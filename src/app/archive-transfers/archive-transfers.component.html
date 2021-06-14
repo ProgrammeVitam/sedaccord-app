@@ -1,4 +1,4 @@
-<ng-container *ngIf="!loading">
+<ng-container *ngIf="userIsLogged">
   <header>
     <h1>
       <span *ngIf="currentUser.role === 'TRANSFER'; else elseBlock">🏛️️</span>
@@ -50,8 +50,8 @@
     </button>
   </div>
   <mat-selection-list #archiveTransferList *ngIf="archiveTransfers.length; else empty" [multiple]="false">
-    <mat-list-option #archiveTransferOption (mouseenter)="onHoverIn(archiveTransferOption)"
-                     (mouseleave)="onHoverOut()" *ngFor="let archiveTransfer of archiveTransfers"
+    <mat-list-option #archiveTransferOption (mouseenter)="selectArchiveTransfer(archiveTransferOption)"
+                     (mouseleave)="deselectAll()" *ngFor="let archiveTransfer of archiveTransfers"
                      [value]="archiveTransfer">
       <mat-icon matListIcon>folder</mat-icon>
       <div class="table-row" mat-line>
@@ -75,22 +75,22 @@
                     routerLink="/detail/{{archiveTransfer.id}}" type="button">
               Voir le versement
             </button>
-            <button (click)="submit(archiveTransfer)" *ngIf="currentUser.role === 'TRANSFER'"
+            <button (click)="shareArchiveTransfer(archiveTransfer)" *ngIf="currentUser.role === 'TRANSFER'"
                     [disabled]="archiveTransfer.status === 'En attente de correction'" color="primary" mat-flat-button
                     type="button">
               Demander le versement
             </button>
             <div class="progress-button-container">
-              <div *ngIf="isLoading(archiveTransfer)" class="spinner-container">
+              <div *ngIf="downloadIsInProgress(archiveTransfer)" class="spinner-container">
                 <mat-spinner diameter="24"></mat-spinner>
               </div>
-              <button (click)="download(archiveTransfer)" *ngIf="currentUser.role === 'ARCHIVE'"
-                      [disabled]="disabledDownload || isLoading(archiveTransfer)"
+              <button (click)="downloadArchiveTransfer(archiveTransfer)" *ngIf="currentUser.role === 'ARCHIVE'"
+                      [disabled]="downloadButtonDisabled || downloadIsInProgress(archiveTransfer)"
                       color="primary" mat-flat-button type="button">
                 Exporter dans le SAE
               </button>
             </div>
-            <button (click)="delete(archiveTransfer)" *ngIf="currentUser.id === archiveTransfer.submissionUserId"
+            <button (click)="deleteArchiveTransfer(archiveTransfer)" *ngIf="archiveTransfer.submissionUserId === currentUser.id"
                     color="primary" mat-mini-fab type="button">
               <mat-icon>delete</mat-icon>
             </button>

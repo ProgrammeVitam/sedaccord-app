@@ -7,17 +7,6 @@ label {
   text-decoration: underline;
 }
 
-.drop-zone {
-  background-color: mat.get-color-from-palette($primary, 50);
-  border: 2px dashed mat.get-color-from-palette($primary);
-  color: mat.get-color-from-palette(mat.$gray-palette, 800);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 200px;
-  padding: $smallest-margin;
-}
-
 .label {
   color: mat.get-color-from-palette(mat.$gray-palette, 600);
   margin-top: $smallest-margin;
@@ -37,4 +26,15 @@ input.visually-hidden:focus + label {
 }
 input.visually-hidden:focus-within + label {
   outline: thin dotted;
+}
+
+.drop-zone {
+  background-color: mat.get-color-from-palette($primary, 50);
+  border: 2px dashed mat.get-color-from-palette($primary);
+  color: mat.get-color-from-palette(mat.$gray-palette, 800);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+  padding: $smallest-margin;
 }

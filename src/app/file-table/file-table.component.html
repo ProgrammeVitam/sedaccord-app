@@ -41,7 +41,7 @@
   <ng-container matColumnDef="edit" stickyEnd>
     <th *matHeaderCellDef class="mat-cell-sticky-right" mat-header-cell></th>
     <td *matCellDef="let element" class="mat-cell-sticky-right" mat-cell>
-      <button (click)="edit(element)" [style.visibility]="!selection.isSelected(element) ? 'hidden': 'visible'"
+      <button (click)="editFile(element)" [style.visibility]="!selection.isSelected(element) ? 'hidden': 'visible'"
               mat-icon-button type="button">
         <mat-icon [matBadgeColor]="hasUnresolvedThread(element) ? 'accent' : 'primary'"
                   [matBadgeHidden]="!hasComment(element)" [matBadge]="getCommentCount(element)" matBadgeSize="small">
@@ -63,7 +63,7 @@
   </ng-container>
 
   <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-  <tr (mouseenter)="onHoverIn(element)" (mouseleave)="onHoverOut()" *matRowDef="let element; columns: displayedColumns;"
+  <tr (mouseenter)="selectFile(element)" (mouseleave)="deselectAll()" *matRowDef="let element; columns: displayedColumns;"
       [ngClass]="{'selected': selection.isSelected(element)}"
       mat-row></tr>
 </table>

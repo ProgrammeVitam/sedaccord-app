@@ -22,17 +22,17 @@ aside {
   border-right: 1px solid $border;
   grid-column: 1;
   grid-row: 1;
-}
 
-h1 {
-  align-items: center;
-  column-gap: $smaller-margin;
-  display: flex;
-  padding: $smaller-margin;
+  h1 {
+    align-items: center;
+    column-gap: $smaller-margin;
+    display: flex;
+    padding: $smaller-margin;
 
-  span {
-    font-size: mat.font-size($config, display-1) * 2;
-    font-weight: bold;
+    span {
+      font-size: mat.font-size($config, display-1) * 2;
+      font-weight: bold;
+    }
   }
 }
 

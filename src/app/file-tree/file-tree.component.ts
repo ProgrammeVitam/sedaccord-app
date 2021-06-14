@@ -28,14 +28,92 @@ interface FileFlatNode {
   styleUrls: ['./file-tree.component.scss']
 })
 export class FileTreeComponent implements OnInit, OnChanges {
-  @Input() fileTreeData: FileMetadata[] = [];
-  @Input() focused = false;
-  @Output() selectDirectoryEvent = new EventEmitter<FileTreeSelectionModel>();
+  @Input() fileTreeData: FileMetadata[];
+  @Input() focused;
+  @Output() selectDirectoryEvent;
 
-  treeControl = new FlatTreeControl<FileFlatNode>(
-    node => node.level,
-    node => node.expandable
-  );
+  treeControl: FlatTreeControl<FileFlatNode>;
+  _treeFlattener: MatTreeFlattener<FileNode, FileFlatNode, FileFlatNode>;
+  dataSource: MatTreeFlatDataSource<FileNode, FileFlatNode, FileFlatNode>;
+  selection: SelectionModel<FileFlatNode>;
+
+  /** Map from flat node to nested node. This helps us finding the nested node to be modified */
+  private _flatNodeMap: Map<FileFlatNode, FileNode>;
+
+  /** Map from nested node to flattened node. This helps us to keep the same object for selection */
+  private _nestedNodeMap: Map<FileNode, FileFlatNode>;
+
+  /** Map from nested node to file metadata. */
+  private _nodeMap: Map<FileNode, FileMetadata>;
+
+  constructor() {
+    this.fileTreeData = [];
+    this.focused = false;
+    this.selectDirectoryEvent = new EventEmitter<FileTreeSelectionModel>();
+    this.treeControl = new FlatTreeControl<FileFlatNode>(
+      node => node.level,
+      node => node.expandable
+    );
+    this._treeFlattener = new MatTreeFlattener(
+      this._transformer,
+      node => node.level,
+      node => node.expandable,
+      node => node.isDirectory ? (node as Directory).children : null
+    );
+    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this._treeFlattener);
+    this.selection = new SelectionModel<FileFlatNode>(false);
+    this._flatNodeMap = new Map<FileFlatNode, FileNode>();
+    this._nestedNodeMap = new Map<FileNode, FileFlatNode>();
+    this._nodeMap = new Map<FileNode, FileMetadata>();
+  }
+
+  hasChild = (_: number, node: FileFlatNode) => node.expandable;
+
+  getLevel = (node: FileFlatNode) => node.level;
+
+  ngOnInit(): void {
+    this.dataSource.data = this._buildTreeFromMaterialized(this.fileTreeData);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.focused && !this.focused) {
+      this.selection.clear();
+    }
+  }
+
+  descendantsHaveUnresolvedThread(node: FileFlatNode): boolean {
+    return this._descendantsOnlyOneOfHasUnresolvedThread(node);
+  }
+
+  descendantsHaveComment(node: FileFlatNode): boolean {
+    return this._getDescendantsOnlyCommentCount(node) > 0;
+  }
+
+  isSelected(node: FileFlatNode): boolean {
+    return this._descendantsOneOfSelected(node);
+  }
+
+  isDirectory(node: FileFlatNode): boolean {
+    return this._flatNodeMap.get(node)!.isDirectory;
+  }
+
+  /** Select a directory. Check all the parents to see if they changed */
+  selectFile(node: FileFlatNode): void {
+    if (this.isDirectory(node)) {
+      this.selection.select(node);
+      const parents = this._checkAllParentsSelection(node)
+        .map(parent => this._nodeMap.get(this._flatNodeMap.get(parent)!)!)
+        .concat([this._nodeMap.get(this._flatNodeMap.get(node)!)!]);
+      const directory = this._flatNodeMap.get(node) as Directory;
+      const children = (directory.children || [])
+        .map(fileNode => this._nodeMap.get(fileNode)!);
+      this.selectDirectoryEvent.emit({parents, children});
+    }
+  }
+
+  addFile(): void {
+    // TODO
+  }
 
   private _transformer = (node: FileNode, level: number) => {
     const existingNode = this._nestedNodeMap.get(node);
@@ -54,71 +132,8 @@ export class FileTreeComponent implements OnInit, OnChanges {
     return flatNode;
   }
 
-  _treeFlattener = new MatTreeFlattener(
-    this._transformer,
-    node => node.level,
-    node => node.expandable,
-    node => node.isDirectory ? (node as Directory).children : null
-  );
-
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this._treeFlattener);
-  selection = new SelectionModel<FileFlatNode>(false);
-
-  /** Map from flat node to nested node. This helps us finding the nested node to be modified */
-  private _flatNodeMap = new Map<FileFlatNode, FileNode>();
-
-  /** Map from nested node to flattened node. This helps us to keep the same object for selection */
-  private _nestedNodeMap = new Map<FileNode, FileFlatNode>();
-
-  /** Map from nested node to file metadata. */
-  private _nodeMap = new Map<FileNode, FileMetadata>();
-
-  ngOnInit(): void {
-    this.fileTreeData = this.fileTreeData || [];
-    this.dataSource.data = this._buildTreeFromMaterialized(this.fileTreeData);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.focused && !this.focused) {
-      this.selection.clear();
-    }
-  }
-
-  getLevel = (node: FileFlatNode) => node.level;
-
-  hasChild = (_: number, node: FileFlatNode) => node.expandable;
-
-  /** Select a file. Check all the parents to see if they changed */
-  selectDirectory(node: FileFlatNode): void {
-    this.selection.select(node);
-    const parents = this._checkAllParentsSelection(node)
-      .map(parent => this._nodeMap.get(this._flatNodeMap.get(parent)!)!)
-      .concat([this._nodeMap.get(this._flatNodeMap.get(node)!)!]);
-    const directory = this._flatNodeMap.get(node) as Directory;
-    const children = (directory.children || [])
-      .map(fileNode => this._nodeMap.get(fileNode)!);
-    this.selectDirectoryEvent.emit({parents, children});
-  }
-
-  /** Select the category so we can insert the new item. */
-  addFile(): void {
-    // TODO
-  }
-
-  isDirectory(node: FileFlatNode): boolean {
-    return this._flatNodeMap.get(node)!.isDirectory;
-  }
-
-  isSelected(node: FileFlatNode): boolean {
-    return this._descendantsOneOfSelected(node);
-  }
-
-  descendantsHaveUnresolvedThread(node: FileFlatNode): boolean {
-    return this._descendantsOnlyOneOfHasUnresolvedThread(node);
-  }
-
-  descendantsHaveComment(node: FileFlatNode): boolean {
-    return this._getDescendantsOnlyCommentCount(node) > 0;
+  private _hasChild(directory: Directory): boolean {
+    return directory.children !== undefined && !!directory.children.length;
   }
 
   private _buildTreeFromMaterialized(data: FileMetadata[]): FileNode[] {
@@ -148,9 +163,9 @@ export class FileTreeComponent implements OnInit, OnChanges {
     return [];
   }
 
-  private _groupByDepth(arr: FileMetadata[]): Map<number, FileMetadata[]> {
+  private _groupByDepth(dataArray: FileMetadata[]): Map<number, FileMetadata[]> {
     const res = new Map();
-    arr.forEach(el => {
+    dataArray.forEach(el => {
       const key = el.path.split('/').length;
       res.set(key, res.get(key) || []);
       res.get(key).push(el);
@@ -158,37 +173,23 @@ export class FileTreeComponent implements OnInit, OnChanges {
     return res;
   }
 
-  private _groupByDepthAndNode(group: Map<number, FileMetadata[]>): Map<number, Map<string, FileMetadata[]>> {
-    return new Map(Array.from(group.entries())
+  private _groupByDepthAndNode(dataGroup: Map<number, FileMetadata[]>): Map<number, Map<string, FileMetadata[]>> {
+    return new Map(Array.from(dataGroup.entries())
       .map(pair => {
         const res = this._groupByNode(pair[1]);
         return [pair[0], res];
       }));
   }
 
-  private _groupByNode(arr: FileMetadata[]): Map<string, FileMetadata[]> {
+  private _groupByNode(dataArray: FileMetadata[]): Map<string, FileMetadata[]> {
     const res = new Map();
-    arr.forEach(el => {
+    dataArray.forEach(el => {
       const lastIndex = this._lastIndexOf(el.path, '/');
       const key = lastIndex > 0 ? el.path.slice(0, lastIndex) : '/';
       res.set(key, res.get(key) || []);
       res.get(key).push(el);
     });
     return res;
-  }
-
-  private _lastIndexOf(str: string, searchTerm: string): number {
-    let tmpIndex = str.indexOf(searchTerm);
-    let lastIndex = tmpIndex;
-    while (tmpIndex > -1) {
-      lastIndex = tmpIndex;
-      tmpIndex = str.indexOf(searchTerm, lastIndex + 1);
-    }
-    return lastIndex;
-  }
-
-  private _mapMap<T, U, V>(m: Map<T, U[]>, f: (v: U) => V): Map<T, V[]> {
-    return new Map(Array.from(m.entries(), ([k, v]) => [k, v.map(f)]));
   }
 
   private _fileMetadataToNode(fileMetadata: FileMetadata, children: FileNode[]): FileNode {
@@ -208,8 +209,18 @@ export class FileTreeComponent implements OnInit, OnChanges {
     return fileNode;
   }
 
-  private _hasChild(directoryNode: Directory): boolean {
-    return directoryNode.children !== undefined && !!directoryNode.children.length;
+  private _mapMap<T, U, V>(m: Map<T, U[]>, f: (v: U) => V): Map<T, V[]> {
+    return new Map(Array.from(m.entries(), ([k, v]) => [k, v.map(f)]));
+  }
+
+  private _lastIndexOf(str: string, searchTerm: string): number {
+    let tmpIndex = str.indexOf(searchTerm);
+    let lastIndex = tmpIndex;
+    while (tmpIndex > -1) {
+      lastIndex = tmpIndex;
+      tmpIndex = str.indexOf(searchTerm, lastIndex + 1);
+    }
+    return lastIndex;
   }
 
   /** Checks all the parents when a leaf node is selected/unselected and return them */
@@ -255,18 +266,6 @@ export class FileTreeComponent implements OnInit, OnChanges {
     return null;
   }
 
-  /** Whether the node or one of its descendants is selected. */
-  private _descendantsOneOfSelected(node: FileFlatNode): boolean {
-    if (this.selection.isEmpty()) {
-      return false;
-    }
-    if (this.selection.isSelected(node)) {
-      return true;
-    }
-    const descendants = this.treeControl.getDescendants(node);
-    return !!descendants.length && descendants.some(child => this.selection.isSelected(child));
-  }
-
   private _descendantsOnlyOneOfHasUnresolvedThread(node: FileFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     return !!descendants.length && descendants
@@ -277,5 +276,17 @@ export class FileTreeComponent implements OnInit, OnChanges {
     const directDescendantCommentCounts = this.treeControl.getDescendants(node)
       .map(child => FileUtil.getCommentCount(this._nodeMap.get(this._flatNodeMap.get(child)!)!));
     return directDescendantCommentCounts.reduce((acc, currentValue) => acc + currentValue, 0);
+  }
+
+  /** Whether the node or one of its descendants is selected. */
+  private _descendantsOneOfSelected(node: FileFlatNode): boolean {
+    if (this.selection.isEmpty()) {
+      return false;
+    }
+    if (this.selection.isSelected(node)) {
+      return true;
+    }
+    const descendants = this.treeControl.getDescendants(node);
+    return !!descendants.length && descendants.some(child => this.selection.isSelected(child));
   }
 }

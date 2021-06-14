@@ -25,10 +25,19 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
   @Input() label = '';
   @Input() treeData: T[] = [];
 
-  autoInput = new FormControl();
-  treeControl = new NestedTreeControl<T>(node => node.children);
-  dataSource = new MatTreeNestedDataSource<T>();
-  selection = new SelectionModel<string>(false);
+  autoInput: FormControl;
+  treeControl: NestedTreeControl<T>;
+  dataSource: MatTreeNestedDataSource<T>;
+  selection: SelectionModel<string>;
+
+  constructor() {
+    this.treeData = [];
+    this.autoInput = new FormControl();
+    this.treeControl = new NestedTreeControl<T>(node => node.children);
+    this.dataSource = new MatTreeNestedDataSource<T>();
+    this.selection = new SelectionModel<string>(false);
+    this.writeValue(null);
+  }
 
   private _value!: T | null;
   get value(): T | null {
@@ -39,23 +48,18 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     this._value = value;
   }
 
-  onChange = (_: any) => {};
-  onTouched = () => {};
+  hasChild = (_: number, node: T) => this._hasChild(node);
 
-  constructor() {
-    this.value = null;
-  }
+  onChange = (_: any) => {};
+
+  onTouched = () => {};
 
   ngOnChanges(changes: SimpleChanges): void {
     // Listen to when data from parent is available
-    if (this.dataSource) { // ngOnChanges called before ngOnInit
-      this.dataSource.data = this.treeData;
-    }
+    this.dataSource.data = this.treeData;
   }
 
   ngOnInit(): void {
-    this.treeData = this.treeData || [];
-    this.dataSource.data = this.treeData;
     this.autoInput.valueChanges
       .pipe(
         startWith(''),
@@ -71,6 +75,10 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     this.writeValue(this.value);
   }
 
+  getDisplayFile(node: T): string {
+    return node && node.name ? node.name : '';
+  }
+
   writeValue(node: T | null): void {
     if (node !== null) {
       this.value = node;
@@ -78,15 +86,8 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
       this.selection.select(this.value.name);
       this.onChange(this.value);
     } else {
-      this.clearValue();
+      this._clearValue();
     }
-  }
-
-  clearValue(): void {
-    this.value = null;
-    this.autoInput.patchValue(null);
-    this.selection.clear();
-    this.onChange(this.value);
   }
 
   registerOnChange(fn: any): void {
@@ -101,8 +102,6 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     this.disabled = isDisabled;
   }
 
-  hasChild = (_: number, node: T) => !!node.children && node.children.length;
-
   selectOption(node: T): void {
     this.writeValue(node);
     this.dataSource.data = this.treeData;
@@ -113,12 +112,12 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
   }
 
   deselectOption(): void {
-    this.clearValue();
+    this._clearValue();
     this.dataSource.data = this.treeData;
   }
 
-  displayFn(node: T): string {
-    return node && node.name ? node.name : '';
+  private _hasChild(node: T): boolean {
+    return node.children !== undefined && !!node.children.length;
   }
 
   private _filter(searchTerm: string, nodes: T[]): T[] {
@@ -138,11 +137,14 @@ export class TreeAutocompleteControlComponent<T extends SimpleTreeNode> implemen
     }).filter(value => !!value.name);
   }
 
-  private _hasChild(node: T): boolean {
-    return node.children !== undefined && !!node.children.length;
-  }
-
   private _found(searchTerm: string, value: string): boolean {
     return value.toLowerCase().includes(searchTerm.toLowerCase());
+  }
+
+  private _clearValue(): void {
+    this.value = null;
+    this.autoInput.patchValue(null);
+    this.selection.clear();
+    this.onChange(this.value);
   }
 }

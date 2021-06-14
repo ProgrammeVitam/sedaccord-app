@@ -1,5 +1,5 @@
 <div *ngIf="isOpen" @openClose class="open-close-container">
-  <button (click)="onCancel()" class="close-button" mat-icon-button type="button">
+  <button (click)="cancelUpdate()" class="close-button" mat-icon-button type="button">
     <mat-icon>close</mat-icon>
   </button>
   <h2 class="text-ellipsis">{{fileData.name}}</h2>
@@ -9,7 +9,7 @@
       <ng-template mat-tab-label>
         Informations<br>du fichier
       </ng-template>
-      <form (ngSubmit)="onSubmitFile()" [formGroup]="fileFormGroup" class="info-form">
+      <form (ngSubmit)="submitFile()" [formGroup]="fileFormGroup" class="info-form">
         <div class="form-content-wrapper">
           <mat-form-field appearance="fill">
             <mat-label>Nom original du fichier
@@ -44,7 +44,7 @@
           </mat-form-field>
         </div>
         <div class="button-group">
-          <button (click)="onCancel()" mat-stroked-button type="button">
+          <button (click)="cancelUpdate()" mat-stroked-button type="button">
             Annuler
           </button>
           <button color="primary" mat-flat-button type="submit">
@@ -59,7 +59,7 @@
         <span [matBadgeColor]="hasUnresolvedThread() ? 'accent' : 'primary'"
               [matBadgeHidden]="!hasComment()" [matBadge]="getCommentCount()" matBadgeSize="small">Discussion</span>
       </ng-template>
-      <form (ngSubmit)="onSubmitComment()" *ngIf="currentUser" [formGroup]="commentFormGroup" class="info-form">
+      <form (ngSubmit)="submitComment()" *ngIf="currentUser" [formGroup]="commentFormGroup" class="info-form">
         <div class="form-content-wrapper">
           <mat-card *ngFor="let comment of commentFormArray.value; let i=index" class="comment">
             <mat-card-header>
@@ -83,7 +83,7 @@
           <mat-hint>Ajouter un commentaire rouvrira une discussion fermée.</mat-hint>
         </mat-form-field>
         <div class="button-group">
-          <button (click)="onCancel()" mat-stroked-button type="button">
+          <button (click)="cancelUpdate()" mat-stroked-button type="button">
             Annuler
           </button>
           <div>

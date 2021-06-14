@@ -4,7 +4,7 @@ import {User} from '../dtos/user';
 import {UserService} from './user.service';
 import {map, tap} from 'rxjs/operators';
 
-export const ANONYMOUS_USER = {
+const ANONYMOUS_USER = {
   id: 0,
   name: '',
   role: 'TRANSFER'

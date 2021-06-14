@@ -1,7 +1,7 @@
 <section [formGroup]="filesFormGroup" class="file-tree-form">
   <mat-accordion formArrayName="archiveDataPackageFormArray">
     <ng-container *ngFor="let archiveDataPackageControl of archiveDataPackageFormArray.controls; let i=index">
-      <mat-expansion-panel #panel (opened)="onSelectPackage(i)" [formGroupName]="i" class="mat-elevation-z0">
+      <mat-expansion-panel #panel (opened)="selectPackage(i)" [formGroupName]="i" class="mat-elevation-z0">
         <mat-expansion-panel-header class="panel-header-overflow">
           <mat-panel-title
             [matBadgeColor]="hasUnresolvedThread(archiveDataPackageControl.get('archiveData')!.value) ? 'accent' : 'primary'"
@@ -21,7 +21,7 @@
                                        [treeData]="classification"
                                        [value]="archiveDataPackageControl.get('classificationItem')!.value"></app-tree-autocomplete-control>
         <div class="mat-caption">Arborescence</div>
-        <app-file-tree (selectDirectoryEvent)="onSelectFromTree($event)"
+        <app-file-tree (selectDirectoryEvent)="selectElementFromTree($event)"
                        [fileTreeData]="archiveDataPackageControl.get('archiveData')!.value.flat()"
                        [focused]="panel.expanded"></app-file-tree>
         <mat-action-row *ngIf="archiveDataPackageFormArray.controls.length > 1">
@@ -53,6 +53,6 @@
     </ng-container>
   </nav>
   <mat-divider></mat-divider>
-  <app-file-table (selectFileEvent)="onSelectFromTable($event)"
+  <app-file-table (selectFileEvent)="selectElementFromTable($event)"
                   [fileTableData]="treeSelection.selected[0].children"></app-file-table>
 </section>

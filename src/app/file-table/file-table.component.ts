@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
   ViewChild
@@ -19,58 +18,49 @@ import {FileMetadata, FileUtil} from '../dtos/file';
   templateUrl: './file-table.component.html',
   styleUrls: ['./file-table.component.scss']
 })
-export class FileTableComponent implements OnChanges, OnInit, AfterViewInit {
-  @Input() fileTableData: FileMetadata[] = [];
-  @Output() selectFileEvent = new EventEmitter<FileMetadata>();
+export class FileTableComponent implements OnChanges, AfterViewInit {
+  @Input() fileTableData: FileMetadata[];
+  @Output() selectFileEvent;
 
-  displayedColumns: string[] = ['name', 'startDate', 'endDate', 'size', 'format', 'description', 'edit', 'delete'];
-  dataSource!: MatTableDataSource<FileMetadata>;
+  displayedColumns: string[];
+  dataSource: MatTableDataSource<FileMetadata>;
   selection!: SelectionModel<FileMetadata>;
 
   @ViewChild(MatTable, {static: true}) table!: MatTable<FileMetadata[]>;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor() {
+    this.fileTableData = [];
+    this.selectFileEvent = new EventEmitter<FileMetadata>();
+    this.displayedColumns = ['name', 'startDate', 'endDate', 'size', 'format', 'description', 'edit', 'delete'];
+    this.dataSource = new MatTableDataSource<FileMetadata>(this.fileTableData);
+    this.selection = new SelectionModel<FileMetadata>(false);
   }
+
+  hasUnresolvedThread = (element: FileMetadata) => FileUtil.hasUnresolvedThread(element);
+
+  hasComment = (element: FileMetadata) => FileUtil.getCommentCount(element) > 0;
+
+  getCommentCount = (element: FileMetadata) => FileUtil.getCommentCount(element);
 
   ngOnChanges(changes: SimpleChanges): void {
     // Listen to when data from parent is available
-    if (this.dataSource) { // ngOnChanges called before ngOnInit
-      this.dataSource.data = this.fileTableData;
-    }
-  }
-
-  ngOnInit(): void {
-    this.fileTableData = this.fileTableData || [];
-    this.dataSource = new MatTableDataSource<FileMetadata>(this.fileTableData);
-    this.selection = new SelectionModel<FileMetadata>(false);
+    this.dataSource.data = this.fileTableData;
   }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
 
-  onHoverIn(row: FileMetadata): void {
+  selectFile(row: FileMetadata): void {
     this.selection.select(row);
   }
 
-  onHoverOut(): void {
+  deselectAll(): void {
     this.selection.clear();
   }
 
-  hasUnresolvedThread(element: FileMetadata): boolean {
-    return FileUtil.hasUnresolvedThread(element);
-  }
-
-  hasComment(element: FileMetadata): boolean {
-    return FileUtil.getCommentCount(element) > 0;
-  }
-
-  getCommentCount(element: FileMetadata): number {
-    return FileUtil.getCommentCount(element);
-  }
-
-  edit(element: FileMetadata): void {
+  editFile(element: FileMetadata): void {
     this.selectFileEvent.emit(element);
   }
 }

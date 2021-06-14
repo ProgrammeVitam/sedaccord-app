@@ -2,7 +2,6 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ArchiveTransfer} from '../dtos/archive-transfer';
 import {ReferentialService} from '../services/referential.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {Agency} from '../dtos/referential';
@@ -16,19 +15,19 @@ export class ArchiveTransferContextComponent implements OnInit {
   @Input() archiveTransfer!: ArchiveTransfer;
   @Output() formChangeEvent: EventEmitter<any>;
 
-  contextFormGroup1!: FormGroup;
-  contextFormGroup2!: FormGroup;
-
-  agencies!: Agency[];
+  agencies: Agency[];
   $filteredOriginatingAgencies!: Observable<Agency[]>;
   $filteredSubmissionAgencies!: Observable<Agency[]>;
 
+  contextFormGroup1!: FormGroup;
+  contextFormGroup2!: FormGroup;
+
   constructor(
-    private _router: Router,
     private _formBuilder: FormBuilder,
     private _referentialService: ReferentialService
   ) {
     this.formChangeEvent = new EventEmitter<any>();
+    this.agencies = [];
   }
 
   ngOnInit(): void {
@@ -45,22 +44,10 @@ export class ArchiveTransferContextComponent implements OnInit {
       submissionAgencyDescription: [this.archiveTransfer.submissionAgency?.description]
     });
     this._getAgencies();
-    this.contextFormGroup1.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
-    this.contextFormGroup2.valueChanges.subscribe(_ => this.formChangeEvent.emit(null));
-  }
-
-  displayFn(office: Agency): string {
-    return office && office.name ? office.name : '';
-  }
-
-  autoFillOriginatingAgencyDescription(originatingAgency: Agency): void {
-    this.contextFormGroup2
-      .patchValue({originatingAgencyDescription: this._findAgency(originatingAgency).description});
-  }
-
-  autoFillSubmissionAgencyDescription(submissionAgency: Agency): void {
-    this.contextFormGroup2
-      .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
+    this.contextFormGroup1.valueChanges
+      .subscribe(_ => this.formChangeEvent.emit(null));
+    this.contextFormGroup2.valueChanges
+      .subscribe(_ => this.formChangeEvent.emit(null));
   }
 
   updateArchiveTransfer(): void {
@@ -80,37 +67,48 @@ export class ArchiveTransferContextComponent implements OnInit {
       });
   }
 
+  getDisplayAgency(agency: Agency): string {
+    return agency && agency.name ? agency.name : '';
+  }
+
+  autoFillOriginatingAgencyDescription(originatingAgency: Agency): void {
+    this.contextFormGroup2
+      .patchValue({originatingAgencyDescription: this._findAgency(originatingAgency).description});
+  }
+
+  autoFillSubmissionAgencyDescription(submissionAgency: Agency): void {
+    this.contextFormGroup2
+      .patchValue({submissionAgencyDescription: this._findAgency(submissionAgency).description});
+  }
+
   private _getAgencies(): void {
     this._referentialService.getAgencies()
       .subscribe(agencies => {
         this.agencies = agencies;
-        this.$filteredOriginatingAgencies = this.contextFormGroup2.get('originatingAgency')!.valueChanges
-          .pipe(
-            startWith(''),
-            map(value => typeof value === 'string' ? value : value.name),
-            map(value => this._filterAgency(value))
-          );
-        this.$filteredSubmissionAgencies = this.contextFormGroup2.get('submissionAgency')!.valueChanges
-          .pipe(
-            startWith(''),
-            map(value => typeof value === 'string' ? value : value.name),
-            map(value => this._filterAgency(value))
-          );
+        this.$filteredOriginatingAgencies = this._observeFilteredAgencies('originatingAgency');
+        this.$filteredSubmissionAgencies = this._observeFilteredAgencies('submissionAgency');
       });
-
   }
 
-  private _findAgency(agency: Agency): Agency {
-    const foundAgency = this.agencies.find(a => a.id === agency.id);
+  private _observeFilteredAgencies(agencyType: string): Observable<Agency[]> {
+    return this.contextFormGroup2.get(agencyType)!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.name),
+        map(value => this._filterAgency(value))
+      );
+  }
+
+  private _filterAgency(value: string): Agency[] {
+    return this.agencies.filter(agency => agency.name.toLowerCase().includes(value.toLowerCase()));
+  }
+
+  private _findAgency(agencyToFind: Agency): Agency {
+    const foundAgency = this.agencies.find(agency => agency.id === agencyToFind.id);
     if (foundAgency) {
       return foundAgency;
     } else {
       throw new Error('Agency not found.');
     }
-  }
-
-  private _filterAgency(value: string): Agency[] {
-    const filterValue = value.toLowerCase();
-    return this.agencies.filter(agency => agency.name.toLowerCase().includes(filterValue));
   }
 }

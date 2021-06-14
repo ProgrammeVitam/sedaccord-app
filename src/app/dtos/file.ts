@@ -6,7 +6,7 @@ export interface FileInterface {
   size: number;
 }
 
-export interface FileComment {
+interface FileComment {
   date: Date;
   username: string;
   text: string;

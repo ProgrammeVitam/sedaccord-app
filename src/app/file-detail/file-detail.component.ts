@@ -2,7 +2,6 @@ import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/c
 import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {DialogReference, FILE_DETAIL_SIDENAV_REF} from '../complex-dialog/complex-dialog.service';
 import {animate, style, transition, trigger} from '@angular/animations';
-import {ArchiveTransferService} from '../services/archive-transfer.service';
 import {FileMetadata, FileUtil} from '../dtos/file';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
@@ -35,28 +34,34 @@ export class FileDetailComponent implements OnInit {
 
   fileFormGroup!: FormGroup;
   commentFormGroup!: FormGroup;
-  isOpen = true;
+  isOpen;
 
   constructor(
     @Inject(FILE_DETAIL_SIDENAV_REF) private _sidenavRef: DialogReference<FileDetailComponent>,
     private _formBuilder: FormBuilder,
     private _authService: AuthService,
-    private _archiveTransferService: ArchiveTransferService,
     private _dialog: MatDialog
   ) {
     this.updateEvent = new EventEmitter<any>();
-    this._getCurrentUser();
+    this.isOpen = true;
   }
 
   get commentFormArray(): FormArray {
     return this.commentFormGroup.get('commentFormArray') as FormArray;
   }
 
+  hasUnresolvedThread = () => FileUtil.hasUnresolvedThread(this.fileData);
+
+  hasComment = () => FileUtil.getCommentCount(this.fileData) > 0;
+
+  getCommentCount = () => FileUtil.getCommentCount(this.fileData);
+
   ngOnInit(): void {
+    this._getCurrentUser();
     this.fileFormGroup = this._formBuilder.group({
       name: [this.fileData.newName || this.fileData.name],
-      startDate: [this.fileData.creationDate || this.fileData.startDate],
-      endDate: [this.fileData.lastModificationDate || this.fileData.endDate],
+      startDate: [this.fileData.startDate || this.fileData.creationDate],
+      endDate: [this.fileData.endDate || this.fileData.lastModificationDate],
       description: [this.fileData.description]
     });
     this.commentFormGroup = this._formBuilder.group({
@@ -68,29 +73,9 @@ export class FileDetailComponent implements OnInit {
     });
   }
 
-  hasUnresolvedThread(): boolean {
-    return FileUtil.hasUnresolvedThread(this.fileData);
-  }
-
-  hasComment(): boolean {
-    return FileUtil.getCommentCount(this.fileData) > 0;
-  }
-
-  getCommentCount(): number {
-    return FileUtil.getCommentCount(this.fileData);
-  }
-
-  onCancel(): void {
-    this._closeSidenav();
-  }
-
-  onSubmitFile(): void {
-    this.fileData.newName = this.fileFormGroup.value.name;
-    this.fileData.startDate = this.fileFormGroup.value.startDate;
-    this.fileData.endDate = this.fileFormGroup.value.endDate;
-    this.fileData.description = this.fileFormGroup.value.description;
-    this.updateEvent.emit(null);
-    this._closeSidenav();
+  closeThread(): void {
+    this.fileData.comments!.status = 'RESOLVED';
+    this.updateEvent.emit(this.fileData);
   }
 
   deleteComment(index: number): void {
@@ -109,12 +94,20 @@ export class FileDetailComponent implements OnInit {
     });
   }
 
-  closeThread(): void {
-    this.fileData.comments!.status = 'RESOLVED';
-    this.updateEvent.emit(this.fileData);
+  cancelUpdate(): void {
+    this._closeSidenav();
   }
 
-  onSubmitComment(): void {
+  submitFile(): void {
+    this.fileData.newName = this.fileFormGroup.value.name;
+    this.fileData.startDate = this.fileFormGroup.value.startDate;
+    this.fileData.endDate = this.fileFormGroup.value.endDate;
+    this.fileData.description = this.fileFormGroup.value.description;
+    this.updateEvent.emit(null);
+    this._closeSidenav();
+  }
+
+  submitComment(): void {
     const comment = {
       date: new Date(),
       username: this.currentUser.name,

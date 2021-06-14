@@ -1,6 +1,6 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {User, UserRole} from '../dtos/user';
+import {User, UserRole, UserUtil} from '../dtos/user';
 import {UserService} from '../services/user.service';
 
 interface LoginDialogData {
@@ -12,7 +12,7 @@ interface LoginDialogData {
   templateUrl: './fake-login-dialog.component.html',
   styleUrls: ['./fake-login-dialog.component.scss']
 })
-export class FakeLoginDialogComponent {
+export class FakeLoginDialogComponent implements OnInit {
   availableUsers!: User[];
 
   constructor(
@@ -20,6 +20,11 @@ export class FakeLoginDialogComponent {
     private _dialogRef: MatDialogRef<FakeLoginDialogComponent>,
     private _userService: UserService
   ) {
+  }
+
+  getDisplayRole = (userRole: UserRole) => UserUtil.getDisplayRole(userRole);
+
+  ngOnInit(): void {
     this._getAvailableUsers();
   }
 
@@ -27,18 +32,8 @@ export class FakeLoginDialogComponent {
     this._dialogRef.close();
   }
 
-  getDisplayRole(role: UserRole): any {
-    switch (role) {
-      case 'ARCHIVE':
-        return 'archiviste';
-      case 'TRANSFER':
-        return 'agent versant';
-      default:
-        return '-';
-    }
-  }
-
   private _getAvailableUsers(): void {
-    this._userService.getUsers().subscribe(users => this.availableUsers = users);
+    this._userService.getUsers()
+      .subscribe(users => this.availableUsers = users);
   }
 }

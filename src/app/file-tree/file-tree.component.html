@@ -4,16 +4,16 @@
 </button>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <!-- This is the tree node template for leaf nodes -->
-  <mat-tree-node *matTreeNodeDef="let node" [ngClass]="{'selectable': isDirectory(node), 'selected': isSelected(node)}"
-                 matTreeNodePadding>
+  <mat-tree-node (click)="selectFile(node)" *matTreeNodeDef="let node"
+                 [ngClass]="{'selectable': isDirectory(node), 'selected': isSelected(node)}" matTreeNodePadding>
     <!-- use a disabled button to provide padding for tree leaf -->
     <button disabled mat-icon-button type="button"></button>
     <ng-container *ngIf="isDirectory(node); else elseBlock">
-      <div (click)="selectDirectory(node)"
-           [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
-           [matBadgeHidden]="!descendantsHaveComment(node)" class="badge-icon text-ellipsis-flex-container"
-           matBadge="&#8288;"
-           matBadgePosition="below before" matBadgeSize="small">
+      <div
+        [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
+        [matBadgeHidden]="!descendantsHaveComment(node)" class="badge-icon text-ellipsis-flex-container"
+        matBadge="&#8288;"
+        matBadgePosition="below before" matBadgeSize="small">
         <div class="text-ellipsis">
           <mat-icon inline>folder</mat-icon>
           {{node.name}}
@@ -33,7 +33,7 @@
     </ng-template>
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
+  <mat-tree-node (click)="selectFile(node)" *matTreeNodeDef="let node;when: hasChild"
                  [ngClass]="{'selectable': isDirectory(node), 'selected': isSelected(node)}"
                  matTreeNodePadding>
     <mat-icon inline>folder</mat-icon>
@@ -42,7 +42,7 @@
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    <div (click)="selectDirectory(node)" [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
+    <div [matBadgeColor]="descendantsHaveUnresolvedThread(node) ? 'accent' : 'primary'"
          [matBadgeHidden]="!descendantsHaveComment(node)" class="badge-icon text-ellipsis-flex-container"
          matBadge="&#8288;"
          matBadgePosition="below before" matBadgeSize="small">

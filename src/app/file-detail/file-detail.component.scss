@@ -9,6 +9,10 @@
   width: 25%;
 }
 
+p.disabled {
+  font-style: italic;
+}
+
 .mat-tab-group {
   height: calc(100% - 2 * #{$default-margin});
 }
@@ -43,8 +47,4 @@
   .mat-form-field {
     width: $form-field-width;
   }
-}
-
-p.disabled {
-  font-style: italic;
 }

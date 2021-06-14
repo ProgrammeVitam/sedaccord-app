@@ -1,6 +1,5 @@
 import {Agency, Reference} from './referential';
 import {FileMetadata} from './file';
-import {ANONYMOUS_USER} from '../services/auth.service';
 
 export class ArchiveDataUtils {
   static getRoots(archiveData: ArchiveData): FileMetadata[] {
@@ -67,7 +66,11 @@ export class ArchiveTransfer {
     return this._status;
   }
 
-  submissionUserId: number;
+  private _submissionUserId: number;
+  get submissionUserId(): number {
+    return this._submissionUserId;
+  }
+
   name: string;
   description?: string;
   startDate?: Date;
@@ -76,12 +79,12 @@ export class ArchiveTransfer {
   submissionAgency?: Agency;
   archiveDataPackages: ArchiveDataPackage[];
 
-  constructor() {
+  constructor(submissionUserId: number) {
     this._id = NULL_ID;
     this._creationDate = new Date();
     this._lastModificationDate = this.creationDate;
     this._status = 'En cours';
-    this.submissionUserId = ANONYMOUS_USER.id;
+    this._submissionUserId = submissionUserId;
     this.name = '';
     this.archiveDataPackages = [];
   }
@@ -91,8 +94,7 @@ export class ArchiveTransfer {
     this._creationDate = new Date(archiveTransferObject.creationDate);
     this._lastModificationDate = new Date(archiveTransferObject.lastModificationDate);
     this._status = archiveTransferObject.status;
-    this._status = archiveTransferObject.status;
-    this.submissionUserId = archiveTransferObject.submissionUserId;
+    this._submissionUserId = archiveTransferObject.submissionUserId;
     this.name = archiveTransferObject.name;
     this.description = archiveTransferObject.description;
     this.startDate = archiveTransferObject.startDate ? new Date(archiveTransferObject.startDate) : undefined;

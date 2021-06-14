@@ -1,17 +1,18 @@
 import {Injectable} from '@angular/core';
-import {forkJoin, Observable, of} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {ArchiveTransfer, ArchiveTransferInterface, ArchiveTransferStatus} from '../dtos/archive-transfer';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {catchError, map, mapTo, switchMap, tap} from 'rxjs/operators';
 import {UserRole} from '../dtos/user';
 import {MessageService} from './message.service';
 import {MessageType} from '../dtos/message';
+import {ServiceUtil} from './service-util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArchiveTransferService {
-  private archiveTransfersUrl = 'api/archiveTransfers';  // URL to web api
+  private archiveTransfersUrl = 'api/archiveTransfers';
   private httpOptions = {
     headers: new HttpHeaders({'Content-Type': 'application/json'})
   };
@@ -22,9 +23,9 @@ export class ArchiveTransferService {
   getArchiveTransfers(): Observable<ArchiveTransfer[]> { // TODO return partial objects?
     return this.http.get<ArchiveTransferInterface[]>(this.archiveTransfersUrl)
       .pipe(
-        map(value => value.map(element => new ArchiveTransfer().fromObject(element))),
-        tap(_ => this.log('fetched archive transfers')),
-        catchError(this.handleError<ArchiveTransfer[]>('getArchiveTransfers', []))
+        map(value => value.map(element => new ArchiveTransfer(element.submissionUserId).fromObject(element))),
+        tap(_ => ServiceUtil.log('fetched archive transfers')),
+        catchError(ServiceUtil.handleError<ArchiveTransfer[]>('getArchiveTransfers', []))
       );
   }
 
@@ -32,9 +33,9 @@ export class ArchiveTransferService {
     const url = `${this.archiveTransfersUrl}/${id}`;
     return this.http.get<ArchiveTransferInterface>(url)
       .pipe(
-        map(value => new ArchiveTransfer().fromObject(value)),
-        tap(_ => this.log(`fetched archive transfer id=${id}`)),
-        catchError(this.handleError<ArchiveTransfer>(`getArchiveTransfer id=${id}`))
+        map(value => new ArchiveTransfer(value.submissionUserId).fromObject(value)),
+        tap(_ => ServiceUtil.log(`fetched archive transfer id=${id}`)),
+        catchError(ServiceUtil.handleError<ArchiveTransfer>(`getArchiveTransfer id=${id}`))
       );
   }
 
@@ -49,14 +50,44 @@ export class ArchiveTransferService {
     return this._findArchiveTransfersBySubmissionUser(submissionUserId);
   }
 
+  updateArchiveTransfer(archiveTransfer: ArchiveTransfer, message: MessageType = 'UPDATED_ARCHIVE_TRANSFER'): Observable<ArchiveTransfer> {
+    archiveTransfer.update();
+    return this.http.put<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
+      .pipe(
+        switchMap(updatedArchiveTransfer =>
+          this._messageService.addMessage(updatedArchiveTransfer.id, message).pipe(
+            mapTo(updatedArchiveTransfer))
+        ),
+        tap(_ => ServiceUtil.log(`updated archive transfer id=${archiveTransfer.id}`)),
+        catchError(ServiceUtil.handleError<any>('updateArchiveTransfer'))
+      );
+  }
+
+  addArchiveTransfer(archiveTransfer: ArchiveTransfer): Observable<ArchiveTransfer> {
+    return this.http.post<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
+      .pipe(
+        tap((newArchiveTransfer: ArchiveTransfer) => ServiceUtil.log(`added archive transfer w/ id=${newArchiveTransfer.id}`)),
+        catchError(ServiceUtil.handleError<ArchiveTransfer>('addArchiveTransfer'))
+      );
+  }
+
+  deleteArchiveTransfer(archiveTransfer: ArchiveTransfer | number): Observable<ArchiveTransfer> {
+    const id = typeof archiveTransfer === 'number' ? archiveTransfer : archiveTransfer.id;
+    const url = `${this.archiveTransfersUrl}/${id}`;
+    return this.http.delete<ArchiveTransfer>(url, this.httpOptions).pipe(
+      tap(_ => ServiceUtil.log(`deleted archive transfer id=${id}`)),
+      catchError(ServiceUtil.handleError<ArchiveTransfer>('deleteArchiveTransfer'))
+    );
+  }
+
   private _findArchiveTransfersBySubmissionUser(submissionUserId: number): Observable<ArchiveTransfer[]> {
     const url = `${this.archiveTransfersUrl}/?submissionUserId=${submissionUserId}`;
     return this.http.get<ArchiveTransferInterface[]>(url)
       .pipe(
-        map(value => value.map(element => new ArchiveTransfer().fromObject(element))),
+        map(value => value.map(element => new ArchiveTransfer(element.submissionUserId).fromObject(element))),
         tap(value => value.length ?
-          this.log(`found archive transfers which submission user id matching "${submissionUserId}"`) : this.log(`no archive transfers which submission user id matching "${submissionUserId}"`)),
-        catchError(this.handleError<ArchiveTransfer[]>(`findArchiveTransfersBySubmissionUser submissionUserId=${submissionUserId}`, []))
+          ServiceUtil.log(`found archive transfers which submission user id matching "${submissionUserId}"`) : ServiceUtil.log(`no archive transfers which submission user id matching "${submissionUserId}"`)),
+        catchError(ServiceUtil.handleError<ArchiveTransfer[]>(`findArchiveTransfersBySubmissionUser submissionUserId=${submissionUserId}`, []))
       );
   }
 
@@ -64,65 +95,10 @@ export class ArchiveTransferService {
     const url = `${this.archiveTransfersUrl}/?status=${status}`;
     return this.http.get<ArchiveTransferInterface[]>(url)
       .pipe(
-        map(value => value.map(element => new ArchiveTransfer().fromObject(element))),
+        map(value => value.map(element => new ArchiveTransfer(element.submissionUserId).fromObject(element))),
         tap(value => value.length ?
-          this.log(`found archive transfers which status matching "${status}"`) : this.log(`no archive transfers which status matching "${status}"`)),
-        catchError(this.handleError<ArchiveTransfer[]>(`findArchiveTransfersByStatus status=${status}`, []))
+          ServiceUtil.log(`found archive transfers which status matching "${status}"`) : ServiceUtil.log(`no archive transfers which status matching "${status}"`)),
+        catchError(ServiceUtil.handleError<ArchiveTransfer[]>(`findArchiveTransfersByStatus status=${status}`, []))
       );
-  }
-
-  updateArchiveTransfer(archiveTransfer: ArchiveTransfer, message: MessageType = 'UPDATED_ARCHIVE_TRANSFER'): Observable<ArchiveTransfer> {
-    return this.http.put<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
-      .pipe(
-        switchMap(updatedArchiveTransfer =>
-          this._messageService.addMessage(updatedArchiveTransfer.id, message!).pipe(
-            mapTo(updatedArchiveTransfer))
-        ),
-        tap(_ => this.log(`updated archive transfer id=${archiveTransfer.id}`)),
-        catchError(this.handleError<any>('updateArchiveTransfer'))
-      );
-  }
-
-  addArchiveTransfer(archiveTransfer: ArchiveTransfer): Observable<ArchiveTransfer> {
-    return this.http.post<ArchiveTransfer>(this.archiveTransfersUrl, archiveTransfer.toInterface(), this.httpOptions)
-      .pipe(
-        tap((newArchiveTransfer: ArchiveTransfer) => this.log(`added archive transfer w/ id=${newArchiveTransfer.id}`)),
-        catchError(this.handleError<ArchiveTransfer>('addArchiveTransfer'))
-      );
-  }
-
-  deleteArchiveTransfer(archiveTransfer: ArchiveTransfer | number): Observable<ArchiveTransfer> {
-    const id = typeof archiveTransfer === 'number' ? archiveTransfer : archiveTransfer.id;
-    const url = `${this.archiveTransfersUrl}/${id}`;
-
-    return this.http.delete<ArchiveTransfer>(url, this.httpOptions).pipe(
-      tap(_ => this.log(`deleted archive transfer id=${id}`)),
-      catchError(this.handleError<ArchiveTransfer>('deleteArchiveTransfer'))
-    );
-  }
-
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T>(operation: string = 'operation', result?: T): (error: any) => Observable<T> {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
-
-  private log(message: string): void {
-    // this.messageService.add(`HeroService: ${message}`);
-    console.log(`ArchiveTransferService: ${message}`);
   }
 }

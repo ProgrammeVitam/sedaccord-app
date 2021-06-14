@@ -48,7 +48,7 @@
            type="text">
     <mat-autocomplete #autoOriginatingAgency="matAutocomplete"
                       (optionSelected)="autoFillOriginatingAgencyDescription($event.option.value)"
-                      [displayWith]="displayFn">
+                      [displayWith]="getDisplayAgency">
       <mat-option *ngFor="let originatingAgency of $filteredOriginatingAgencies | async"
                   [value]="originatingAgency">
         {{originatingAgency.name}}
@@ -75,7 +75,7 @@
            type="text">
     <mat-autocomplete #autoSubmissionAgency="matAutocomplete"
                       (optionSelected)="autoFillSubmissionAgencyDescription($event.option.value)"
-                      [displayWith]="displayFn">
+                      [displayWith]="getDisplayAgency">
       <mat-option *ngFor="let submissionAgency of $filteredSubmissionAgencies | async"
                   [value]="submissionAgency">
         {{submissionAgency.name}}

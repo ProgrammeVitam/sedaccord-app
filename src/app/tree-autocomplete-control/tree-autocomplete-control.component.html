@@ -11,7 +11,7 @@
   <!-- #docregion mat-autocomplete -->
   <mat-autocomplete #auto="matAutocomplete" (closed)="reselectOption()"
                     (optionSelected)="selectOption($event.option.value)"
-                    [displayWith]="displayFn">
+                    [displayWith]="getDisplayFile">
     <mat-tree
       [dataSource]="dataSource"
       [treeControl]="treeControl"

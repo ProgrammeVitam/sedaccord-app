@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, of} from 'rxjs';
+import {Observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {User} from '../dtos/user';
+import {ServiceUtil} from './service-util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private usersUrl = 'api/users';  // URL to web api
+  private usersUrl = 'api/users';
 
   constructor(private http: HttpClient) {
   }
@@ -16,8 +17,8 @@ export class UserService {
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.usersUrl)
       .pipe(
-        tap(_ => this.log('fetched users')),
-        catchError(this.handleError<User[]>('getUsers', []))
+        tap(_ => ServiceUtil.log('fetched users')),
+        catchError(ServiceUtil.handleError<User[]>('getUsers', []))
       );
   }
 
@@ -26,33 +27,8 @@ export class UserService {
     return this.http.get<User[]>(url)
       .pipe(
         tap(value => value.length ?
-          this.log(`found users whose name matching "${name}"`) : this.log(`no users whose name matching "${name}"`)),
-        catchError(this.handleError<User[]>(`findUserByName name=${name}`, []))
+          ServiceUtil.log(`found users whose name matching "${name}"`) : ServiceUtil.log(`no users whose name matching "${name}"`)),
+        catchError(ServiceUtil.handleError<User[]>(`findUserByName name=${name}`, []))
       );
-  }
-
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-  private handleError<T>(operation: string = 'operation', result?: T): (error: any) => Observable<T> {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
-    };
-  }
-
-  private log(message: string): void {
-    // this.messageService.add(`HeroService: ${message}`);
-    console.log(`ArchiveTransferService: ${message}`);
   }
 }

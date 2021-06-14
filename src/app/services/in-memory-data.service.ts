@@ -9,8 +9,7 @@ import {User} from '../dtos/user';
 })
 export class InMemoryDataService implements InMemoryDbService {
 
-  constructor() {
-  }
+  constructor() {}
 
   createDb() {
     const users: User[] = [
@@ -238,13 +237,6 @@ export class InMemoryDataService implements InMemoryDbService {
     const archiveTransfers: ArchiveTransfer[] = [
       transfer1,
       transfer2
-    ];
-    const messages = [
-      {
-        id: 1,
-        archiveTransferId: 1,
-        type: 'NEW_ARCHIVE_TRANSFER'
-      }
     ];
     return {
       users,

@@ -29,6 +29,10 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
   @Input() disabled = false;
   @Input() label = '';
 
+  constructor() {
+    this.writeValue([]);
+  }
+
   private _fileDropPackages!: FileDropPackage[];
   get fileDropPackages(): FileDropPackage[] {
     return this._fileDropPackages;
@@ -39,11 +43,8 @@ export class FileDropInputControlComponent implements ControlValueAccessor {
   }
 
   onChange = (_: any) => {};
-  onTouched = () => {};
 
-  constructor() {
-    this.writeValue([]);
-  }
+  onTouched = () => {};
 
   writeValue(fileDropPackages: FileDropPackage[]): void {
     this.fileDropPackages = fileDropPackages;
