@@ -26,6 +26,8 @@ export interface ArchiveDataPackage {
   archiveData: ArchiveData;
 }
 
+const NULL_ID = 0;
+
 export type ArchiveTransferStatus = 'En cours' | 'En attente de correction';
 
 export interface ArchiveTransferInterface {
@@ -42,8 +44,6 @@ export interface ArchiveTransferInterface {
   submissionAgency?: Agency;
   archiveDataPackages: ArchiveDataPackage[];
 }
-
-const NULL_ID = 0;
 
 export class ArchiveTransfer {
   private _id: number;
@@ -108,14 +108,14 @@ export class ArchiveTransfer {
    toInterface(): ArchiveTransferInterface {
     return {
       id: this._id > 0 ? this._id : undefined,
-      creationDate: this._creationDate.toDateString(),
-      lastModificationDate: this._lastModificationDate.toDateString(),
+      creationDate: this._creationDate.toUTCString(),
+      lastModificationDate: this._lastModificationDate.toUTCString(),
       status: this._status,
       submissionUserId: this.submissionUserId,
       name: this.name,
       description: this.description,
-      startDate: this.startDate && this.startDate.toDateString(),
-      endDate: this.endDate && this.endDate.toDateString(),
+      startDate: this.startDate && this.startDate.toUTCString(),
+      endDate: this.endDate && this.endDate.toUTCString(),
       originatingAgency: this.originatingAgency,
       submissionAgency: this.submissionAgency,
       archiveDataPackages: this.archiveDataPackages
