@@ -6,14 +6,15 @@ import {ArchiveTransfer} from '../dtos/archive-transfer';
 import {SipData} from '../dtos/sip';
 import {ServiceUtil} from './service-util';
 
-const SERVER_URL = 'http://localhost:8080';
+export const LOCAL_STORAGE_PATH = '/home/helene/Desktop';
+const LOCAL_SERVER_URL = 'http://localhost:8080';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SipService {
-  private sipHealthCheckUrl = `${SERVER_URL}/actuator/health`;
-  private sipGenerationUrl = `${SERVER_URL}/sip/generate-sync`;
+  private sipHealthCheckUrl = `${LOCAL_SERVER_URL}/actuator/health`;
+  private sipGenerationUrl = `${LOCAL_SERVER_URL}/sip/generate-sync`;
   private httpOptions = {
     headers: new HttpHeaders({
       Accept: 'application/octet-stream',

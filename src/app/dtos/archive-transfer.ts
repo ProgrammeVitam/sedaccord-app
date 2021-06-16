@@ -42,7 +42,7 @@ export interface ArchiveTransferInterface {
   endDate?: string;
   originatingAgency?: Agency;
   submissionAgency?: Agency;
-  archiveDataPackages: ArchiveDataPackage[];
+  archiveDataPackages: ArchiveDataPackage[]; // TODO might be stored in another collection if too large (https://docs.mongodb.com/manual/core/document/#document-size-limit)
 }
 
 export class ArchiveTransfer {

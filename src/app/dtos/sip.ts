@@ -1,10 +1,13 @@
 import {ArchiveDataPackage, ArchiveDataUtils, ArchiveTransfer} from './archive-transfer';
+import {LOCAL_STORAGE_PATH} from '../services/sip.service';
 
 interface ArchiveUnitData {
   archiveUnitID: string;
   descriptionLevel: 'RecordGrp' | 'Item';
   title: string;
   description: string;
+  startDate?: string;
+  endDate?: string;
   path?: string;
 }
 
@@ -44,10 +47,17 @@ export class SipData implements SipDataInterface {
 
   static fromArchiveTransfer(archiveTransfer: ArchiveTransfer): SipData {
     return new SipData()
-      .withComment(`${archiveTransfer.name}\n${archiveTransfer.description}\n${archiveTransfer.startDate}\n${archiveTransfer.endDate}\n${archiveTransfer.originatingAgency?.description}\n${archiveTransfer.submissionAgency?.description}`)
+      .withComment(`
+        ${archiveTransfer.name}\n
+        Description: ${archiveTransfer.description}\n
+        Date de début: ${archiveTransfer.startDate}\n
+        Date de fin: ${archiveTransfer.endDate}\n
+        Service producteur: ${archiveTransfer.originatingAgency?.description}\n
+        Service versant: ${archiveTransfer.submissionAgency?.description}
+      `)
       .withMessageIdentifier(`Projet de versement ${archiveTransfer.id}`)
       .withArchivalAgreement('IC-000001') // TODO
-      .withArchivalAgency('') // TODO
+      .withArchivalAgency('Vitam') // TODO
       .withTransferringAgency(archiveTransfer.originatingAgency?.name || '')
       .withOriginatingAgency(archiveTransfer.originatingAgency?.name || '')
       .withSubmissionAgency(archiveTransfer.submissionAgency?.name || '')
@@ -69,7 +79,9 @@ export class SipData implements SipDataInterface {
             descriptionLevel: 'RecordGrp',
             title: root.name,
             description: root.description || '',
-            path: `/home/helene/Desktop${root.path}` // TODO
+            startDate: root.startDate?.toUTCString(), // TODO missing backend side
+            endDate: root.endDate?.toUTCString(), // TODO missing backend side
+            path: `${LOCAL_STORAGE_PATH}${root.path}`
           } as ArchiveUnitData; });
       return [metaArchiveUnit, ...archiveUnits];
     });
