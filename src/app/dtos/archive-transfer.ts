@@ -19,7 +19,6 @@ export class ArchiveDataUtils {
 export type ArchiveData = FileMetadata[][];
 
 export interface ArchiveDataPackage {
-  id: number;
   name: string;
   description?: string;
   classificationItem: Reference;

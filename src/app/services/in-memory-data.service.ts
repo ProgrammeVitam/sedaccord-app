@@ -214,7 +214,6 @@ export class InMemoryDataService implements InMemoryDbService {
       originatingAgency: agencies[4],
       submissionAgency: agencies[4],
       archiveDataPackages: [{
-        id: 1,
         name: '',
         classificationItem: classification[0].children![0],
         archiveData: data1

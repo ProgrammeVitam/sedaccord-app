@@ -188,7 +188,6 @@ export class ArchiveTransferAddComponent implements OnInit, AfterViewInit {
     return archiveDataPackageFormArrayValue
       .map((archiveDataPackage: any, index: number) => {
         return {
-          id: index,
           name: archiveDataPackage.name,
           classificationItem: {
             id: archiveDataPackage.classificationItem.id,

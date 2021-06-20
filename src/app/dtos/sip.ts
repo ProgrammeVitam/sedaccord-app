@@ -65,8 +65,8 @@ export class SipData implements SipDataInterface {
   }
 
   private static _archiveDataPackagesToArchiveUnits(archiveDataPackages: ArchiveDataPackage[]): ArchiveUnitData[] {
-    return archiveDataPackages.flatMap(archiveDataPackage => {
-      const archiveUnitId = `${archiveDataPackage.id}`;
+    return archiveDataPackages.flatMap((archiveDataPackage, index) => {
+      const archiveUnitId = `${index}`;
       const metaArchiveUnit: ArchiveUnitData = {
         archiveUnitID: archiveUnitId,
         descriptionLevel: 'RecordGrp',
