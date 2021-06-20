@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.5.
 
+**[DISCLAIMER]** This project is currently a POC to demonstrate the utility of such a tool for agencies and archivists.
+It means there is no true backend: mock data is returned from fake API endpoints in memory via ([in-memory-data.service.ts](src/app/services/in-memory-data.service.ts)), and SIP generation depends on an external beta service.
+However, these fake endpoint can easily be replaced by true ones, and the frontend code be reused (except for some shortcuts, like authentication, indicated in code).
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
@@ -31,7 +35,7 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Deploy to GitHub Pages
+## Deploy to GitHub Pages (prototype only)
 
 Run `ng deploy --base-href=/sedaccord-app/` to deploy the Angular application to GitHub Pages.
 
