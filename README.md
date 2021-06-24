@@ -1,10 +1,26 @@
 # SEDAccord
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.5.
+## Features
 
-**[DISCLAIMER]** This project is currently a POC to demonstrate the utility of such a tool for agencies and archivists.
-It means there is no true backend: mock data is returned from fake API endpoints in memory via ([in-memory-data.service.ts](src/app/services/in-memory-data.service.ts)), and SIP generation depends on an external beta service.
-However, these fake endpoint can easily be replaced by true ones, and the frontend code be reused (except for some shortcuts, like authentication, indicated in code).
+This project is currently a **POC** to demonstrate the utility of such a tool for agencies and archivists.
+
+**It means there is no true backend**: mock data is returned from fake API endpoints in memory via [in-memory-data.service.ts](src/app/services/in-memory-data.service.ts), and SIP generation depends on an external beta service.
+However, these fake endpoints can easily be replaced by true ones, and the frontend code be reused (except for some technical shortcuts, like authentication, indicated in code).
+It is also missing error handling and form validation.
+
+It currently supports:
+* **Creation of a new transfer project**, allowing to upload one or several directories *(simulated for display only)*.
+* **Modification of an existing transfer project**: update context information and file details.
+* **Communication between agencies and archivists** via a comment system *(available for directories/files only)* and switching from one of the profile to the other.
+  * Agencies can create and share transfer projects.
+  * Archivists can see all shared transfers projects and generate SIPs in addition to create new transfer projects.
+* **Generation of a SIP** from a transfer project *(local only: service must run on the machine where files are stored)*.
+
+### How-to generate a SIP
+
+* Clone and run [https://github.com/hjonin/sipservice](https://github.com/hjonin/sipservice) on your computer.
+* Specify url to the service (`LOCAL_SERVER_URL`) and path to your files (`LOCAL_STORAGE_PATH`) in [src/app/services/sip.service.ts](src/app/services/sip.service.ts).
+* Export button should now be available under the archivist profile.
 
 ## Development server
 
@@ -27,11 +43,11 @@ It will use the configuration file by default.
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests
+## Running unit tests [N/A]
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+## Running end-to-end tests [N/A]
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
